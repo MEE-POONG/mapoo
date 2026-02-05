@@ -1,4 +1,4 @@
-// File: D:\web\otop\src\app\layout.tsx
+// File: D:\pat\mapoo\src\app\layout.tsx
 import * as entry from '../../../src/app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
