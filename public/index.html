@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SiamSausage - ไส้กรอกอีสาน & หมูแดดเดียว ราคาส่ง</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Prompt', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#fdf8f6',
+                            100: '#f2e8e5',
+                            200: '#eaddd7',
+                            300: '#e0cec7',
+                            400: '#d2bab0',
+                            500: '#a1887f', // Secondary Brown
+                            600: '#8d6e63', // Primary Brown
+                            700: '#5d4037',
+                            800: '#4e342e',
+                            900: '#3e2723',
+                        },
+                        accent: {
+                            500: '#FF7043', /* Deep Orange */
+                            600: '#F4511E',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body class="bg-brand-50 text-brand-900 font-sans antialiased selection:bg-accent-500 selection:text-white">
+
+    <!-- Navbar -->
+    <nav class="glass-nav fixed w-full z-50 border-b border-brand-200 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer">
+                    <div class="w-10 h-10 bg-accent-500 rounded-full flex items-center justify-center text-white text-xl font-bold font-serif">S</div>
+                    <div>
+                        <span class="font-bold text-2xl tracking-tight text-brand-800">SiamSausage</span>
+                        <p class="text-xs text-brand-500 -mt-1 tracking-wider">ต้นตำรับ ราคาส่ง</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#" class="text-brand-700 hover:text-accent-600 font-medium transition-colors">หน้าแรก</a>
+                    <a href="#" class="text-brand-700 hover:text-accent-600 font-medium transition-colors">สินค้าทั้งหมด</a>
+                    <a href="#" class="text-brand-700 hover:text-accent-600 font-medium transition-colors">เรทราคาส่ง</a>
+                    <a href="#" class="text-brand-700 hover:text-accent-600 font-medium transition-colors">ติดต่อเรา</a>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center space-x-4">
+                    <button class="text-brand-700 hover:text-accent-600 relative group">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                        <span class="absolute -top-1 -right-2 bg-accent-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm group-hover:scale-110 transition-transform">0</span>
+                    </button>
+                    <button class="md:hidden text-brand-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="relative pt-20 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-24 lg:pt-32 lg:pb-40">
+            <div class="lg:grid lg:grid-cols-2 lg:gap-8 items-center">
+                <!-- Text Content -->
+                <div class="text-center lg:text-left z-10 relative">
+                    <div class="inline-flex items-center px-3 py-1 rounded-full bg-orange-100 text-orange-800 text-sm font-semibold mb-6 border border-orange-200">
+                        <span class="mr-2">🔥</span> ยอดขายอันดับ 1 ในตลาดไท
+                    </div>
+                    <h1 class="text-5xl lg:text-7xl font-bold tracking-tight text-brand-900 mb-6 leading-tight">
+                        ไส้กรอกอีสาน <br>
+                        <span class="text-accent-600 bg-clip-text text-transparent bg-gradient-to-r from-accent-600 to-orange-500">รสต้นตำรับ</span>
+                    </h1>
+                    <p class="text-xl text-brand-600 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                        หมูล้วน มันน้อย เปรี้ยวกำลังดี สูตรลับจากรุ่นสู่รุ่น <br>
+                        เหมาะสำหรับร้านทอด ร้านปิ้งย่าง กำไรดี คืนทุนไว
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <a href="#products" class="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-medium rounded-2xl text-white bg-accent-600 hover:bg-accent-700 shadow-lg shadow-orange-500/30 transition-all hover:-translate-y-1">
+                            สั่งซื้อราคาส่ง
+                        </a>
+                        <a href="#" class="inline-flex items-center justify-center px-8 py-4 border-2 border-brand-200 text-lg font-medium rounded-2xl text-brand-700 bg-white hover:bg-brand-50 hover:border-brand-300 transition-all">
+                            ดูรีวิวลูกค้า ⭐️
+                        </a>
+                    </div>
+                    
+                    <div class="mt-10 flex items-center justify-center lg:justify-start gap-6 text-brand-500 text-sm font-medium">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            ผลิตใหม่ทุกวัน
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            ไม่ใส่สารกันบูด
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hero Image -->
+                <div class="mt-12 lg:mt-0 relative">
+                    <!-- Blob Background -->
+                    <div class="absolute top-0 right-0 -mr-20 -mt-20 w-full h-full bg-orange-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+                    <div class="absolute -bottom-8 -left-20 w-full h-full bg-brand-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+                    
+                    <div class="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white rotate-2 hover:rotate-0 transition-transform duration-500">
+                        <img src="https://images.unsplash.com/photo-1596796408226-5b487d605503?auto=format&fit=crop&q=80&w=1000" alt="ไส้กรอกอีสานย่างร้อนๆ" class="object-cover w-full h-[600px] hover:scale-105 transition-transform duration-700">
+                        
+                        <!-- Floating Card -->
+                        <div class="absolute bottom-6 left-6 bg-white/95 backdrop-blur-sm p-4 rounded-xl shadow-lg border border-orange-100 max-w-xs">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-green-100 p-2 rounded-lg text-green-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500">กำไรต่อกิโล</p>
+                                    <p class="font-bold text-gray-900">฿350 - ฿500</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Category Section -->
+    <section class="py-20 bg-white" id="products">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-base text-accent-600 font-semibold tracking-wide uppercase mb-2">สินค้าแนะนำ</h2>
+                <h3 class="text-4xl font-bold text-brand-900">เลือกสินค้าไปทำกำไร</h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                <!-- Card 1 -->
+                <div class="group bg-white rounded-3xl p-4 shadow-xl shadow-brand-100/50 hover:shadow-2xl hover:shadow-orange-500/10 transition-all duration-300 border border-brand-50 hover:border-orange-100">
+                    <div class="relative h-64 rounded-2xl overflow-hidden mb-6">
+                        <div class="absolute top-4 left-4 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full z-10 shadow-sm">ขายดี</div>
+                        <img src="https://images.unsplash.com/photo-1551248429-40975aa4de74?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="หมูผสมมัน">
+                    </div>
+                    <div class="px-2 pb-4">
+                        <h4 class="text-xl font-bold text-brand-900 mb-2">ไส้กรอกอีสาน (สูตรหมูล้วน)</h4>
+                        <p class="text-brand-500 text-sm mb-4 line-clamp-2">เนื้อแดงคัดพิเศษ 90% มันน้อย ไม่เลี่ยน เหมาะสำหรับกลุ่มลูกค้าสายสุขภาพ</p>
+                        <div class="flex items-end justify-between">
+                            <div>
+                                <p class="text-xs text-brand-400">ราคาส่งเริ่มต้น</p>
+                                <p class="text-2xl font-bold text-accent-600">฿120<span class="text-sm font-normal text-brand-400">/กก.</span></p>
+                            </div>
+                            <button class="w-12 h-12 rounded-full bg-brand-100 hover:bg-accent-500 hover:text-white text-brand-800 flex items-center justify-center transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="group bg-white rounded-3xl p-4 shadow-xl shadow-brand-100/50 hover:shadow-2xl hover:shadow-orange-500/10 transition-all duration-300 border border-brand-50 hover:border-orange-100 relative top-0 md:-top-8">
+                    <div class="relative h-64 rounded-2xl overflow-hidden mb-6">
+                        <div class="absolute top-4 left-4 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full z-10 shadow-sm">แนะนำ</div>
+                        <img src="https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="หมูติดมัน">
+                    </div>
+                    <div class="px-2 pb-4">
+                        <h4 class="text-xl font-bold text-brand-900 mb-2">ไส้กรอกอีสาน (สูตรต้นตำรับ)</h4>
+                        <p class="text-brand-500 text-sm mb-4 line-clamp-2">รสชาติกลมกล่อม เปรี้ยวกำลังดี ขายง่ายที่สุด นิยมมากในตลาดนัด</p>
+                        <div class="flex items-end justify-between">
+                            <div>
+                                <p class="text-xs text-brand-400">ราคาส่งเริ่มต้น</p>
+                                <p class="text-2xl font-bold text-accent-600">฿95<span class="text-sm font-normal text-brand-400">/กก.</span></p>
+                            </div>
+                            <button class="w-12 h-12 rounded-full bg-brand-100 hover:bg-accent-500 hover:text-white text-brand-800 flex items-center justify-center transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="group bg-white rounded-3xl p-4 shadow-xl shadow-brand-100/50 hover:shadow-2xl hover:shadow-orange-500/10 transition-all duration-300 border border-brand-50 hover:border-orange-100">
+                    <div class="relative h-64 rounded-2xl overflow-hidden mb-6">
+                        <img src="https://images.unsplash.com/photo-1606787366850-de6330128bfc?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="หมูแดดเดียว">
+                    </div>
+                    <div class="px-2 pb-4">
+                        <h4 class="text-xl font-bold text-brand-900 mb-2">หมูแดดเดียว (สูตรพริกไทยดำ)</h4>
+                        <p class="text-brand-500 text-sm mb-4 line-clamp-2">หอมเครื่องเทศ ตากแดดธรรมชาติ 100% ทอดแล้วสีสวย ไม่ดำ</p>
+                        <div class="flex items-end justify-between">
+                            <div>
+                                <p class="text-xs text-brand-400">ราคาส่งเริ่มต้น</p>
+                                <p class="text-2xl font-bold text-accent-600">฿150<span class="text-sm font-normal text-brand-400">/กก.</span></p>
+                            </div>
+                            <button class="w-12 h-12 rounded-full bg-brand-100 hover:bg-accent-500 hover:text-white text-brand-800 flex items-center justify-center transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Value Props -->
+    <section class="py-20 bg-brand-900 text-white relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/food.png')]"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6 text-3xl">🐷</div>
+                    <h4 class="text-lg font-bold mb-2">หมูสดจากฟาร์ม</h4>
+                    <p class="text-brand-300 text-sm">คัดสรรวัตถุดิบคุณภาพ เกรด A ส่งตรงจากฟาร์มปิดมาตรฐาน</p>
+                </div>
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6 text-3xl">🌿</div>
+                    <h4 class="text-lg font-bold mb-2">สมุนไพรล้วน</h4>
+                    <p class="text-brand-300 text-sm">ถึงเครื่องเทศ หอมกระเทียมพริกไทย สูตรลับเฉพาะ</p>
+                </div>
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6 text-3xl">🚚</div>
+                    <h4 class="text-lg font-bold mb-2">ส่งทั่วไทย 1-2 วัน</h4>
+                    <p class="text-brand-300 text-sm">แพ็คสุญญากาศอย่างดี เก็บได้นาน ส่งรถห้องเย็นได้</p>
+                </div>
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6 text-3xl">💰</div>
+                    <h4 class="text-lg font-bold mb-2">ราคาส่งกำไรดี</h4>
+                    <p class="text-brand-300 text-sm">มีเรทแม่ค้า เริ่มต้นแค่ 10 กิโลฯ ก็ได้ราคาส่ง</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-brand-50 border-t border-brand-200 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+                 <div class="flex items-center gap-2 mb-4 md:mb-0">
+                    <div class="w-8 h-8 bg-brand-800 rounded-full flex items-center justify-center text-white font-bold font-serif">S</div>
+                    <span class="font-bold text-xl text-brand-800">SiamSausage</span>
+                </div>
+                <div class="flex space-x-6 text-brand-500">
+                    <a href="#" class="hover:text-brand-800 transition-colors">หน้าแรก</a>
+                    <a href="#" class="hover:text-brand-800 transition-colors">สินค้า</a>
+                    <a href="#" class="hover:text-brand-800 transition-colors">แจ้งชำระเงิน</a>
+                    <a href="#" class="hover:text-brand-800 transition-colors">ติดต่อเรา</a>
+                </div>
+            </div>
+            <div class="text-center text-brand-400 text-sm">
+                &copy; 2024 SiamSausage. สงวนลิขสิทธิ์. ออกแบบเพื่อการสาธิตเท่านั้น
+            </div>
+        </div>
+    </footer>
+
+    <!-- Animation Keyframes -->
+    <style>
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+    </style>
+</body>
+</html>
