@@ -19,16 +19,16 @@ export default function Navbar() {
                     <div className="hidden md:flex space-x-8 items-center">
                         <Link href="/" className="text-brand-700 hover:text-accent-600 font-medium transition-colors">หน้าแรก</Link>
                         <Link href="/products" className="text-brand-700 hover:text-accent-600 font-medium transition-colors">สินค้าทั้งหมด</Link>
-                        <Link href="#" className="text-brand-700 hover:text-accent-600 font-medium transition-colors">เรทราคาส่ง</Link>
-                        <Link href="#" className="text-brand-700 hover:text-accent-600 font-medium transition-colors">ติดต่อเรา</Link>
+                        <Link href="/wholesale" className="text-brand-700 hover:text-accent-600 font-medium transition-colors">เรทราคาส่ง</Link>
+                        <Link href="/contact" className="text-brand-700 hover:text-accent-600 font-medium transition-colors">ติดต่อเรา</Link>
                     </div>
 
                     {/* Actions */}
                     <div className="flex items-center space-x-4">
-                        <button className="text-brand-700 hover:text-accent-600 relative group">
+                        <Link href="/cart" className="text-brand-700 hover:text-accent-600 relative group">
                             <ShoppingCart className="w-7 h-7" />
-                            <span className="absolute -top-1 -right-2 bg-accent-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm group-hover:scale-110 transition-transform">0</span>
-                        </button>
+                            <span className="absolute -top-1 -right-2 bg-accent-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm group-hover:scale-110 transition-transform">2</span>
+                        </Link>
                         <button className="md:hidden text-brand-700">
                             <Menu className="w-7 h-7" />
                         </button>
