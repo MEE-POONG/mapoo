@@ -13,6 +13,8 @@ export const metadata: Metadata = {
     description: "ไส้กรอกอีสาน หมูแดดเดียว ราคาส่ง กำไรดี เหมาะสำหรับร้านค้าและตัวแทนจำหน่าย",
 };
 
+import { CartProvider } from "@/context/CartContext";
+
 export default function RootLayout({
     children,
 }: Readonly<{
@@ -21,7 +23,9 @@ export default function RootLayout({
     return (
         <html lang="th">
             <body className={`${prompt.variable} font-sans antialiased text-brand-900 bg-brand-50 selection:bg-accent-500 selection:text-white`}>
-                {children}
+                <CartProvider>
+                    {children}
+                </CartProvider>
             </body>
         </html>
     );

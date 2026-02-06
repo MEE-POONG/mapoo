@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
 import { Check, Star } from "lucide-react";
+import FeaturedProducts from "@/components/FeaturedProducts";
 
 export default function Home() {
     return (
@@ -35,8 +36,8 @@ export default function Home() {
                                     สั่งซื้อราคาส่ง
                                 </Link>
                                 <Link
-                                    href="#"
-                                    className="inline-flex items-center justify-center px-8 py-4 border-2 border-brand-200 text-lg font-medium rounded-2xl text-brand-700 bg-white hover:bg-brand-50 hover:border-brand-300 transition-all"
+                                    href="/reviews"
+                                    className="inline-flex items-center justify-center px-8 py-4 border-2 border-brand-200 text-lg font-medium rounded-2xl text-brand-700 bg-white hover:bg-brand-50 hover:border-brand-300 transition-all font-bold"
                                 >
                                     ดูรีวิวลูกค้า ⭐️
                                 </Link>
@@ -97,69 +98,7 @@ export default function Home() {
                         </h3>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                        {/* Card 1 */}
-                        <div className="group bg-white rounded-3xl p-4 shadow-xl shadow-brand-100/50 hover:shadow-2xl hover:shadow-orange-500/10 transition-all duration-300 border border-brand-50 hover:border-orange-100">
-                            <div className="relative h-64 rounded-2xl overflow-hidden mb-6">
-                                <div className="absolute top-4 left-4 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full z-10 shadow-sm">ขายดี</div>
-                                <img src="https://images.unsplash.com/photo-1551248429-40975aa4de74?auto=format&fit=crop&q=80&w=800" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="หมูผสมมัน" />
-                            </div>
-                            <div className="px-2 pb-4">
-                                <h4 className="text-xl font-bold text-brand-900 mb-2">ไส้กรอกอีสาน (สูตรหมูล้วน)</h4>
-                                <p className="text-brand-500 text-sm mb-4 line-clamp-2">เนื้อแดงคัดพิเศษ 90% มันน้อย ไม่เลี่ยน เหมาะสำหรับกลุ่มลูกค้าสายสุขภาพ</p>
-                                <div className="flex items-end justify-between">
-                                    <div>
-                                        <p className="text-xs text-brand-400">ราคาส่งเริ่มต้น</p>
-                                        <p className="text-2xl font-bold text-accent-600">฿120<span className="text-sm font-normal text-brand-400">/กก.</span></p>
-                                    </div>
-                                    <button className="w-12 h-12 rounded-full bg-brand-100 hover:bg-accent-500 hover:text-white text-brand-800 flex items-center justify-center transition-colors">
-                                        <span className="text-2xl font-light leading-none pb-1">+</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Card 2 */}
-                        <div className="group bg-white rounded-3xl p-4 shadow-xl shadow-brand-100/50 hover:shadow-2xl hover:shadow-orange-500/10 transition-all duration-300 border border-brand-50 hover:border-orange-100 relative top-0 md:-top-8">
-                            <div className="relative h-64 rounded-2xl overflow-hidden mb-6">
-                                <div className="absolute top-4 left-4 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full z-10 shadow-sm">แนะนำ</div>
-                                <img src="https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&q=80&w=800" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="หมูติดมัน" />
-                            </div>
-                            <div className="px-2 pb-4">
-                                <h4 className="text-xl font-bold text-brand-900 mb-2">ไส้กรอกอีสาน (สูตรต้นตำรับ)</h4>
-                                <p className="text-brand-500 text-sm mb-4 line-clamp-2">รสชาติกลมกล่อม เปรี้ยวกำลังดี ขายง่ายที่สุด นิยมมากในตลาดนัด</p>
-                                <div className="flex items-end justify-between">
-                                    <div>
-                                        <p className="text-xs text-brand-400">ราคาส่งเริ่มต้น</p>
-                                        <p className="text-2xl font-bold text-accent-600">฿95<span className="text-sm font-normal text-brand-400">/กก.</span></p>
-                                    </div>
-                                    <button className="w-12 h-12 rounded-full bg-brand-100 hover:bg-accent-500 hover:text-white text-brand-800 flex items-center justify-center transition-colors">
-                                        <span className="text-2xl font-light leading-none pb-1">+</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Card 3 */}
-                        <div className="group bg-white rounded-3xl p-4 shadow-xl shadow-brand-100/50 hover:shadow-2xl hover:shadow-orange-500/10 transition-all duration-300 border border-brand-50 hover:border-orange-100">
-                            <div className="relative h-64 rounded-2xl overflow-hidden mb-6">
-                                <img src="https://images.unsplash.com/photo-1606787366850-de6330128bfc?auto=format&fit=crop&q=80&w=800" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="หมูแดดเดียว" />
-                            </div>
-                            <div className="px-2 pb-4">
-                                <h4 className="text-xl font-bold text-brand-900 mb-2">หมูแดดเดียว (สูตรพริกไทยดำ)</h4>
-                                <p className="text-brand-500 text-sm mb-4 line-clamp-2">หอมเครื่องเทศ ตากแดดธรรมชาติ 100% ทอดแล้วสีสวย ไม่ดำ</p>
-                                <div className="flex items-end justify-between">
-                                    <div>
-                                        <p className="text-xs text-brand-400">ราคาส่งเริ่มต้น</p>
-                                        <p className="text-2xl font-bold text-accent-600">฿150<span className="text-sm font-normal text-brand-400">/กก.</span></p>
-                                    </div>
-                                    <button className="w-12 h-12 rounded-full bg-brand-100 hover:bg-accent-500 hover:text-white text-brand-800 flex items-center justify-center transition-colors">
-                                        <span className="text-2xl font-light leading-none pb-1">+</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <FeaturedProducts />
                 </div>
             </section>
 

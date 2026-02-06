@@ -8,10 +8,11 @@ export default function Footer() {
                         <span className="font-bold text-xl text-brand-800">SiamSausage</span>
                     </div>
                     <div className="flex space-x-6 text-brand-500">
-                        <a href="#" className="hover:text-brand-800 transition-colors">หน้าแรก</a>
-                        <a href="#" className="hover:text-brand-800 transition-colors">สินค้า</a>
-                        <a href="#" className="hover:text-brand-800 transition-colors">แจ้งชำระเงิน</a>
-                        <a href="#" className="hover:text-brand-800 transition-colors">ติดต่อเรา</a>
+                        <a href="/" className="hover:text-brand-800 transition-colors">หน้าแรก</a>
+                        <a href="/products" className="hover:text-brand-800 transition-colors">สินค้า</a>
+                        <a href="/reviews" className="hover:text-brand-800 transition-colors">รีวิวจากลูกค้า</a>
+                        <a href="/admin/products" className="hover:text-brand-800 transition-colors">จัดการหลังบ้าน</a>
+                        <a href="/contact" className="hover:text-brand-800 transition-colors">ติดต่อเรา</a>
                     </div>
                 </div>
                 <div className="text-center text-brand-400 text-sm">
