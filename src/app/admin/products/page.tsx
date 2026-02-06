@@ -14,7 +14,9 @@ import {
     Image as ImageIcon,
     Tag,
     DollarSign,
-    Box
+    Box,
+    TrendingUp,
+    AlertCircle
 } from "lucide-react";
 
 interface Product {
@@ -27,6 +29,8 @@ interface Product {
     category: string;
     tags: string[];
     isFeatured: boolean;
+    stock: number;
+    costPrice: number;
 }
 
 export default function AdminProductsPage() {
@@ -46,7 +50,9 @@ export default function AdminProductsPage() {
         imageUrl: '',
         category: 'ไส้กรอกอีสาน',
         tags: [] as string[],
-        isFeatured: false
+        isFeatured: false,
+        stock: 0,
+        costPrice: 0
     });
 
     useEffect(() => {
@@ -77,7 +83,9 @@ export default function AdminProductsPage() {
                 imageUrl: product.imageUrl,
                 category: product.category,
                 tags: product.tags,
-                isFeatured: product.isFeatured
+                isFeatured: product.isFeatured || false,
+                stock: product.stock || 0,
+                costPrice: product.costPrice || 0
             });
         } else {
             setEditingProduct(null);
@@ -89,7 +97,9 @@ export default function AdminProductsPage() {
                 imageUrl: '',
                 category: 'ไส้กรอกอีสาน',
                 tags: [],
-                isFeatured: false
+                isFeatured: false,
+                stock: 0,
+                costPrice: 0
             });
         }
         setIsModalOpen(true);
@@ -155,9 +165,9 @@ export default function AdminProductsPage() {
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
                             <Package className="w-8 h-8 text-accent-600" />
-                            จัดการสินค้า
+                            จัดการสินค้าและสต๊อก
                         </h1>
-                        <p className="text-gray-500">จัดการข้อมูลสินค้า ราคา และหมวดหมู่</p>
+                        <p className="text-gray-500">จัดการข้อมูลสินค้า ราคา สต๊อก และต้นทุน</p>
                     </div>
                     <button
                         onClick={() => handleOpenModal()}
@@ -166,26 +176,6 @@ export default function AdminProductsPage() {
                         <Plus className="w-5 h-5" />
                         เพิ่มสินค้าใหม่
                     </button>
-                </div>
-
-                {/* Stats Summary */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                        <p className="text-gray-500 text-sm mb-1">สินค้าทั้งหมด</p>
-                        <p className="text-2xl font-bold text-gray-900">{products.length} รายการ</p>
-                    </div>
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                        <p className="text-gray-500 text-sm mb-1">แยกเป็นหมวดหมู่</p>
-                        <p className="text-2xl font-bold text-gray-900">{new Set(products.map(p => p.category)).size} หมวด</p>
-                    </div>
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                        <p className="text-gray-500 text-sm mb-1">สินค้าแนะนำ</p>
-                        <p className="text-2xl font-bold text-accent-600">{products.filter(p => p.isFeatured).length} รายการ</p>
-                    </div>
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                        <p className="text-gray-500 text-sm mb-1">ราคาเฉลี่ย</p>
-                        <p className="text-2xl font-bold text-gray-900">฿{products.length > 0 ? (products.reduce((acc, p) => acc + p.price, 0) / products.length).toFixed(2) : '0'}</p>
-                    </div>
                 </div>
 
                 {/* Search and Filters */}
@@ -215,7 +205,8 @@ export default function AdminProductsPage() {
                                     <tr>
                                         <th className="px-6 py-4 text-sm font-bold text-gray-500 uppercase">สินค้า</th>
                                         <th className="px-6 py-4 text-sm font-bold text-gray-500 uppercase">หมวดหมู่</th>
-                                        <th className="px-6 py-4 text-sm font-bold text-gray-500 uppercase">ราคา</th>
+                                        <th className="px-6 py-4 text-sm font-bold text-gray-500 uppercase">ราคา/ต้นทุน</th>
+                                        <th className="px-6 py-4 text-sm font-bold text-gray-500 uppercase">สต๊อก</th>
                                         <th className="px-6 py-4 text-sm font-bold text-gray-500 uppercase">การจัดการ</th>
                                     </tr>
                                 </thead>
@@ -243,6 +234,16 @@ export default function AdminProductsPage() {
                                             </td>
                                             <td className="px-6 py-4">
                                                 <p className="font-bold text-gray-900">฿{p.price}</p>
+                                                <p className="text-[10px] text-gray-400 font-medium">ทุน: ฿{p.costPrice || 0}</p>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-2">
+                                                    <span className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 ${(p.stock || 0) < 10 ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'
+                                                        }`}>
+                                                        {(p.stock || 0) < 10 && <AlertCircle className="w-3 h-3" />}
+                                                        {p.stock || 0} {p.unit.split(' ')[1] || 'กก.'}
+                                                    </span>
+                                                </div>
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-2">
@@ -266,7 +267,7 @@ export default function AdminProductsPage() {
                                     ))}
                                     {filteredProducts.length === 0 && (
                                         <tr>
-                                            <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
+                                            <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
                                                 ไม่พบข้อมูลสินค้าที่ค้นหา
                                             </td>
                                         </tr>
@@ -328,22 +329,6 @@ export default function AdminProductsPage() {
                                     </select>
                                 </div>
 
-                                {/* Price */}
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
-                                        <DollarSign className="w-4 h-4 text-gray-400" />
-                                        ราคา (บาท)
-                                    </label>
-                                    <input
-                                        required
-                                        type="number"
-                                        className="w-full px-4 py-3 bg-gray-50 border-gray-200 rounded-xl focus:ring-2 focus:ring-accent-500 focus:border-transparent transition-all"
-                                        placeholder="0"
-                                        value={formData.price}
-                                        onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
-                                    />
-                                </div>
-
                                 {/* Unit */}
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
@@ -360,8 +345,56 @@ export default function AdminProductsPage() {
                                     />
                                 </div>
 
+                                {/* Price */}
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2 text-accent-700">
+                                        <DollarSign className="w-4 h-4" />
+                                        ราคาขาย (บาท)
+                                    </label>
+                                    <input
+                                        required
+                                        type="number"
+                                        className="w-full px-4 py-3 bg-gray-50 border-gray-200 rounded-xl focus:ring-2 focus:ring-accent-500 focus:border-transparent transition-all font-bold"
+                                        placeholder="0"
+                                        value={formData.price}
+                                        onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
+                                    />
+                                </div>
+
+                                {/* Cost Price */}
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2 text-green-700">
+                                        <TrendingUp className="w-4 h-4" />
+                                        ราคาต้นทุน (บาท)
+                                    </label>
+                                    <input
+                                        required
+                                        type="number"
+                                        className="w-full px-4 py-3 bg-gray-50 border-gray-200 rounded-xl focus:ring-2 focus:ring-accent-500 focus:border-transparent transition-all font-bold"
+                                        placeholder="0"
+                                        value={formData.costPrice}
+                                        onChange={(e) => setFormData({ ...formData, costPrice: parseFloat(e.target.value) || 0 })}
+                                    />
+                                </div>
+
+                                {/* Stock */}
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2 text-brand-700">
+                                        <Package className="w-4 h-4" />
+                                        จำนวนในสต๊อก
+                                    </label>
+                                    <input
+                                        required
+                                        type="number"
+                                        className="w-full px-4 py-3 bg-gray-50 border-gray-200 rounded-xl focus:ring-2 focus:ring-accent-500 focus:border-transparent transition-all font-bold text-brand-900"
+                                        placeholder="0"
+                                        value={formData.stock}
+                                        onChange={(e) => setFormData({ ...formData, stock: parseInt(e.target.value) || 0 })}
+                                    />
+                                </div>
+
                                 {/* isFeatured */}
-                                <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-3 md:mt-8">
                                     <input
                                         type="checkbox"
                                         id="isFeatured"

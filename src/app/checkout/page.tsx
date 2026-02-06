@@ -19,7 +19,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function CheckoutPage() {
-    const { cart, loading: cartLoading, itemCount } = useCart();
+    const { cart, loading: cartLoading, itemCount, refreshCart } = useCart();
     const [submitting, setSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [orderData, setOrderData] = useState<any>(null);
@@ -49,8 +49,8 @@ export default function CheckoutPage() {
                 const order = await res.json();
                 setOrderData(order);
                 setIsSuccess(true);
-                // The cart is cleared by the API, but we might want to refreshCart in context if needed
-                // But context refresh is handled by the provider's refreshCart if we navigate.
+                // Refresh order state to clear the cart badge
+                refreshCart();
             } else {
                 alert('เกิดข้อผิดพลาดในการสั่งซื้อ');
             }
@@ -81,7 +81,7 @@ export default function CheckoutPage() {
                             <p className="font-mono font-bold text-brand-900 text-lg mb-4">{orderData?.id}</p>
                             <div className="flex justify-between font-bold text-brand-900 pt-4 border-t border-brand-200">
                                 <span>ยอดชำระสุทธิ</span>
-                                <span className="text-accent-600 text-xl">฿{total.toLocaleString()}</span>
+                                <span className="text-accent-600 text-xl">฿{orderData?.totalAmount.toLocaleString()}</span>
                             </div>
                         </div>
                         <div>

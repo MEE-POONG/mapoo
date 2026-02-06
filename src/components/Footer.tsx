@@ -11,7 +11,7 @@ export default function Footer() {
                         <a href="/" className="hover:text-brand-800 transition-colors">หน้าแรก</a>
                         <a href="/products" className="hover:text-brand-800 transition-colors">สินค้า</a>
                         <a href="/reviews" className="hover:text-brand-800 transition-colors">รีวิวจากลูกค้า</a>
-                        <a href="/admin/products" className="hover:text-brand-800 transition-colors">จัดการหลังบ้าน</a>
+                        <a href="/admin" className="hover:text-brand-800 transition-colors font-bold text-accent-600">จัดการหลังบ้าน</a>
                         <a href="/contact" className="hover:text-brand-800 transition-colors">ติดต่อเรา</a>
                     </div>
                 </div>

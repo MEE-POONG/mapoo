@@ -33,11 +33,30 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
+        const { name, description, price, unit, imageUrl, category, tags, isFeatured, stock, costPrice } = body;
+
+        const createData: any = {
+            name,
+            description,
+            price: parseFloat(price) || 0,
+            unit,
+            imageUrl,
+            category,
+            tags: tags || [],
+            isFeatured: Boolean(isFeatured),
+            stock: parseInt(stock) || 0,
+            costPrice: parseFloat(costPrice) || 0
+        };
+
         const product = await prisma.product.create({
-            data: body,
+            data: createData,
         });
         return NextResponse.json(product);
-    } catch (error) {
-        return NextResponse.json({ error: 'Error creating product' }, { status: 500 });
+    } catch (error: any) {
+        console.error('Error creating product:', error);
+        return NextResponse.json({
+            error: 'Error creating product',
+            details: error.message
+        }, { status: 500 });
     }
 }
