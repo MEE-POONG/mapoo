@@ -110,3 +110,5 @@ dump.rdb
 
 # PnP
 .pnp.*.next
+
+.next
