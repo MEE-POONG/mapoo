@@ -109,4 +109,4 @@ dump.rdb
 !.yarn/versions
 
 # PnP
-.pnp.*
+.pnp.*.next
