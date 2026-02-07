@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/context/CartContext";
@@ -13,7 +13,10 @@ import {
     MapPin,
     CheckCircle2,
     ShoppingBag,
-    Loader2
+    Loader2,
+    Ticket,
+    X,
+    Tag
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -31,18 +34,102 @@ export default function CheckoutPage() {
         address: ''
     });
 
+    const [discountInput, setDiscountInput] = useState('');
+    const [validatingCode, setValidatingCode] = useState(false);
+    const [appliedDiscount, setAppliedDiscount] = useState<any>(null);
+    const [discountError, setDiscountError] = useState('');
+
     const subtotal = cart?.items.reduce((acc, item) => acc + (item.product.price * item.quantity), 0) || 0;
     const shipping = subtotal > 0 ? 40 : 0;
-    const total = subtotal + shipping;
+
+    // Calculate discount
+    let discountAmount = 0;
+    if (appliedDiscount) {
+        if (appliedDiscount.type === 'PERCENTAGE') {
+            discountAmount = (subtotal * appliedDiscount.discountValue) / 100;
+        } else {
+            discountAmount = appliedDiscount.discountValue;
+        }
+    }
+
+    const total = Math.max(0, subtotal + shipping - discountAmount);
+
+    const handleApplyDiscount = async () => {
+        if (!discountInput) return;
+        setValidatingCode(true);
+        setDiscountError('');
+        try {
+            const res = await fetch('/api/discounts/validate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    code: discountInput,
+                    subtotal,
+                    phone: formData.phone // Send phone if available
+                }),
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setAppliedDiscount(data);
+                setDiscountInput('');
+            } else {
+                setDiscountError(data.error || 'โค้ดส่วนลดไม่ถูกต้อง');
+            }
+        } catch (error) {
+            setDiscountError('เกิดข้อผิดพลาดในการตรวจสอบโค้ด');
+        } finally {
+            setValidatingCode(false);
+        }
+    };
+
+    const handleRemoveDiscount = () => {
+        setAppliedDiscount(null);
+    };
+
+    // Re-validate discount if subtotal changes
+    useEffect(() => {
+        if (appliedDiscount && appliedDiscount.minPurchaseAmount && subtotal < appliedDiscount.minPurchaseAmount) {
+            setAppliedDiscount(null);
+            setDiscountError(`ยอดซื้อขั้นต่ำไม่ถึง ฿${appliedDiscount.minPurchaseAmount.toLocaleString()}`);
+        }
+    }, [subtotal, appliedDiscount]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitting(true);
+        setDiscountError('');
+
         try {
+            // 1. Final re-validation of discount if applied
+            if (appliedDiscount) {
+                const valRes = await fetch('/api/discounts/validate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        code: appliedDiscount.code,
+                        subtotal,
+                        phone: formData.phone
+                    }),
+                });
+
+                if (!valRes.ok) {
+                    const errorData = await valRes.json();
+                    setDiscountError(errorData.error || 'โค้ดส่วนลดไม่สามารถใช้งานได้ในขณะนี้');
+                    setAppliedDiscount(null);
+                    setSubmitting(false);
+                    // Scroll to discount error
+                    return;
+                }
+            }
+
+            // 2. Create Order
             const res = await fetch('/api/orders', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({
+                    ...formData,
+                    discountCode: appliedDiscount?.code
+                }),
             });
 
             if (res.ok) {
@@ -79,9 +166,17 @@ export default function CheckoutPage() {
                         <div className="bg-brand-50 p-6 rounded-2xl mb-8 text-left inline-block w-full max-w-md">
                             <p className="text-brand-500 text-sm mb-2">เลขที่ใบสั่งซื้อ</p>
                             <p className="font-mono font-bold text-brand-900 text-lg mb-4">{orderData?.id}</p>
-                            <div className="flex justify-between font-bold text-brand-900 pt-4 border-t border-brand-200">
-                                <span>ยอดชำระสุทธิ</span>
-                                <span className="text-accent-600 text-xl">฿{orderData?.totalAmount.toLocaleString()}</span>
+                            <div className="space-y-3 pt-4 border-t border-brand-200">
+                                {orderData?.discountAmount > 0 && (
+                                    <div className="flex justify-between text-green-600 text-sm font-bold">
+                                        <span>ส่วนลด ({orderData.discountCode})</span>
+                                        <span>- ฿{orderData.discountAmount.toLocaleString()}</span>
+                                    </div>
+                                )}
+                                <div className="flex justify-between font-bold text-brand-900">
+                                    <span>ยอดชำระสุทธิ</span>
+                                    <span className="text-accent-600 text-xl">฿{orderData?.totalAmount.toLocaleString()}</span>
+                                </div>
                             </div>
                         </div>
                         <div>
@@ -225,7 +320,73 @@ export default function CheckoutPage() {
                                     <span>ค่าจัดส่ง (เหมาจ่าย)</span>
                                     <span className="font-medium">฿{shipping.toLocaleString()}</span>
                                 </div>
+                                {appliedDiscount && (
+                                    <div className="flex flex-col gap-1 bg-green-50 p-3 rounded-lg border border-green-100 animate-in fade-in zoom-in duration-300">
+                                        <div className="flex justify-between text-green-600 font-bold">
+                                            <span className="flex items-center gap-1 text-sm">
+                                                <Tag className="w-3 h-3" />
+                                                ส่วนลด ({appliedDiscount.code})
+                                            </span>
+                                            <span>- ฿{discountAmount.toLocaleString()}</span>
+                                        </div>
+                                        {appliedDiscount.description && (
+                                            <p className="text-[10px] text-green-700 font-medium italic">
+                                                * {appliedDiscount.description}
+                                            </p>
+                                        )}
+                                        <p className="text-[9px] text-green-600/70 font-bold">
+                                            (ลด {appliedDiscount.type === 'PERCENTAGE' ? `${appliedDiscount.discountValue}%` : `฿${appliedDiscount.discountValue.toLocaleString()}`})
+                                        </p>
+                                    </div>
+                                )}
                             </div>
+
+                            {/* Discount Input */}
+                            {!appliedDiscount ? (
+                                <div className="mb-8">
+                                    <div className="flex gap-2">
+                                        <div className="relative flex-1">
+                                            <Ticket className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-400 w-4 h-4" />
+                                            <input
+                                                type="text"
+                                                placeholder="โค้ดส่วนลด"
+                                                className="w-full pl-9 pr-3 py-2.5 bg-brand-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-accent-500 font-bold uppercase"
+                                                value={discountInput}
+                                                onChange={(e) => setDiscountInput(e.target.value)}
+                                            />
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={handleApplyDiscount}
+                                            disabled={validatingCode || !discountInput}
+                                            className="px-4 py-2.5 bg-brand-100 text-brand-700 rounded-xl text-sm font-bold hover:bg-brand-200 transition-all disabled:opacity-50"
+                                        >
+                                            {validatingCode ? <Loader2 className="w-4 h-4 animate-spin" /> : 'ใช้'}
+                                        </button>
+                                    </div>
+                                    {discountError && (
+                                        <p className="text-[10px] text-red-500 mt-1 ml-1 font-bold">{discountError}</p>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="mb-8 bg-brand-50 p-3 rounded-2xl flex items-center justify-between border border-brand-100 border-dashed animate-in slide-in-from-right-4 duration-300">
+                                    <div className="flex items-center gap-2">
+                                        <div className="bg-green-100 p-2 rounded-lg">
+                                            <Ticket className="w-4 h-4 text-green-600" />
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] text-brand-500 font-bold uppercase tracking-widest">ใช้โค้ดแล้ว</p>
+                                            <p className="text-sm font-black text-brand-900">{appliedDiscount.code}</p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={handleRemoveDiscount}
+                                        className="text-brand-300 hover:text-red-500 transition-colors p-1"
+                                    >
+                                        <X className="w-5 h-5" />
+                                    </button>
+                                </div>
+                            )}
 
                             <div className="flex justify-between items-center mb-10 pt-6 border-t border-brand-100">
                                 <span className="font-bold text-lg text-brand-900">ยอดชำระสุทธิ</span>

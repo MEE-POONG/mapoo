@@ -44,14 +44,16 @@ model ContactMessage {
 }
 
 model Order {
-    id           String      @id @default(auto()) @map("_id") @db.ObjectId
-    customerName String
-    phone        String
-    address      String?
-    totalAmount  Float
-    status       String      @default("PENDING")
-    items        OrderItem[]
-    createdAt    DateTime    @default(now())
+    id             String      @id @default(auto()) @map("_id") @db.ObjectId
+    customerName   String
+    phone          String
+    address        String?
+    totalAmount    Float
+    discountCode   String?
+    discountAmount Float?      @default(0)
+    status         String      @default("PENDING")
+    items          OrderItem[]
+    createdAt      DateTime    @default(now())
 }
 
 model OrderItem {
@@ -92,4 +94,21 @@ model Review {
     source       String   @default("Website")
     createdAt    DateTime @default(now())
     updatedAt    DateTime @updatedAt
+}
+
+model Discount {
+    id                String    @id @default(auto()) @map("_id") @db.ObjectId
+    code              String    @unique
+    description       String?
+    discountValue     Float // Percentage or Fixed amount
+    type              String    @default("PERCENTAGE") // PERCENTAGE or FIXED
+    minPurchaseAmount Float?    @default(0)
+    userUsageLimit    Int?      @default(1)
+    isActive          Boolean   @default(true)
+    usageLimit        Int?
+    usedCount         Int       @default(0)
+    startDate         DateTime?
+    endDate           DateTime?
+    createdAt         DateTime  @default(now())
+    updatedAt         DateTime  @updatedAt
 }

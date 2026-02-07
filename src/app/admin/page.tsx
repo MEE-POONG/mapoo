@@ -24,7 +24,9 @@ import {
     CheckCircle2,
     Truck,
     XCircle,
-    ShoppingBag
+    ShoppingBag,
+    Ticket,
+    BarChart3
 } from "lucide-react";
 
 interface Stats {
@@ -191,6 +193,30 @@ export default function AdminDashboard() {
                                 <p className="text-[10px] text-gray-400 font-medium italic">รายการทั้งหมด</p>
                             </div>
                             <ArrowUpRight className="ml-auto w-4 h-4 text-gray-300 group-hover:text-blue-500 transition-colors" />
+                        </Link>
+
+                        <Link
+                            href="/admin/reports/sales"
+                            className="flex items-center gap-4 p-5 rounded-3xl bg-blue-50/50 hover:bg-blue-100/50 transition-all border border-blue-100 group"
+                        >
+                            <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                                <BarChart3 className="w-6 h-6 text-blue-600" />
+                            </div>
+                            <div>
+                                <h3 className="font-black text-gray-900">สรุปยอดขาย</h3>
+                                <p className="text-xs text-gray-500 font-bold italic">ดูรายงานรายได้ย้อนหลัง</p>
+                            </div>
+                        </Link>
+
+                        <Link href="/admin/discounts" className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-orange-300 hover:shadow-md transition-all group">
+                            <div className="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600 group-hover:bg-orange-500 group-hover:text-white transition-all">
+                                <Ticket className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <p className="font-bold text-gray-900 text-sm">โค้ดส่วนลด</p>
+                                <p className="text-[10px] text-gray-400 font-medium italic">โปรโมชั่น & คูปอง</p>
+                            </div>
+                            <ArrowUpRight className="ml-auto w-4 h-4 text-gray-300 group-hover:text-orange-500 transition-colors" />
                         </Link>
 
                         <Link href="/contact" className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-green-300 hover:shadow-md transition-all group">
