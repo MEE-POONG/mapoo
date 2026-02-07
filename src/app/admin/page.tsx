@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { useRouter } from 'next/navigation';
+import { useAdminAuth } from '@/context/AdminAuthContext';
 import Link from 'next/link';
 import {
     TrendingUp,
@@ -26,7 +26,9 @@ import {
     XCircle,
     ShoppingBag,
     Ticket,
-    BarChart3
+    BarChart3,
+    LogOut,
+    ShieldCheck
 } from "lucide-react";
 
 interface Stats {
@@ -47,14 +49,26 @@ const STATUS_OPTIONS = [
 ];
 
 export default function AdminDashboard() {
+    const router = useRouter();
+    const { admin, isLoading: authLoading, isAuthenticated, logout } = useAdminAuth();
+
     const [stats, setStats] = useState<Stats | null>(null);
     const [loading, setLoading] = useState(true);
     const [updatingId, setUpdatingId] = useState<string | null>(null);
     const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
 
+    // Redirect if not authenticated
     useEffect(() => {
-        fetchStats();
-    }, []);
+        if (!authLoading && !isAuthenticated) {
+            router.push('/admin/login');
+        }
+    }, [authLoading, isAuthenticated, router]);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            fetchStats();
+        }
+    }, [isAuthenticated]);
 
     const fetchStats = async () => {
         setLoading(true);
@@ -94,9 +108,22 @@ export default function AdminDashboard() {
         return STATUS_OPTIONS.find(opt => opt.value === status) || STATUS_OPTIONS[0];
     };
 
+    const handleLogout = () => {
+        logout();
+        router.push('/admin/login');
+    };
+
+    if (authLoading || (!isAuthenticated && !authLoading)) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+                <Loader2 className="w-12 h-12 text-amber-500 animate-spin" />
+            </div>
+        );
+    }
+
     if (loading && !stats) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
+            <div className="min-h-screen bg-gray-50/50 flex items-center justify-center">
                 <Loader2 className="w-12 h-12 text-accent-500 animate-spin" />
             </div>
         );
@@ -104,9 +131,37 @@ export default function AdminDashboard() {
 
     return (
         <main className="min-h-screen bg-gray-50/50">
-            <Navbar />
+            {/* Admin Header */}
+            <nav className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between items-center h-16">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center">
+                                <ShieldCheck className="w-5 h-5 text-white" />
+                            </div>
+                            <div>
+                                <h1 className="font-bold text-gray-900">Admin Panel</h1>
+                                <p className="text-xs text-gray-500">SiamSausage</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <div className="text-right hidden sm:block">
+                                <p className="text-sm font-bold text-gray-700">{admin?.name}</p>
+                                <p className="text-xs text-gray-400">{admin?.role}</p>
+                            </div>
+                            <button
+                                onClick={handleLogout}
+                                className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors font-medium"
+                            >
+                                <LogOut className="w-4 h-4" />
+                                <span className="hidden sm:inline">ออกจากระบบ</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-32">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900 mb-2 font-black tracking-tight">Dashboard ศูนย์ควบคุม</h1>
@@ -118,7 +173,56 @@ export default function AdminDashboard() {
                     </div>
                 </div>
 
+                {/* Quick Navigation */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <Link href="/admin/customers" className="bg-white p-4 rounded-2xl border border-gray-100 hover:border-blue-200 hover:shadow-lg transition-all group">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-500 transition-colors">
+                                <Users className="w-5 h-5 text-blue-600 group-hover:text-white transition-colors" />
+                            </div>
+                            <div>
+                                <p className="font-bold text-gray-900 text-sm">จัดการลูกค้า</p>
+                                <p className="text-xs text-gray-400">Customers</p>
+                            </div>
+                        </div>
+                    </Link>
+                    <Link href="/admin/admins" className="bg-white p-4 rounded-2xl border border-gray-100 hover:border-amber-200 hover:shadow-lg transition-all group">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center group-hover:bg-amber-500 transition-colors">
+                                <ShieldCheck className="w-5 h-5 text-amber-600 group-hover:text-white transition-colors" />
+                            </div>
+                            <div>
+                                <p className="font-bold text-gray-900 text-sm">จัดการ Admin</p>
+                                <p className="text-xs text-gray-400">Admins</p>
+                            </div>
+                        </div>
+                    </Link>
+                    <Link href="/admin/products" className="bg-white p-4 rounded-2xl border border-gray-100 hover:border-green-200 hover:shadow-lg transition-all group">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center group-hover:bg-green-500 transition-colors">
+                                <Package className="w-5 h-5 text-green-600 group-hover:text-white transition-colors" />
+                            </div>
+                            <div>
+                                <p className="font-bold text-gray-900 text-sm">จัดการสินค้า</p>
+                                <p className="text-xs text-gray-400">Products</p>
+                            </div>
+                        </div>
+                    </Link>
+                    <Link href="/admin/orders" className="bg-white p-4 rounded-2xl border border-gray-100 hover:border-purple-200 hover:shadow-lg transition-all group">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center group-hover:bg-purple-500 transition-colors">
+                                <ShoppingCart className="w-5 h-5 text-purple-600 group-hover:text-white transition-colors" />
+                            </div>
+                            <div>
+                                <p className="font-bold text-gray-900 text-sm">จัดการออร์เดอร์</p>
+                                <p className="text-xs text-gray-400">Orders</p>
+                            </div>
+                        </div>
+                    </Link>
+                </div>
+
                 {/* KPI Cards */}
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                     <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group">
                         <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50/50 rounded-bl-[4rem] -mr-8 -mt-8 transition-all group-hover:scale-110" />
@@ -349,8 +453,6 @@ export default function AdminDashboard() {
                     </div>
                 </div>
             </div>
-
-            <Footer />
         </main>
     );
 }

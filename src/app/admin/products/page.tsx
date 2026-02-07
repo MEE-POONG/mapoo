@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { useRouter } from 'next/navigation';
+import { useAdminAuth } from '@/context/AdminAuthContext';
+import Link from 'next/link';
 import {
     Plus,
     Pencil,
@@ -16,7 +17,10 @@ import {
     DollarSign,
     Box,
     TrendingUp,
-    AlertCircle
+    AlertCircle,
+    ChevronLeft,
+    ShieldCheck,
+    LogOut
 } from "lucide-react";
 
 interface Product {
@@ -34,6 +38,9 @@ interface Product {
 }
 
 export default function AdminProductsPage() {
+    const router = useRouter();
+    const { admin, isLoading: authLoading, isAuthenticated, logout } = useAdminAuth();
+
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -56,8 +63,22 @@ export default function AdminProductsPage() {
     });
 
     useEffect(() => {
-        fetchProducts();
-    }, []);
+        if (!authLoading && !isAuthenticated) {
+            router.push('/admin/login');
+        }
+    }, [authLoading, isAuthenticated, router]);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            fetchProducts();
+        }
+    }, [isAuthenticated]);
+
+    const handleLogout = () => {
+        logout();
+        router.push('/admin/login');
+    };
+
 
     const fetchProducts = async () => {
         setLoading(true);
@@ -150,33 +171,78 @@ export default function AdminProductsPage() {
         }
     };
 
+
     const filteredProducts = products.filter(p =>
         p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.category.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    return (
-        <main className="min-h-screen bg-gray-50/50">
-            <Navbar />
+    if (authLoading || !isAuthenticated) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+                <Loader2 className="w-12 h-12 text-amber-500 animate-spin" />
+            </div>
+        );
+    }
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-32">
+    return (
+        <main className="min-h-screen bg-gray-50">
+            {/* Admin Header */}
+            <nav className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between items-center h-16">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center">
+                                <ShieldCheck className="w-5 h-5 text-white" />
+                            </div>
+                            <div>
+                                <h1 className="font-bold text-gray-900">Admin Panel</h1>
+                                <p className="text-xs text-gray-500">SiamSausage</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <div className="text-right hidden sm:block">
+                                <p className="text-sm font-bold text-gray-700">{admin?.name}</p>
+                                <p className="text-xs text-gray-400">{admin?.role}</p>
+                            </div>
+                            <button
+                                onClick={handleLogout}
+                                className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors font-medium"
+                            >
+                                <LogOut className="w-4 h-4" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Dashboard Header */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
-                            <Package className="w-8 h-8 text-accent-600" />
-                            จัดการสินค้าและสต๊อก
-                        </h1>
-                        <p className="text-gray-500">จัดการข้อมูลสินค้า ราคา สต๊อก และต้นทุน</p>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                    <div className="flex items-center gap-4">
+                        <Link
+                            href="/admin"
+                            className="p-2 bg-white rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors"
+                        >
+                            <ChevronLeft className="w-5 h-5 text-gray-600" />
+                        </Link>
+                        <div>
+                            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                                <Package className="w-7 h-7 text-green-600" />
+                                จัดการสินค้าและสต๊อก
+                            </h1>
+                            <p className="text-gray-500">สินค้าทั้งหมด {products.length} รายการ</p>
+                        </div>
                     </div>
                     <button
                         onClick={() => handleOpenModal()}
-                        className="bg-brand-900 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-accent-600 transition-all shadow-lg shadow-brand-200 hover:-translate-y-1"
+                        className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg shadow-green-500/30"
                     >
                         <Plus className="w-5 h-5" />
                         เพิ่มสินค้าใหม่
                     </button>
                 </div>
+
 
                 {/* Search and Filters */}
                 <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-8 flex items-center gap-4">
@@ -465,8 +531,6 @@ export default function AdminProductsPage() {
                     </div>
                 </div>
             )}
-
-            <Footer />
         </main>
     );
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { cookies } from 'next/headers';
+import { verifyToken, getTokenFromHeaders } from '@/lib/auth';
 
 export async function POST(request: Request) {
     try {
@@ -10,6 +11,18 @@ export async function POST(request: Request) {
 
         if (!sessionId) {
             return NextResponse.json({ error: 'Cart not found' }, { status: 400 });
+        }
+
+        // Check if user is logged in
+        const authHeader = request.headers.get('authorization');
+        const token = getTokenFromHeaders(authHeader);
+        let customerId: string | null = null;
+
+        if (token) {
+            const payload = verifyToken(token);
+            if (payload) {
+                customerId = payload.customerId;
+            }
         }
 
         // 1. Get cart items
@@ -77,9 +90,10 @@ export async function POST(request: Request) {
                 });
             }
 
-            // Create the order
+            // Create the order with customerId if logged in
             const newOrder = await tx.order.create({
                 data: {
+                    customerId: customerId,
                     customerName,
                     phone,
                     address,

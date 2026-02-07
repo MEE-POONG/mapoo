@@ -14,6 +14,7 @@ export const metadata: Metadata = {
 };
 
 import { CartProvider } from "@/context/CartContext";
+import { AuthProvider } from "@/context/AuthContext";
 
 export default function RootLayout({
     children,
@@ -23,9 +24,11 @@ export default function RootLayout({
     return (
         <html lang="th">
             <body className={`${prompt.variable} font-sans antialiased text-brand-900 bg-brand-50 selection:bg-accent-500 selection:text-white`}>
-                <CartProvider>
-                    {children}
-                </CartProvider>
+                <AuthProvider>
+                    <CartProvider>
+                        {children}
+                    </CartProvider>
+                </AuthProvider>
             </body>
         </html>
     );

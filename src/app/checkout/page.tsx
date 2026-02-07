@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 import {
     ChevronLeft,
     CreditCard,
@@ -23,6 +24,7 @@ import { useRouter } from "next/navigation";
 
 export default function CheckoutPage() {
     const { cart, loading: cartLoading, itemCount, refreshCart } = useCart();
+    const { customer, token } = useAuth();
     const [submitting, setSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [orderData, setOrderData] = useState<any>(null);
@@ -33,6 +35,17 @@ export default function CheckoutPage() {
         phone: '',
         address: ''
     });
+
+    // Auto-fill from logged in customer
+    useEffect(() => {
+        if (customer) {
+            setFormData(prev => ({
+                customerName: prev.customerName || customer.name || '',
+                phone: prev.phone || customer.phone || '',
+                address: prev.address || customer.address || ''
+            }));
+        }
+    }, [customer]);
 
     const [discountInput, setDiscountInput] = useState('');
     const [validatingCode, setValidatingCode] = useState(false);
@@ -123,9 +136,14 @@ export default function CheckoutPage() {
             }
 
             // 2. Create Order
+            const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
             const res = await fetch('/api/orders', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers,
                 body: JSON.stringify({
                     ...formData,
                     discountCode: appliedDiscount?.code
