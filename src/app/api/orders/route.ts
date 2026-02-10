@@ -37,18 +37,31 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'กรุณาเข้าสู่ระบบก่อนสั่งซื้อ' }, { status: 401 });
         }
 
-        // 1. Get cart items
-        const cart = await prisma.cart.findUnique({
-            where: { sessionId },
-            include: { items: { include: { product: true } } }
-        });
+        // 1. Get cart items and wholesale rates
+        const [cart, wholesaleRates] = await Promise.all([
+            prisma.cart.findUnique({
+                where: { sessionId },
+                include: { items: { include: { product: true } } }
+            }),
+            prisma.wholesaleRate.findMany({
+                orderBy: { minQuantity: 'desc' }
+            })
+        ]);
 
         if (!cart || cart.items.length === 0) {
             return NextResponse.json({ error: 'Cart is empty' }, { status: 400 });
         }
 
+        // 2. Calculate wholesale pricing
+        const wholesaleItemsCount = cart.items.reduce((acc, item) => acc + item.quantity, 0);
+        const applicableRate = wholesaleRates.find(rate => wholesaleItemsCount >= rate.minQuantity);
+
         // 2. Calculate initial total
-        const subtotal = cart.items.reduce((acc, item) => acc + (item.product.price * item.quantity), 0);
+        const subtotal = cart.items.reduce((acc, item) => {
+            const price = applicableRate ? applicableRate.pricePerKg : item.product.price;
+            return acc + (price * item.quantity);
+        }, 0);
+
         let shipping = 40;
         let discountAmount = 0;
 
@@ -134,7 +147,7 @@ export async function POST(request: Request) {
                         create: cart.items.map(item => ({
                             productId: item.productId,
                             quantity: item.quantity,
-                            price: item.product.price
+                            price: applicableRate ? applicableRate.pricePerKg : item.product.price
                         }))
                     }
                 }

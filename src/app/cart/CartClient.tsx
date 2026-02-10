@@ -1,15 +1,39 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Trash2, Plus, Minus, ArrowRight, ArrowLeft, Loader2, ShoppingBag } from "lucide-react";
+import { Trash2, Plus, Minus, ArrowRight, ArrowLeft, Loader2, ShoppingBag, Tag, Percent } from "lucide-react";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 
 export default function CartPage() {
     const { cart, loading, updateQuantity, removeItem } = useCart();
+    const [wholesaleRates, setWholesaleRates] = useState<any[]>([]);
 
-    const subtotal = cart?.items.reduce((acc, item) => acc + (item.product.price * item.quantity), 0) || 0;
+    useEffect(() => {
+        fetch('/api/wholesale')
+            .then(res => res.json())
+            .then(data => setWholesaleRates(data))
+            .catch(err => console.error(err));
+    }, []);
+
+    // Calculate total quantity of items eligible for wholesale (e.g., Sausages)
+    const wholesaleItemsCount = cart?.items.reduce((acc, item) => {
+        // Assume all items count for now or filter by category if needed
+        return acc + item.quantity;
+    }, 0) || 0;
+
+    // Find applicable wholesale rate
+    const applicableRate = [...wholesaleRates]
+        .sort((a, b) => b.minQuantity - a.minQuantity)
+        .find(rate => wholesaleItemsCount >= rate.minQuantity);
+
+    const subtotal = cart?.items.reduce((acc, item) => {
+        const price = applicableRate ? applicableRate.pricePerKg : item.product.price;
+        return acc + (price * item.quantity);
+    }, 0) || 0;
+
     const shipping = subtotal > 0 ? 40 : 0;
     const total = subtotal + shipping;
 
@@ -76,7 +100,16 @@ export default function CartPage() {
                                                     <Plus className="w-4 h-4" />
                                                 </button>
                                             </div>
-                                            <p className="font-bold text-lg text-accent-600">฿{(item.product.price * item.quantity).toLocaleString()}</p>
+                                            <div className="text-right">
+                                                <p className="font-bold text-lg text-accent-600">
+                                                    ฿{((applicableRate ? applicableRate.pricePerKg : item.product.price) * item.quantity).toLocaleString()}
+                                                </p>
+                                                {applicableRate && (
+                                                    <p className="text-[10px] text-green-600 font-bold">
+                                                        (ราคาส่ง ฿{applicableRate.pricePerKg}/กก.)
+                                                    </p>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -96,7 +129,15 @@ export default function CartPage() {
                                 <div className="space-y-3 mb-6">
                                     <div className="flex justify-between text-brand-600">
                                         <span>ยอดรวมสินค้า</span>
-                                        <span className="font-medium">฿{subtotal.toLocaleString()}</span>
+                                        <div className="text-right">
+                                            {applicableRate && (
+                                                <div className="text-xs text-green-600 font-bold flex items-center gap-1 justify-end mb-1">
+                                                    <Tag className="w-3 h-3" />
+                                                    ใช้ราคาส่งแล้ว (ขั้นต่ำ {applicableRate.minQuantity} กก.)
+                                                </div>
+                                            )}
+                                            <span className="font-medium">฿{subtotal.toLocaleString()}</span>
+                                        </div>
                                     </div>
                                     <div className="flex justify-between text-brand-600">
                                         <span>ค่าจัดส่ง (เหมาจ่าย)</span>

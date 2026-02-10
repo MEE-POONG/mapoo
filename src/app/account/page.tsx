@@ -7,7 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import {
     User, Package, MapPin, Phone, Mail, LogOut,
     ArrowLeft, Loader2, Clock, CheckCircle, Truck,
-    XCircle, Edit3, Save, X
+    XCircle, Edit3, Save, X, Plus
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { th } from 'date-fns/locale';
@@ -33,6 +33,7 @@ interface Order {
     discountCode: string | null;
     discountAmount: number | null;
     status: string;
+    slipImageUrl: string | null;
     items: OrderItem[];
     createdAt: string;
 }
@@ -136,6 +137,9 @@ export default function AccountPage() {
 
         if (result.success) {
             setIsEditing(false);
+            alert('บันทึกข้อมูลส่วนตัวเรียบร้อยแล้ว');
+        } else {
+            alert(result.error || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล');
         }
     };
 
@@ -147,13 +151,47 @@ export default function AccountPage() {
         );
     }
 
+    const handleCancelOrder = async (orderId: string) => {
+        if (!window.confirm('คุณต้องการยกเลิกคำสั่งซื้อนี้ใช่หรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้')) {
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/customer/orders/${orderId}/cancel`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                alert('ยกเลิกคำสั่งซื้อเรียบร้อยแล้ว');
+                fetchOrders(); // Refresh orders
+            } else {
+                alert(data.error || 'เกิดข้อผิดพลาดในการยกเลิกคำสั่งซื้อ');
+            }
+        } catch (error) {
+            console.error('Cancel order error:', error);
+            alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+        }
+    };
+
+    if (authLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-brand-50">
+                <Loader2 className="w-10 h-10 text-accent-500 animate-spin" />
+            </div>
+        );
+    }
+
     if (!customer) {
         return null;
     }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-brand-50 via-white to-accent-50">
-            {/* Header */}
+            {/* ... header ... */}
             <header className="bg-white/80 backdrop-blur-xl border-b border-brand-100 sticky top-0 z-50">
                 <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
                     <Link
@@ -174,7 +212,7 @@ export default function AccountPage() {
             </header>
 
             <main className="max-w-6xl mx-auto px-4 py-8">
-                {/* Welcome Section */}
+                {/* ... existing code ... */}
                 <div className="bg-gradient-to-r from-accent-500 to-brand-600 rounded-3xl p-8 text-white mb-8 shadow-xl shadow-accent-500/20">
                     <div className="flex items-center gap-4">
                         <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
@@ -188,12 +226,13 @@ export default function AccountPage() {
                 </div>
 
                 {/* Tabs */}
+                {/* ... tabs code ... */}
                 <div className="flex gap-2 mb-6">
                     <button
                         onClick={() => setActiveTab('orders')}
                         className={`px-6 py-3 rounded-xl font-medium transition-all ${activeTab === 'orders'
-                                ? 'bg-accent-500 text-white shadow-lg shadow-accent-500/30'
-                                : 'bg-white text-brand-600 hover:bg-brand-50'
+                            ? 'bg-accent-500 text-white shadow-lg shadow-accent-500/30'
+                            : 'bg-white text-brand-600 hover:bg-brand-50'
                             }`}
                     >
                         <span className="inline-flex items-center gap-2">
@@ -204,8 +243,8 @@ export default function AccountPage() {
                     <button
                         onClick={() => setActiveTab('profile')}
                         className={`px-6 py-3 rounded-xl font-medium transition-all ${activeTab === 'profile'
-                                ? 'bg-accent-500 text-white shadow-lg shadow-accent-500/30'
-                                : 'bg-white text-brand-600 hover:bg-brand-50'
+                            ? 'bg-accent-500 text-white shadow-lg shadow-accent-500/30'
+                            : 'bg-white text-brand-600 hover:bg-brand-50'
                             }`}
                     >
                         <span className="inline-flex items-center gap-2">
@@ -215,7 +254,6 @@ export default function AccountPage() {
                     </button>
                 </div>
 
-                {/* Content */}
                 {activeTab === 'orders' ? (
                     <div className="space-y-4">
                         <h2 className="text-xl font-bold text-brand-900">ประวัติคำสั่งซื้อ</h2>
@@ -258,9 +296,19 @@ export default function AccountPage() {
                                                         {format(new Date(order.createdAt), 'dd MMMM yyyy เวลา HH:mm น.', { locale: th })}
                                                     </p>
                                                 </div>
-                                                <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl border ${status.bgColor} ${status.color}`}>
-                                                    <StatusIcon className="w-4 h-4" />
-                                                    <span className="font-medium">{status.label}</span>
+                                                <div className="flex flex-col items-end gap-2">
+                                                    <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl border ${status.bgColor} ${status.color}`}>
+                                                        <StatusIcon className="w-4 h-4" />
+                                                        <span className="font-medium">{status.label}</span>
+                                                    </div>
+                                                    {order.status === 'PENDING' && (
+                                                        <button
+                                                            onClick={() => handleCancelOrder(order.id)}
+                                                            className="text-xs text-red-500 hover:text-red-700 hover:underline transition-colors p-1"
+                                                        >
+                                                            ยกเลิกคำสั่งซื้อ
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </div>
 
@@ -288,6 +336,118 @@ export default function AccountPage() {
                                                 ))}
                                             </div>
 
+                                            {/* Bank Details (Only for Pending) */}
+                                            {order.status === 'PENDING' && !order.slipImageUrl && (
+                                                <div className="bg-brand-50 rounded-xl p-4 mb-4 border border-brand-100">
+                                                    <p className="text-sm font-bold text-brand-800 mb-2">ช่องทางการชำระเงิน:</p>
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="bg-white p-2 rounded-lg border border-brand-200">
+                                                            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c4/K_Bank_logo.png" alt="KBank" className="h-6" />
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-sm font-bold text-brand-900">ธนาคารกสิกรไทย (KBank)</p>
+                                                            <p className="text-sm text-brand-600">ชื่อบัญชี: บจก. สยามซอสเซจ</p>
+                                                            <p className="text-lg font-mono font-bold text-accent-600 tracking-wider">123-4-56789-0</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Slip Upload / Display */}
+                                            <div className="mb-4">
+                                                {order.slipImageUrl ? (
+                                                    <div className="flex items-center gap-4 p-3 bg-green-50 rounded-xl border border-green-100">
+                                                        <div className="w-12 h-12 rounded-lg overflow-hidden border border-green-200 cursor-pointer" onClick={() => window.open(order.slipImageUrl!, '_blank')}>
+                                                            <img src={order.slipImageUrl} alt="Slip" className="w-full h-full object-cover" />
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-sm font-bold text-green-700">อัปโหลดหลักฐานแล้ว</p>
+                                                            <p className="text-xs text-green-600">รอยืนยันการชำระเงินจากเจ้าหน้าที่</p>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    order.status === 'PENDING' && (
+                                                        <div className="flex flex-col gap-2">
+                                                            <p className="text-xs text-brand-500 italic">* กรุณาอัปโหลดหลักฐานการโอนเงินเพื่อดำเนินการต่อ</p>
+                                                            <label className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-white border-2 border-dashed border-brand-200 rounded-xl text-brand-600 cursor-pointer hover:border-accent-500 hover:text-accent-600 transition-all">
+                                                                <input
+                                                                    type="file"
+                                                                    className="hidden"
+                                                                    accept="image/*"
+                                                                    onChange={async (e) => {
+                                                                        const file = e.target.files?.[0];
+                                                                        if (!file) return;
+
+                                                                        const formData = new FormData();
+                                                                        formData.append('file', file);
+
+                                                                        try {
+                                                                            const res = await fetch(`/api/customer/orders/upload-slip/${order.id}`, {
+                                                                                method: 'POST',
+                                                                                headers: {
+                                                                                    'Authorization': `Bearer ${token}`
+                                                                                },
+                                                                                body: formData
+                                                                            });
+                                                                            if (res.ok) {
+                                                                                alert('อัปโหลดหลักฐานเรียบร้อยแล้ว');
+                                                                                fetchOrders();
+                                                                            } else {
+                                                                                const data = await res.json();
+                                                                                alert(data.error || 'เกิดข้อผิดพลาดในการอัปโหลด');
+                                                                            }
+                                                                        } catch (err) {
+                                                                            console.error(err);
+                                                                            alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+                                                                        }
+                                                                    }}
+                                                                />
+                                                                <Plus className="w-5 h-5" />
+                                                                <span className="font-bold">อัปโหลดสลิปธนาคาร</span>
+                                                            </label>
+                                                        </div>
+                                                    )
+                                                )}
+                                            </div>
+
+                                            {/* Review Section (Only for Delivered) */}
+                                            {order.status === 'DELIVERED' && (
+                                                <div className="bg-brand-50 rounded-xl p-4 mb-4 border border-brand-100 animate-in fade-in duration-500">
+                                                    <p className="font-bold text-brand-800 mb-3 flex items-center gap-2">
+                                                        <CheckCircle className="w-4 h-4 text-green-600" />
+                                                        ให้คะแนนความพึงพอใจ
+                                                    </p>
+                                                    <div className="flex flex-col gap-4">
+                                                        {order.items.map(item => (
+                                                            <div key={item.id} className="bg-white p-3 rounded-lg border border-brand-200">
+                                                                <p className="text-sm font-bold text-brand-900 mb-2">{item.product.name}</p>
+                                                                <div className="flex gap-1 mb-3">
+                                                                    {[1, 2, 3, 4, 5].map(star => (
+                                                                        <button
+                                                                            key={star}
+                                                                            className="text-amber-400 hover:scale-110 transition-transform"
+                                                                            onClick={() => {
+                                                                                // Handle rating state (would need local state per item)
+                                                                                alert(`ขอบคุณสำหรับการให้คะแนน ${star} ดาว! (ฟังก์ชันส่งรีวิวกำลังติดตั้ง)`);
+                                                                            }}
+                                                                        >
+                                                                            <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                                                                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                                                                            </svg>
+                                                                        </button>
+                                                                    ))}
+                                                                </div>
+                                                                <textarea
+                                                                    placeholder="เขียนรีวิวของคุณที่นี่..."
+                                                                    className="w-full text-xs p-2 bg-brand-50 rounded border-none focus:ring-1 focus:ring-accent-500"
+                                                                    rows={2}
+                                                                />
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+
                                             {/* Order Total */}
                                             <div className="flex justify-between items-center">
                                                 <div className="text-sm text-brand-600">
@@ -314,7 +474,9 @@ export default function AccountPage() {
                         )}
                     </div>
                 ) : (
+                    // ... profile code ...
                     <div className="bg-white rounded-2xl p-6 shadow-lg shadow-brand-900/5 border border-brand-100">
+                        {/* profile form */}
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-xl font-bold text-brand-900">ข้อมูลส่วนตัว</h2>
                             {!isEditing ? (

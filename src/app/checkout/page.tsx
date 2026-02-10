@@ -17,7 +17,8 @@ import {
     Loader2,
     Ticket,
     X,
-    Tag
+    Tag,
+    Plus
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -52,7 +53,25 @@ export default function CheckoutPage() {
     const [appliedDiscount, setAppliedDiscount] = useState<any>(null);
     const [discountError, setDiscountError] = useState('');
 
-    const subtotal = cart?.items.reduce((acc, item) => acc + (item.product.price * item.quantity), 0) || 0;
+    const [wholesaleRates, setWholesaleRates] = useState<any[]>([]);
+
+    useEffect(() => {
+        fetch('/api/wholesale')
+            .then(res => res.json())
+            .then(data => setWholesaleRates(data))
+            .catch(err => console.error(err));
+    }, []);
+
+    const wholesaleItemsCount = cart?.items.reduce((acc, item) => acc + item.quantity, 0) || 0;
+    const applicableRate = [...wholesaleRates]
+        .sort((a, b) => b.minQuantity - a.minQuantity)
+        .find(rate => wholesaleItemsCount >= rate.minQuantity);
+
+    const subtotal = cart?.items.reduce((acc, item) => {
+        const price = applicableRate ? applicableRate.pricePerKg : item.product.price;
+        return acc + (price * item.quantity);
+    }, 0) || 0;
+
     const shipping = subtotal > 0 ? 40 : 0;
 
     // Calculate discount
@@ -175,48 +194,6 @@ export default function CheckoutPage() {
         }
     };
 
-    if (isSuccess) {
-        return (
-            <main className="min-h-screen bg-brand-50">
-                <Navbar />
-                <div className="max-w-3xl mx-auto px-4 py-32 text-center">
-                    <div className="bg-white p-12 rounded-3xl shadow-xl shadow-brand-200/50 border border-brand-100">
-                        <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-8">
-                            <CheckCircle2 className="w-12 h-12 text-green-600" />
-                        </div>
-                        <h1 className="text-3xl font-bold text-brand-900 mb-4">สั่งซื้อเรียบร้อยแล้ว!</h1>
-                        <p className="text-brand-600 mb-8 text-lg">
-                            ขอบคุณคุณ <span className="font-bold text-brand-900">{formData.customerName}</span> ที่ไว้วางใจ SiamSausage <br />
-                            เจ้าหน้าที่กำลังตรวจสอบข้อมูลและจะจัดส่งสินค้าให้โดยเร็วที่สุด
-                        </p>
-                        <div className="bg-brand-50 p-6 rounded-2xl mb-8 text-left inline-block w-full max-w-md">
-                            <p className="text-brand-500 text-sm mb-2">เลขที่ใบสั่งซื้อ</p>
-                            <p className="font-mono font-bold text-brand-900 text-lg mb-4">{orderData?.id}</p>
-                            <div className="space-y-3 pt-4 border-t border-brand-200">
-                                {orderData?.discountAmount > 0 && (
-                                    <div className="flex justify-between text-green-600 text-sm font-bold">
-                                        <span>ส่วนลด ({orderData.discountCode})</span>
-                                        <span>- ฿{orderData.discountAmount.toLocaleString()}</span>
-                                    </div>
-                                )}
-                                <div className="flex justify-between font-bold text-brand-900">
-                                    <span>ยอดชำระสุทธิ</span>
-                                    <span className="text-accent-600 text-xl">฿{orderData?.totalAmount.toLocaleString()}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <Link href="/products" className="bg-brand-900 text-white px-8 py-4 rounded-xl font-bold hover:bg-accent-600 transition-all inline-block shadow-lg shadow-brand-200">
-                                กลับไปหน้าสินค้า
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-                <Footer />
-            </main>
-        );
-    }
-
     const [checkingAuth, setCheckingAuth] = useState(true);
 
     useEffect(() => {
@@ -231,6 +208,65 @@ export default function CheckoutPage() {
         };
         checkAuth();
     }, [token]);
+
+    if (isSuccess) {
+        return (
+            <main className="min-h-screen bg-brand-50">
+                <Navbar />
+                <div className="max-w-3xl mx-auto px-4 py-32 text-center">
+                    <div className="bg-white p-12 rounded-3xl shadow-xl shadow-brand-200/50 border border-brand-100">
+                        <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-8">
+                            <CheckCircle2 className="w-12 h-12 text-green-600" />
+                        </div>
+                        <h1 className="text-3xl font-bold text-brand-900 mb-4">สั่งซื้อเรียบร้อยแล้ว!</h1>
+                        <p className="text-brand-600 mb-8 text-lg">
+                            ขอบคุณคุณ <span className="font-bold text-brand-900">{formData.customerName}</span> ที่ไว้วางใจ SiamSausage <br />
+                            กรุณาโอนเงินตามยอดด้านล่างและแจ้งชำระเงินเพื่อดำเนินการจัดส่ง
+                        </p>
+
+                        <div className="bg-brand-900 text-white p-6 rounded-2xl mb-8 text-left w-full max-w-md mx-auto shadow-xl">
+                            <p className="text-brand-300 text-sm mb-4 border-b border-brand-800 pb-2 flex items-center gap-2">
+                                <CreditCard className="w-4 h-4" />
+                                ช่องทางการโอนเงิน
+                            </p>
+                            <div className="flex items-center gap-4 mb-4">
+                                <div className="bg-white p-2 rounded-lg">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c4/K_Bank_logo.png" alt="KBank" className="h-6" />
+                                </div>
+                                <div>
+                                    <p className="font-bold">ธนาคารกสิกรไทย (KBank)</p>
+                                    <p className="text-sm text-brand-300">บจก. สยามซอสเซจ</p>
+                                    <p className="text-xl font-mono font-bold text-accent-400 tracking-wider">123-4-56789-0</p>
+                                </div>
+                            </div>
+                            <div className="bg-brand-800 p-4 rounded-xl space-y-2">
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-brand-400">เลขที่ใบสั่งซื้อ</span>
+                                    <span className="font-mono font-bold text-brand-100 italic">{orderData?.id.slice(-8).toUpperCase()}</span>
+                                </div>
+                                <div className="flex justify-between items-center pt-2 border-t border-brand-700">
+                                    <span className="text-brand-100 font-bold">ยอดที่ต้องโอน</span>
+                                    <span className="text-2xl font-black text-accent-500">฿{orderData?.totalAmount.toLocaleString()}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            <Link href="/account" className="w-full max-w-md bg-accent-500 text-white px-8 py-4 rounded-xl font-bold hover:bg-accent-600 transition-all inline-flex items-center justify-center gap-2 shadow-lg shadow-accent-200">
+                                <Plus className="w-5 h-5" />
+                                อัปโหลดสลิปที่หน้าบัญชีของฉัน
+                            </Link>
+                            <br />
+                            <Link href="/products" className="text-brand-500 hover:text-brand-900 font-bold transition-all inline-block">
+                                กลับไปหน้าสินค้า
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+                <Footer />
+            </main>
+        );
+    }
 
     if (!cartLoading && (!cart || cart.items.length === 0)) {
         router.push('/products');
@@ -389,7 +425,14 @@ export default function CheckoutPage() {
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm font-bold text-brand-900 line-clamp-1">{item.product.name}</p>
                                             <p className="text-xs text-brand-500">จำนวน: {item.quantity} {item.product.unit}</p>
-                                            <p className="text-sm font-bold text-accent-600 mt-1">฿{(item.product.price * item.quantity).toLocaleString()}</p>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <p className="text-sm font-bold text-accent-600">
+                                                    ฿{((applicableRate ? applicableRate.pricePerKg : item.product.price) * item.quantity).toLocaleString()}
+                                                </p>
+                                                {applicableRate && (
+                                                    <span className="text-[9px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-bold">ราคาส่ง</span>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 ))}

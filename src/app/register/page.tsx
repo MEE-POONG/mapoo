@@ -210,7 +210,10 @@ export default function RegisterPage() {
                     {/* Login link */}
                     <p className="text-center mt-6 text-brand-600">
                         มีบัญชีอยู่แล้ว?{' '}
-                        <Link href="/login" className="text-accent-600 font-semibold hover:text-accent-700 hover:underline">
+                        <Link
+                            href={`/login${typeof window !== 'undefined' && window.location.search ? window.location.search : ''}`}
+                            className="text-accent-600 font-semibold hover:text-accent-700 hover:underline"
+                        >
                             เข้าสู่ระบบ
                         </Link>
                     </p>

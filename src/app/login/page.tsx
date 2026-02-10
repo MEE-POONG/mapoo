@@ -149,7 +149,10 @@ export default function LoginPage() {
                         </Link>
                         <p className="text-brand-600">
                             ยังไม่มีบัญชี?{' '}
-                            <Link href="/register" className="text-accent-600 font-semibold hover:text-accent-700 hover:underline">
+                            <Link
+                                href={`/register${typeof window !== 'undefined' && window.location.search ? window.location.search : ''}`}
+                                className="text-accent-600 font-semibold hover:text-accent-700 hover:underline"
+                            >
                                 สมัครสมาชิก
                             </Link>
                         </p>

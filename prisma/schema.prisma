@@ -21,6 +21,7 @@ model Product {
     costPrice   Float       @default(0)
     createdAt   DateTime    @default(now())
     updatedAt   DateTime    @updatedAt
+    reviews     Review[]
     orderItems  OrderItem[]
     cartItems   CartItem[]
 }
@@ -68,6 +69,7 @@ model Order {
     discountCode   String?
     discountAmount Float?      @default(0)
     status         String      @default("PENDING")
+    slipImageUrl   String?
     items          OrderItem[]
     createdAt      DateTime    @default(now())
 }
@@ -103,6 +105,8 @@ model CartItem {
 
 model Review {
     id           String   @id @default(auto()) @map("_id") @db.ObjectId
+    productId    String   @db.ObjectId
+    product      Product  @relation(fields: [productId], references: [id])
     customerName String
     rating       Int
     comment      String
