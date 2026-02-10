@@ -54,13 +54,29 @@ export async function POST(request: Request) {
                     cartId: cart.id,
                     productId
                 }
-            }
+            },
+            include: { product: true }
         });
+
+        // Get product to check stock
+        const product = await prisma.product.findUnique({ where: { id: productId } });
+        if (!product) {
+            return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+        }
+
+        const newQuantity = existingItem ? existingItem.quantity + quantity : quantity;
+
+        if (product.stock < newQuantity) {
+            return NextResponse.json({
+                error: `ขออภัย สินค้ามีสต๊อกไม่เพียงพอ (คงเหลือ ${product.stock} ${product.unit})`,
+                currentStock: product.stock
+            }, { status: 400 });
+        }
 
         if (existingItem) {
             await prisma.cartItem.update({
                 where: { id: existingItem.id },
-                data: { quantity: existingItem.quantity + quantity }
+                data: { quantity: newQuantity }
             });
         } else {
             await prisma.cartItem.create({
@@ -106,6 +122,19 @@ export async function PATCH(request: Request) {
                 }
             });
         } else {
+            // Check stock before updating
+            const product = await prisma.product.findUnique({ where: { id: productId } });
+            if (!product) {
+                return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+            }
+
+            if (product.stock < quantity) {
+                return NextResponse.json({
+                    error: `สินค้าคงเหลือเพียง ${product.stock} ${product.unit}`,
+                    currentStock: product.stock
+                }, { status: 400 });
+            }
+
             await prisma.cartItem.update({
                 where: {
                     cartId_productId: {

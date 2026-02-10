@@ -9,12 +9,38 @@ const prompt = Prompt({
 });
 
 export const metadata: Metadata = {
-    title: "SiamSausage - ไส้กรอกอีสาน & หมูแดดเดียว ราคาส่ง",
-    description: "ไส้กรอกอีสาน หมูแดดเดียว ราคาส่ง กำไรดี เหมาะสำหรับร้านค้าและตัวแทนจำหน่าย",
+    metadataBase: new URL('https://siamsausage.com'),
+    title: {
+        default: "SiamSausage - ไส้กรอกอีสาน & หมูแดดเดียว ราคาส่ง ต้นตำรับความอร่อย",
+        template: "%s | SiamSausage"
+    },
+    description: "แหล่งรวมไส้กรอกอีสานและหมูแดดเดียว ราคาส่ง ผลิตสดใหม่ทุกวัน ไร้สารกันบูด รสชาติต้นตำรับ เหมาะสำหรับร้านอาหารและตัวแทนจำหน่ายสินค้าทั่วประเทศ",
+    keywords: ["ไส้กรอกอีสาน", "หมูแดดเดียว", "ราคาส่ง", "ขายส่งไส้กรอก", "อาหารอีสาน", "ของฝาก", "โรงงานไส้กรอก"],
+    openGraph: {
+        title: "SiamSausage - ไส้กรอกอีสาน & หมูแดดเดียว ราคาส่ง",
+        description: "อร่อย สะอาด ได้มาตรฐานต้นตำรับ ขายส่งทั่วประเทศ",
+        url: 'https://siamsausage.com',
+        siteName: 'SiamSausage',
+        images: [
+            {
+                url: '/og-image.jpg',
+                width: 1200,
+                height: 630,
+            },
+        ],
+        locale: 'th_TH',
+        type: 'website',
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: "SiamSausage - ไส้กรอกอีสาน & หมูแดดเดียว ราคาส่ง",
+        description: "อร่อย สะอาด ได้มาตรฐานต้นตำรับ ขายส่งทั่วประเทศ",
+    },
 };
 
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
+import FloatingActions from "@/components/FloatingActions";
 
 export default function RootLayout({
     children,
@@ -27,6 +53,7 @@ export default function RootLayout({
                 <AuthProvider>
                     <CartProvider>
                         {children}
+                        <FloatingActions />
                     </CartProvider>
                 </AuthProvider>
             </body>

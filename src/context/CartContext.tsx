@@ -62,13 +62,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ productId, quantity }),
             });
+            const data = await res.json();
             if (res.ok) {
-                const data = await res.json();
                 setCart(data);
                 return true;
+            } else {
+                alert(data.error || 'ไม่สามารถเพิ่มสินค้าลงในตะกร้าได้');
             }
         } catch (error) {
             console.error('Error adding to cart:', error);
+            alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
         }
         return false;
     };
@@ -80,12 +83,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ productId, quantity }),
             });
+            const data = await res.json();
             if (res.ok) {
-                const data = await res.json();
                 setCart(data);
+            } else {
+                alert(data.error || 'ไม่สามารถปรับจำนวนสินค้าได้');
             }
         } catch (error) {
             console.error('Error updating quantity:', error);
+            alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
         }
     };
 

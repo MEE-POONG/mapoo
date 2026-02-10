@@ -1,10 +1,19 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
+import { verifyAdminToken, getAdminTokenFromHeaders } from '@/lib/adminAuth';
 
 // GET all admins
-export async function GET() {
+export async function GET(request: Request) {
     try {
+        const authHeader = request.headers.get('authorization');
+        const token = getAdminTokenFromHeaders(authHeader);
+        const adminData = verifyAdminToken(token || '');
+
+        if (!token || !adminData) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const admins = await prisma.admin.findMany({
             orderBy: { createdAt: 'desc' },
             select: {
@@ -32,6 +41,12 @@ export async function GET() {
 // POST create new admin
 export async function POST(request: Request) {
     try {
+        const authHeader = request.headers.get('authorization');
+        const token = getAdminTokenFromHeaders(authHeader);
+        if (!token || !verifyAdminToken(token)) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const { email, password, name, role } = await request.json();
 
         if (!email || !password || !name) {

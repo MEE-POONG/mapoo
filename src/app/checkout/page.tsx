@@ -109,6 +109,13 @@ export default function CheckoutPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Final Validation
+        if (!formData.phone.match(/^[0-9]{10}$/)) {
+            alert('กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง (10 หลัก)');
+            return;
+        }
+
         setSubmitting(true);
         setDiscountError('');
 
@@ -157,7 +164,8 @@ export default function CheckoutPage() {
                 // Refresh order state to clear the cart badge
                 refreshCart();
             } else {
-                alert('เกิดข้อผิดพลาดในการสั่งซื้อ');
+                const errorData = await res.json();
+                alert(errorData.error || 'เกิดข้อผิดพลาดในการสั่งซื้อ');
             }
         } catch (error) {
             console.error('Checkout error:', error);
@@ -209,9 +217,67 @@ export default function CheckoutPage() {
         );
     }
 
+    const [checkingAuth, setCheckingAuth] = useState(true);
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            // Give context a bit of time to initialize token
+            if (token === null && !localStorage.getItem('auth_token')) {
+                // Not authenticated
+                setCheckingAuth(false);
+            } else {
+                setCheckingAuth(false);
+            }
+        };
+        checkAuth();
+    }, [token]);
+
     if (!cartLoading && (!cart || cart.items.length === 0)) {
         router.push('/products');
         return null;
+    }
+
+    if (checkingAuth) {
+        return (
+            <div className="min-h-screen bg-brand-50 flex items-center justify-center">
+                <Loader2 className="w-10 h-10 text-accent-500 animate-spin" />
+            </div>
+        );
+    }
+
+    if (!token) {
+        return (
+            <main className="min-h-screen bg-brand-50">
+                <Navbar />
+                <div className="max-w-xl mx-auto px-4 py-32 text-center">
+                    <div className="bg-white p-12 rounded-3xl shadow-xl shadow-brand-200/50 border border-brand-100">
+                        <div className="w-20 h-20 bg-accent-100 rounded-full flex items-center justify-center mx-auto mb-8">
+                            <User className="w-10 h-10 text-accent-600" />
+                        </div>
+                        <h1 className="text-2xl font-bold text-brand-900 mb-4">กรุณาเข้าสู่ระบบก่อนสั่งซื้อ</h1>
+                        <p className="text-brand-600 mb-8">
+                            เพื่อให้คุณสามารถติดตามสถานะออเดอร์และดูประวัติการสั่งซื้อได้ <br />
+                            กรุณาเข้าสู่ระบบหรือสมัครสมาชิกเพื่อดำเนินการต่อ
+                        </p>
+                        <div className="space-y-4">
+                            <Link
+                                href="/login?redirect=/checkout"
+                                className="w-full bg-brand-900 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-accent-600 transition-all shadow-lg"
+                            >
+                                เข้าสู่ระบบ
+                            </Link>
+                            <Link
+                                href="/register?redirect=/checkout"
+                                className="w-full bg-white text-brand-900 border-2 border-brand-900 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-brand-50 transition-all"
+                            >
+                                สมัครสมาชิกใหม่
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+                <Footer />
+            </main>
+        );
     }
 
     return (

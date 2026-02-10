@@ -34,16 +34,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [token, setToken] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    // Load auth state from localStorage on mount
+    // Load auth state from localStorage on mount and verify with server
     useEffect(() => {
-        const savedToken = localStorage.getItem('auth_token');
-        const savedCustomer = localStorage.getItem('auth_customer');
+        const verifyAuth = async () => {
+            const savedToken = localStorage.getItem('auth_token');
+            const savedCustomer = localStorage.getItem('auth_customer');
 
-        if (savedToken && savedCustomer) {
-            setToken(savedToken);
-            setCustomer(JSON.parse(savedCustomer));
-        }
-        setIsLoading(false);
+            if (savedToken && savedCustomer) {
+                try {
+                    const res = await fetch('/api/auth/profile', {
+                        headers: { 'Authorization': `Bearer ${savedToken}` }
+                    });
+
+                    if (res.ok) {
+                        const data = await res.json();
+                        setToken(savedToken);
+                        setCustomer(data.customer);
+                        localStorage.setItem('auth_customer', JSON.stringify(data.customer));
+                    } else {
+                        // Token expired or invalid
+                        localStorage.removeItem('auth_token');
+                        localStorage.removeItem('auth_customer');
+                    }
+                } catch {
+                    // Network error - use cached data
+                    setToken(savedToken);
+                    setCustomer(JSON.parse(savedCustomer));
+                }
+            }
+            setIsLoading(false);
+        };
+
+        verifyAuth();
     }, []);
 
     const login = async (email: string, password: string) => {

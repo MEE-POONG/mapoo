@@ -3,6 +3,12 @@ import Footer from "@/components/Footer";
 import Link from "next/link";
 import { Check, Star } from "lucide-react";
 import FeaturedProducts from "@/components/FeaturedProducts";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "ไส้กรอกอีสาน & หมูแดดเดียว ราคาส่ง | SiamSausage",
+    description: "สั่งซื้อไส้กรอกอีสานและหมูแดดเดียวราคาส่ง ออนไลน์ได้ที่นี่ ผลิตสดใหม่ รสดั้งเดิม จัดส่งทั่วประเทศ ยอดขายอันดับ 1 ในตลาดไท",
+};
 
 export default function Home() {
     return (
@@ -126,6 +132,51 @@ export default function Home() {
                             <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6 text-3xl">💰</div>
                             <h4 className="text-lg font-bold mb-2">ราคาส่งกำไรดี</h4>
                             <p className="text-brand-300 text-sm">มีเรทแม่ค้า เริ่มต้นแค่ 10 กิโลฯ ก็ได้ราคาส่ง</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* FAQ Section */}
+            <section className="py-24 bg-white">
+                <div className="max-w-4xl mx-auto px-4">
+                    <div className="text-center mb-16">
+                        <h2 className="text-base text-accent-600 font-semibold tracking-wide uppercase mb-2">คำถามที่พบบ่อย</h2>
+                        <h3 className="text-4xl font-bold text-brand-900">มีเรื่องสงสัยใช่ไหม?</h3>
+                    </div>
+
+                    <div className="space-y-6">
+                        <div className="group bg-brand-50 p-6 rounded-3xl border border-transparent hover:border-accent-200 transition-all">
+                            <h4 className="font-bold text-brand-900 text-lg mb-2 flex items-center gap-3">
+                                <span className="w-8 h-8 rounded-full bg-accent-500 text-white flex items-center justify-center text-sm">Q</span>
+                                สินค้าส่งกี่วันถึง จะเสียไหม?
+                            </h4>
+                            <p className="text-brand-600 pl-11">
+                                ทางร้านใช้เวลาจัดส่ง 1-2 วันครับ เราแพ็คสุญญากาศอย่างดีและส่งผ่านรถห้องเย็นในบางพื้นที่
+                                รับประกันสินค้าไม่เสีย 100% หากได้รับแล้วมีปัญหา ทางร้านยินดีเคลมให้ทันทีครับ
+                            </p>
+                        </div>
+
+                        <div className="group bg-brand-50 p-6 rounded-3xl border border-transparent hover:border-accent-200 transition-all">
+                            <h4 className="font-bold text-brand-900 text-lg mb-2 flex items-center gap-3">
+                                <span className="w-8 h-8 rounded-full bg-accent-500 text-white flex items-center justify-center text-sm">Q</span>
+                                เก็บไว้ได้นานแค่ไหน?
+                            </h4>
+                            <p className="text-brand-600 pl-11">
+                                แช่ตู้เย็นช่องธรรมดาเก็บได้ 1 สัปดาห์ หากแช่ช่องฟรีซ (ช่องแข็ง) จะเก็บได้นานถึง 1-2 เดือนครับ
+                                แนะนำให้แบ่งทานเท่าที่ต้องการเพื่อความสดใหม่
+                            </p>
+                        </div>
+
+                        <div className="group bg-brand-50 p-6 rounded-3xl border border-transparent hover:border-accent-200 transition-all">
+                            <h4 className="font-bold text-brand-900 text-lg mb-2 flex items-center gap-3">
+                                <span className="w-8 h-8 rounded-full bg-accent-500 text-white flex items-center justify-center text-sm">Q</span>
+                                สนใจสมัครตัวแทน/ซื้อราคาส่ง ต้องทำอย่างไร?
+                            </h4>
+                            <p className="text-brand-600 pl-11">
+                                สามารถดู <Link href="/wholesale" className="text-accent-600 font-bold underline">เรทราคาส่ง</Link> ได้ที่หน้าหลักครับ
+                                เริ่มต้นเพียง 10 กิโลกรัมเท่านั้น หรือทักแชทสอบถามแอดมินทาง LINE ได้ตลอดเวลาครับ
+                            </p>
                         </div>
                     </div>
                 </div>

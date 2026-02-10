@@ -28,7 +28,9 @@ import {
     Ticket,
     BarChart3,
     LogOut,
-    ShieldCheck
+    ShieldCheck,
+    MessageSquare,
+    Star
 } from "lucide-react";
 
 interface Stats {
@@ -174,48 +176,70 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Quick Navigation */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
                     <Link href="/admin/customers" className="bg-white p-4 rounded-2xl border border-gray-100 hover:border-blue-200 hover:shadow-lg transition-all group">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-500 transition-colors">
-                                <Users className="w-5 h-5 text-blue-600 group-hover:text-white transition-colors" />
+                        <div className="flex flex-col items-center text-center gap-2">
+                            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-500 transition-colors">
+                                <Users className="w-6 h-6 text-blue-600 group-hover:text-white transition-colors" />
                             </div>
                             <div>
-                                <p className="font-bold text-gray-900 text-sm">จัดการลูกค้า</p>
-                                <p className="text-xs text-gray-400">Customers</p>
-                            </div>
-                        </div>
-                    </Link>
-                    <Link href="/admin/admins" className="bg-white p-4 rounded-2xl border border-gray-100 hover:border-amber-200 hover:shadow-lg transition-all group">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center group-hover:bg-amber-500 transition-colors">
-                                <ShieldCheck className="w-5 h-5 text-amber-600 group-hover:text-white transition-colors" />
-                            </div>
-                            <div>
-                                <p className="font-bold text-gray-900 text-sm">จัดการ Admin</p>
-                                <p className="text-xs text-gray-400">Admins</p>
+                                <p className="font-bold text-gray-900 text-xs">ลูกค้า</p>
+                                <p className="text-[10px] text-gray-400">Customers</p>
                             </div>
                         </div>
                     </Link>
                     <Link href="/admin/products" className="bg-white p-4 rounded-2xl border border-gray-100 hover:border-green-200 hover:shadow-lg transition-all group">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center group-hover:bg-green-500 transition-colors">
-                                <Package className="w-5 h-5 text-green-600 group-hover:text-white transition-colors" />
+                        <div className="flex flex-col items-center text-center gap-2">
+                            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center group-hover:bg-green-500 transition-colors">
+                                <Package className="w-6 h-6 text-green-600 group-hover:text-white transition-colors" />
                             </div>
                             <div>
-                                <p className="font-bold text-gray-900 text-sm">จัดการสินค้า</p>
-                                <p className="text-xs text-gray-400">Products</p>
+                                <p className="font-bold text-gray-900 text-xs">สินค้า</p>
+                                <p className="text-[10px] text-gray-400">Products</p>
                             </div>
                         </div>
                     </Link>
                     <Link href="/admin/orders" className="bg-white p-4 rounded-2xl border border-gray-100 hover:border-purple-200 hover:shadow-lg transition-all group">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center group-hover:bg-purple-500 transition-colors">
-                                <ShoppingCart className="w-5 h-5 text-purple-600 group-hover:text-white transition-colors" />
+                        <div className="flex flex-col items-center text-center gap-2">
+                            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center group-hover:bg-purple-500 transition-colors">
+                                <ShoppingCart className="w-6 h-6 text-purple-600 group-hover:text-white transition-colors" />
                             </div>
                             <div>
-                                <p className="font-bold text-gray-900 text-sm">จัดการออร์เดอร์</p>
-                                <p className="text-xs text-gray-400">Orders</p>
+                                <p className="font-bold text-gray-900 text-xs">ออร์เดอร์</p>
+                                <p className="text-[10px] text-gray-400">Orders</p>
+                            </div>
+                        </div>
+                    </Link>
+                    <Link href="/admin/contacts" className="bg-white p-4 rounded-2xl border border-gray-100 hover:border-indigo-200 hover:shadow-lg transition-all group">
+                        <div className="flex flex-col items-center text-center gap-2">
+                            <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center group-hover:bg-indigo-500 transition-colors">
+                                <MessageSquare className="w-6 h-6 text-indigo-600 group-hover:text-white transition-colors" />
+                            </div>
+                            <div>
+                                <p className="font-bold text-gray-900 text-xs">ข้อความ</p>
+                                <p className="text-[10px] text-gray-400">Contacts</p>
+                            </div>
+                        </div>
+                    </Link>
+                    <Link href="/admin/reviews" className="bg-white p-4 rounded-2xl border border-gray-100 hover:border-yellow-200 hover:shadow-lg transition-all group">
+                        <div className="flex flex-col items-center text-center gap-2">
+                            <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center group-hover:bg-yellow-500 transition-colors">
+                                <Star className="w-6 h-6 text-yellow-600 group-hover:text-white transition-colors" />
+                            </div>
+                            <div>
+                                <p className="font-bold text-gray-900 text-xs">รีวิว</p>
+                                <p className="text-[10px] text-gray-400">Reviews</p>
+                            </div>
+                        </div>
+                    </Link>
+                    <Link href="/admin/wholesale" className="bg-white p-4 rounded-2xl border border-gray-100 hover:border-emerald-200 hover:shadow-lg transition-all group">
+                        <div className="flex flex-col items-center text-center gap-2">
+                            <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center group-hover:bg-emerald-500 transition-colors">
+                                <TrendingUp className="w-6 h-6 text-emerald-600 group-hover:text-white transition-colors" />
+                            </div>
+                            <div>
+                                <p className="font-bold text-gray-900 text-xs">ราคาส่ง</p>
+                                <p className="text-[10px] text-gray-400">Wholesale</p>
                             </div>
                         </div>
                     </Link>
@@ -232,7 +256,7 @@ export default function AdminDashboard() {
                             </div>
                         </div>
                         <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">ยอดขายรวม</p>
-                        <p className="text-2xl font-black text-gray-900">฿{stats?.totalRevenue.toLocaleString()}</p>
+                        <p className="text-2xl font-black text-gray-900">฿{(stats?.totalRevenue || 0).toLocaleString()}</p>
                     </div>
 
                     <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group">
@@ -243,7 +267,7 @@ export default function AdminDashboard() {
                             </div>
                         </div>
                         <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">กำไรสุทธิ</p>
-                        <p className="text-2xl font-black text-green-600">฿{stats?.totalProfit.toLocaleString()}</p>
+                        <p className="text-2xl font-black text-green-600">฿{(stats?.totalProfit || 0).toLocaleString()}</p>
                     </div>
 
                     <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group">
@@ -254,7 +278,7 @@ export default function AdminDashboard() {
                             </div>
                         </div>
                         <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">ออเดอร์ทั้งหมด</p>
-                        <p className="text-2xl font-black text-gray-900">{stats?.totalOrders.toLocaleString()} รายการ</p>
+                        <p className="text-2xl font-black text-gray-900">{(stats?.totalOrders || 0).toLocaleString()} รายการ</p>
                     </div>
 
                     <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group">
@@ -265,7 +289,7 @@ export default function AdminDashboard() {
                             </div>
                         </div>
                         <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">รายการสินค้า</p>
-                        <p className="text-2xl font-black text-gray-900">{stats?.topProducts.length} รายการ</p>
+                        <p className="text-2xl font-black text-gray-900">{(stats?.topProducts?.length || 0)} รายการ</p>
                     </div>
                 </div>
 
@@ -338,7 +362,7 @@ export default function AdminDashboard() {
                         <div className="mt-8 pt-8 border-t border-gray-100">
                             <h2 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-4">5 อันดับขายดี</h2>
                             <div className="space-y-3">
-                                {stats?.topProducts.map((p, i) => (
+                                {stats?.topProducts?.map((p, i) => (
                                     <div key={i} className="flex items-center justify-between p-3 bg-white rounded-xl border border-gray-50 text-[11px]">
                                         <span className="font-bold text-gray-400 mr-2">#0{i + 1}</span>
                                         <span className="font-bold text-gray-700 truncate flex-1">{p.name}</span>
@@ -367,12 +391,12 @@ export default function AdminDashboard() {
                         </div>
 
                         <div className="space-y-4">
-                            {stats?.todayOrders.length === 0 ? (
+                            {(!stats?.todayOrders || stats?.todayOrders?.length === 0) ? (
                                 <div className="bg-white p-12 rounded-3xl border border-dashed border-gray-200 text-center">
                                     <Clock className="w-12 h-12 text-gray-200 mx-auto mb-4" />
                                     <p className="text-gray-400 font-bold">ยังไม่มีออเดอร์ในวันนี้</p>
                                 </div>
-                            ) : stats?.todayOrders.map((order, i) => {
+                            ) : stats?.todayOrders?.map((order, i) => {
                                 const statusInfo = getStatusInfo(order.status);
                                 const StatusIcon = statusInfo.icon;
                                 const isExpanded = expandedOrder === order.id;

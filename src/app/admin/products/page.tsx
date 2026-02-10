@@ -39,7 +39,7 @@ interface Product {
 
 export default function AdminProductsPage() {
     const router = useRouter();
-    const { admin, isLoading: authLoading, isAuthenticated, logout } = useAdminAuth();
+    const { admin, token, isLoading: authLoading, isAuthenticated, logout } = useAdminAuth();
 
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
@@ -137,7 +137,10 @@ export default function AdminProductsPage() {
 
             const res = await fetch(url, {
                 method,
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify(formData),
             });
 
@@ -160,6 +163,9 @@ export default function AdminProductsPage() {
         try {
             const res = await fetch(`/api/products/${id}`, {
                 method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             });
             if (res.ok) {
                 fetchProducts();

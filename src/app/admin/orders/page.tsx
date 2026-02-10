@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { useRouter } from 'next/navigation';
+import { useAdminAuth } from '@/context/AdminAuthContext';
+import Link from 'next/link';
 import {
     ShoppingBag,
     Search,
@@ -13,11 +14,14 @@ import {
     User,
     Package,
     ChevronDown,
+    ChevronLeft,
     RefreshCw,
     CheckCircle2,
     Truck,
     Clock,
-    XCircle
+    XCircle,
+    ShieldCheck,
+    LogOut
 } from "lucide-react";
 
 interface OrderItem {
@@ -50,6 +54,9 @@ const STATUS_OPTIONS = [
 ];
 
 export default function AdminOrdersPage() {
+    const router = useRouter();
+    const { admin, isLoading: authLoading, isAuthenticated, logout } = useAdminAuth();
+
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -59,15 +66,33 @@ export default function AdminOrdersPage() {
     const [updatingId, setUpdatingId] = useState<string | null>(null);
 
     useEffect(() => {
-        fetchOrders();
-    }, []);
+        if (!authLoading && !isAuthenticated) {
+            router.push('/admin/login');
+        }
+    }, [authLoading, isAuthenticated, router]);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            fetchOrders();
+        }
+    }, [isAuthenticated]);
+
+    const handleLogout = () => {
+        logout();
+        router.push('/admin/login');
+    };
 
     const fetchOrders = async () => {
         setLoading(true);
         try {
             const res = await fetch('/api/admin/orders');
             const data = await res.json();
-            setOrders(data);
+            if (res.ok && Array.isArray(data)) {
+                setOrders(data);
+            } else {
+                console.error('Invalid orders data:', data);
+                setOrders([]);
+            }
         } catch (error) {
             console.error('Error fetching orders:', error);
         } finally {
@@ -76,7 +101,7 @@ export default function AdminOrdersPage() {
     };
 
     const handleUpdateStatus = async (orderId: string, newStatus: string) => {
-        setUpdatingId(orderId);
+        setUpdatingId(`${orderId}_${newStatus}`);
         try {
             const res = await fetch(`/api/admin/orders/${orderId}`, {
                 method: 'PATCH',
@@ -88,7 +113,8 @@ export default function AdminOrdersPage() {
                 // Update local state
                 setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
             } else {
-                alert('ไม่สามารถอัปเดตสถานะได้');
+                const errData = await res.json().catch(() => ({}));
+                alert(errData.error || 'ไม่สามารถอัปเดตสถานะได้');
             }
         } catch (error) {
             console.error('Error updating status:', error);
@@ -98,10 +124,10 @@ export default function AdminOrdersPage() {
         }
     };
 
-    const filteredOrders = orders.filter(o => {
-        const matchesSearch = o.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            o.phone.includes(searchQuery) ||
-            o.id.includes(searchQuery);
+    const filteredOrders = Array.isArray(orders) ? orders.filter(o => {
+        const matchesSearch = (o.customerName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (o.phone || '').includes(searchQuery) ||
+            (o.id || '').includes(searchQuery);
 
         const matchesStatus = statusFilter === 'ALL' || o.status === statusFilter;
 
@@ -116,24 +142,61 @@ export default function AdminOrdersPage() {
         }
 
         return matchesSearch && matchesStatus && matchesDate;
-    });
+    }) : [];
 
     const getStatusInfo = (status: string) => {
         return STATUS_OPTIONS.find(opt => opt.value === status) || STATUS_OPTIONS[0];
     };
 
-    return (
-        <main className="min-h-screen bg-gray-50/50">
-            <Navbar />
+    if (authLoading || !isAuthenticated) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+                <Loader2 className="w-12 h-12 text-amber-500 animate-spin" />
+            </div>
+        );
+    }
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-32">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
-                            <ShoppingBag className="w-8 h-8 text-accent-600" />
-                            จัดการออเดอร์และการจัดส่ง
-                        </h1>
-                        <p className="text-gray-500">ติดตามสถานะการสั่งซื้อและอัปเดตกระบวนการจัดส่ง</p>
+    return (
+        <main className="min-h-screen bg-gray-50">
+            {/* Admin Header */}
+            <nav className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between items-center h-16">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center">
+                                <ShieldCheck className="w-5 h-5 text-white" />
+                            </div>
+                            <div>
+                                <h1 className="font-bold text-gray-900">Admin Panel</h1>
+                                <p className="text-xs text-gray-500">SiamSausage</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <div className="text-right hidden sm:block">
+                                <p className="text-sm font-bold text-gray-700">{admin?.name}</p>
+                                <p className="text-xs text-gray-400">{admin?.role}</p>
+                            </div>
+                            <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors font-medium">
+                                <LogOut className="w-4 h-4" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                    <div className="flex items-center gap-4">
+                        <Link href="/admin" className="p-2 bg-white rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors">
+                            <ChevronLeft className="w-5 h-5 text-gray-600" />
+                        </Link>
+                        <div>
+                            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                                <ShoppingBag className="w-7 h-7 text-purple-600" />
+                                จัดการออเดอร์และการจัดส่ง
+                            </h1>
+                            <p className="text-gray-500">ออเดอร์ทั้งหมด {orders.length} รายการ</p>
+                        </div>
                     </div>
                 </div>
 
@@ -291,25 +354,62 @@ export default function AdminOrdersPage() {
                                                         {/* Status Update */}
                                                         <div>
                                                             <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">อัปเดตสถานะออเดอร์</h4>
-                                                            <div className="grid grid-cols-2 gap-2">
-                                                                {STATUS_OPTIONS.map((opt) => (
-                                                                    <button
-                                                                        key={opt.value}
-                                                                        disabled={updatingId === order.id}
-                                                                        onClick={() => handleUpdateStatus(order.id, opt.value)}
-                                                                        className={`flex items-center justify-center gap-2 p-3 rounded-xl text-xs font-bold transition-all border ${order.status === opt.value
-                                                                            ? `${opt.color} border-current`
-                                                                            : 'bg-white text-gray-500 border-gray-100 hover:border-gray-300'
-                                                                            }`}
-                                                                    >
-                                                                        {updatingId === order.id && order.status !== opt.value ? (
-                                                                            <Loader2 className="w-3 h-3 animate-spin" />
-                                                                        ) : (
-                                                                            <opt.icon className="w-3 h-3" />
-                                                                        )}
-                                                                        {opt.label}
-                                                                    </button>
-                                                                ))}
+                                                            <div className="space-y-2">
+                                                                {STATUS_OPTIONS.map((opt, idx) => {
+                                                                    const isCurrent = order.status === opt.value;
+                                                                    const currentIdx = STATUS_OPTIONS.findIndex(s => s.value === order.status);
+                                                                    const isNext = idx === currentIdx + 1;
+                                                                    const isPassed = idx < currentIdx;
+                                                                    const isUpdating = updatingId === `${order.id}_${opt.value}`;
+                                                                    const isAnyUpdating = updatingId?.startsWith(order.id);
+
+                                                                    return (
+                                                                        <button
+                                                                            key={opt.value}
+                                                                            disabled={isCurrent || (isAnyUpdating && !isUpdating)}
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                if (!isCurrent) {
+                                                                                    if (opt.value === 'CANCELLED') {
+                                                                                        if (confirm('คุณแน่ใจหรือไม่ว่าต้องการยกเลิกออเดอร์นี้?')) {
+                                                                                            handleUpdateStatus(order.id, opt.value);
+                                                                                        }
+                                                                                    } else {
+                                                                                        handleUpdateStatus(order.id, opt.value);
+                                                                                    }
+                                                                                }
+                                                                            }}
+                                                                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all border
+                                                                                ${isCurrent
+                                                                                    ? `${opt.color} border-current ring-2 ring-offset-1 ring-current/20 cursor-default`
+                                                                                    : isPassed
+                                                                                        ? 'bg-gray-50 text-gray-400 border-gray-100 hover:bg-gray-100 line-through'
+                                                                                        : isNext
+                                                                                            ? 'bg-white text-gray-700 border-gray-200 hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700 shadow-sm'
+                                                                                            : opt.value === 'CANCELLED'
+                                                                                                ? 'bg-white text-gray-400 border-gray-100 hover:border-red-300 hover:bg-red-50 hover:text-red-600'
+                                                                                                : 'bg-white text-gray-400 border-gray-100 hover:border-gray-300 hover:text-gray-600'
+                                                                                }
+                                                                                ${(isAnyUpdating && !isUpdating) ? 'opacity-50 cursor-not-allowed' : ''}
+                                                                            `}
+                                                                        >
+                                                                            {isUpdating ? (
+                                                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                                                            ) : isCurrent ? (
+                                                                                <CheckCircle2 className="w-4 h-4" />
+                                                                            ) : (
+                                                                                <opt.icon className="w-4 h-4" />
+                                                                            )}
+                                                                            <span className="flex-1 text-left">{opt.label}</span>
+                                                                            {isCurrent && (
+                                                                                <span className="text-[10px] font-black uppercase tracking-wider opacity-70">ปัจจุบัน</span>
+                                                                            )}
+                                                                            {isNext && !isCurrent && (
+                                                                                <span className="text-[10px] font-bold text-blue-500 bg-blue-50 px-2 py-0.5 rounded-md">ถัดไป →</span>
+                                                                            )}
+                                                                        </button>
+                                                                    );
+                                                                })}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -360,8 +460,6 @@ export default function AdminOrdersPage() {
                     )}
                 </div>
             </div>
-
-            <Footer />
         </main>
     );
 }

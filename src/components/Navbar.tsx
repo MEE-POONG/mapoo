@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { ShoppingCart, Menu, User, LogIn, Package, LogOut, ChevronDown } from 'lucide-react';
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
@@ -11,8 +11,11 @@ export default function Navbar() {
     const { itemCount } = useCart();
     const { customer, isLoading, logout } = useAuth();
     const [showDropdown, setShowDropdown] = useState(false);
+    const [showMobileMenu, setShowMobileMenu] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const mobileMenuRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
+    const pathname = usePathname();
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -20,10 +23,18 @@ export default function Navbar() {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
                 setShowDropdown(false);
             }
+            if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+                setShowMobileMenu(false);
+            }
         }
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
+
+    // Close mobile menu on route change
+    useEffect(() => {
+        setShowMobileMenu(false);
+    }, [pathname]);
 
     const handleLogout = () => {
         logout();
@@ -31,26 +42,42 @@ export default function Navbar() {
         router.push('/');
     };
 
+    const navLinks = [
+        { name: 'หน้าแรก', href: '/' },
+        { name: 'สินค้าทั้งหมด', href: '/products' },
+        { name: 'รีวิวลูกค้า', href: '/reviews' },
+        { name: 'เรทราคาส่ง', href: '/wholesale' },
+        { name: 'ติดตามออเดอร์', href: '/track-order' },
+        { name: 'ติดต่อเรา', href: '/contact' },
+    ];
+
     return (
         <nav className="glass-nav fixed w-full z-50 border-b border-brand-200 shadow-sm transition-all duration-300">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-20">
                     {/* Logo */}
-                    <Link href="/" className="flex-shrink-0 flex items-center gap-2 cursor-pointer">
-                        <div className="w-10 h-10 bg-accent-500 rounded-full flex items-center justify-center text-white text-xl font-bold font-serif">S</div>
+                    <Link href="/" className="flex-shrink-0 flex items-center gap-2 cursor-pointer group">
+                        <div className="w-10 h-10 bg-accent-500 rounded-full flex items-center justify-center text-white text-xl font-bold font-serif group-hover:rotate-12 transition-transform duration-300">S</div>
                         <div>
-                            <span className="font-bold text-2xl tracking-tight text-brand-800">SiamSausage</span>
-                            <p className="text-xs text-brand-500 -mt-1 tracking-wider">ต้นตำรับ ราคาส่ง</p>
+                            <span className="font-bold text-2xl tracking-tight text-brand-800 group-hover:text-accent-600 transition-colors">SiamSausage</span>
+                            <p className="text-xs text-brand-500 -mt-1 tracking-wider uppercase font-semibold">Thai Taste</p>
                         </div>
                     </Link>
 
                     {/* Desktop Menu */}
                     <div className="hidden md:flex space-x-8 items-center">
-                        <Link href="/" className="text-brand-700 hover:text-accent-600 font-medium transition-colors">หน้าแรก</Link>
-                        <Link href="/products" className="text-brand-700 hover:text-accent-600 font-medium transition-colors">สินค้าทั้งหมด</Link>
-                        <Link href="/reviews" className="text-brand-700 hover:text-accent-600 font-medium transition-colors">รีวิวลูกค้า</Link>
-                        <Link href="/wholesale" className="text-brand-700 hover:text-accent-600 font-medium transition-colors">เรทราคาส่ง</Link>
-                        <Link href="/contact" className="text-brand-700 hover:text-accent-600 font-medium transition-colors">ติดต่อเรา</Link>
+                        {navLinks.map((link) => (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                className={`font-medium transition-all duration-300 relative group ${pathname === link.href ? 'text-accent-600' : 'text-brand-700 hover:text-accent-600'
+                                    }`}
+                            >
+                                {link.name}
+                                <span className={`absolute -bottom-1 left-0 h-0.5 bg-accent-500 transition-all duration-300 ${pathname === link.href ? 'w-full' : 'w-0 group-hover:w-full'
+                                    }`}></span>
+                            </Link>
+                        ))}
                     </div>
 
                     {/* Actions */}
@@ -116,47 +143,98 @@ export default function Navbar() {
                             )
                         )}
 
-                        {/* Mobile Auth Button */}
+                        {/* Mobile Device Only Profile Icon */}
                         {!isLoading && (
                             <Link
                                 href={customer ? "/account" : "/login"}
-                                className="sm:hidden text-brand-700 hover:text-accent-600"
+                                className="sm:hidden text-brand-700 hover:text-accent-600 p-2"
                             >
-                                {customer ? <User className="w-6 h-6" /> : <LogIn className="w-6 h-6" />}
-                            </Link>
-                        )}
-
-                        {/* Order Tracking Icon - Shows when logged in, next to cart */}
-                        {!isLoading && customer && (
-                            <Link
-                                href="/account"
-                                className="text-brand-700 hover:text-accent-600 relative group"
-                                title="ติดตามคำสั่งซื้อ"
-                            >
-                                <Package className="w-7 h-7" />
-                                {/* Tooltip */}
-                                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1.5 bg-brand-900 text-white text-xs font-medium rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap shadow-lg z-50">
-                                    ติดตามคำสั่งซื้อ
-                                    <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-brand-900 rotate-45"></div>
-                                </div>
+                                {customer ? <User className="w-6 h-6 text-accent-600" /> : <LogIn className="w-6 h-6" />}
                             </Link>
                         )}
 
                         {/* Cart */}
-                        <Link href="/cart" className="text-brand-700 hover:text-accent-600 relative group">
-                            <ShoppingCart className="w-7 h-7" />
+                        <Link href="/cart" className="text-brand-700 hover:text-accent-600 relative group p-2">
+                            <ShoppingCart className="w-6 h-6 group-hover:scale-110 transition-transform" />
                             {itemCount > 0 && (
-                                <span className="absolute -top-1 -right-2 bg-accent-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm group-hover:scale-110 transition-transform">
+                                <span key={itemCount} className="absolute top-1 right-0.5 bg-accent-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pop">
                                     {itemCount}
                                 </span>
                             )}
                         </Link>
-                        <button className="md:hidden text-brand-700">
+
+                        {/* Mobile Menu Toggle */}
+                        <button
+                            onClick={() => setShowMobileMenu(!showMobileMenu)}
+                            className="md:hidden text-brand-700 hover:text-accent-600 p-2"
+                        >
                             <Menu className="w-7 h-7" />
                         </button>
                     </div>
                 </div>
             </div>
+
+            {/* Mobile Sidebar Overlay */}
+            {showMobileMenu && (
+                <div className="fixed inset-0 bg-brand-900/40 backdrop-blur-sm z-50 md:hidden animate-in fade-in duration-300">
+                    <div
+                        ref={mobileMenuRef}
+                        className="absolute right-0 top-0 bottom-0 w-80 bg-white shadow-2xl animate-in slide-in-from-right duration-300"
+                    >
+                        <div className="p-6 flex justify-between items-center border-b border-brand-50">
+                            <span className="font-bold text-brand-900 text-lg">Menu</span>
+                            <button
+                                onClick={() => setShowMobileMenu(false)}
+                                className="p-2 text-brand-400 hover:text-brand-900"
+                            >
+                                <ChevronDown className="w-6 h-6 rotate-90" />
+                            </button>
+                        </div>
+                        <div className="py-2">
+                            {navLinks.map((link) => (
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    className={`flex items-center justify-between px-6 py-4 transition-colors ${pathname === link.href
+                                        ? 'bg-accent-50 text-accent-700 border-r-4 border-accent-600 font-bold'
+                                        : 'text-brand-700 hover:bg-brand-50'
+                                        }`}
+                                >
+                                    {link.name}
+                                </Link>
+                            ))}
+                        </div>
+
+                        {!customer && (
+                            <div className="p-6 mt-4 border-t border-brand-50 space-y-3">
+                                <Link
+                                    href="/login"
+                                    className="block w-full text-center py-4 rounded-xl font-bold bg-brand-50 text-brand-800"
+                                >
+                                    เข้าสู่ระบบ
+                                </Link>
+                                <Link
+                                    href="/register"
+                                    className="block w-full text-center py-4 rounded-xl font-bold bg-accent-600 text-white shadow-lg shadow-accent-500/20"
+                                >
+                                    สมัครสมาชิก
+                                </Link>
+                            </div>
+                        )}
+                        {customer && (
+                            <div className="p-6 mt-4 border-t border-brand-50">
+                                <button
+                                    onClick={handleLogout}
+                                    className="flex items-center gap-3 text-red-600 p-2 font-bold"
+                                >
+                                    <LogOut className="w-5 h-5" />
+                                    ออกจากระบบ
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </nav>
     );
 }

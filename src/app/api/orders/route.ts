@@ -6,6 +6,12 @@ import { verifyToken, getTokenFromHeaders } from '@/lib/auth';
 export async function POST(request: Request) {
     try {
         const { customerName, phone, address, discountCode } = await request.json();
+
+        // Simple Phone Validation (Thailand 10 digits)
+        if (!phone || !phone.match(/^[0-9]{10}$/)) {
+            return NextResponse.json({ error: 'เบอร์โทรศัพท์ไม่ถูกต้อง (ต้องเป็นตัวเลข 10 หลัก)' }, { status: 400 });
+        }
+
         const cookieStore = await cookies();
         const sessionId = cookieStore.get('cart_session_id')?.value;
 
@@ -13,7 +19,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Cart not found' }, { status: 400 });
         }
 
-        // Check if user is logged in
+        // Force member login (No Guest Checkout)
         const authHeader = request.headers.get('authorization');
         const token = getTokenFromHeaders(authHeader);
         let customerId: string | null = null;
@@ -22,7 +28,13 @@ export async function POST(request: Request) {
             const payload = verifyToken(token);
             if (payload) {
                 customerId = payload.customerId;
+            } else {
+                return NextResponse.json({ error: 'Session Expired. Please login again.' }, { status: 401 });
             }
+        }
+
+        if (!customerId) {
+            return NextResponse.json({ error: 'กรุณาเข้าสู่ระบบก่อนสั่งซื้อ' }, { status: 401 });
         }
 
         // 1. Get cart items
@@ -80,13 +92,30 @@ export async function POST(request: Request) {
 
         const totalAmount = subtotal + shipping - discountAmount;
 
-        // 4. Create Order in a transaction
+        // 4. Check stock availability
+        for (const item of cart.items) {
+            if (item.product.stock < item.quantity) {
+                return NextResponse.json({
+                    error: `สินค้า "${item.product.name}" มีสต๊อกไม่เพียงพอ (เหลือ ${item.product.stock} ${item.product.unit})`
+                }, { status: 400 });
+            }
+        }
+
+        // 5. Create Order in a transaction
         const order = await prisma.$transaction(async (tx) => {
             // Increment discount count
             if (discountCode && discountAmount > 0) {
                 await tx.discount.update({
                     where: { code: discountCode.toUpperCase() },
                     data: { usedCount: { increment: 1 } }
+                });
+            }
+
+            // Decrement stock for each product
+            for (const item of cart.items) {
+                await tx.product.update({
+                    where: { id: item.productId },
+                    data: { stock: { decrement: item.quantity } }
                 });
             }
 

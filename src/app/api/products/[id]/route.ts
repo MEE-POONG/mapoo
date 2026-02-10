@@ -1,11 +1,19 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { verifyAdminToken, getAdminTokenFromHeaders } from '@/lib/adminAuth';
 
 export async function PATCH(
     request: Request,
     { params }: { params: { id: string } }
 ) {
     try {
+        // Verify admin authentication
+        const authHeader = request.headers.get('authorization');
+        const token = getAdminTokenFromHeaders(authHeader);
+        if (!token || !verifyAdminToken(token)) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const body = await request.json();
         const { name, description, price, unit, imageUrl, category, tags, isFeatured, stock, costPrice } = body;
 
@@ -40,6 +48,13 @@ export async function DELETE(
     { params }: { params: { id: string } }
 ) {
     try {
+        // Verify admin authentication
+        const authHeader = request.headers.get('authorization');
+        const token = getAdminTokenFromHeaders(authHeader);
+        if (!token || !verifyAdminToken(token)) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         await prisma.product.delete({
             where: { id: params.id },
         });

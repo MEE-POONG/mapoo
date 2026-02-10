@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { verifyAdminToken, getAdminTokenFromHeaders } from '@/lib/adminAuth';
 
 // DELETE admin
 export async function DELETE(
@@ -7,6 +8,12 @@ export async function DELETE(
     { params }: { params: { id: string } }
 ) {
     try {
+        const authHeader = request.headers.get('authorization');
+        const token = getAdminTokenFromHeaders(authHeader);
+        if (!token || !verifyAdminToken(token)) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const { id } = params;
 
         // Check if admin exists
@@ -43,6 +50,12 @@ export async function PATCH(
     { params }: { params: { id: string } }
 ) {
     try {
+        const authHeader = request.headers.get('authorization');
+        const token = getAdminTokenFromHeaders(authHeader);
+        if (!token || !verifyAdminToken(token)) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const { id } = params;
         const { isActive, role } = await request.json();
 

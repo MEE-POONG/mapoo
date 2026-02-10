@@ -59,7 +59,9 @@ export default function RegisterPage() {
         setIsLoading(false);
 
         if (result.success) {
-            router.push('/account');
+            const params = new URLSearchParams(window.location.search);
+            const redirect = params.get('redirect');
+            router.push(redirect || '/account');
         } else {
             setError(result.error || 'เกิดข้อผิดพลาด');
         }

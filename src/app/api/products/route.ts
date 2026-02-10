@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { verifyAdminToken, getAdminTokenFromHeaders } from '@/lib/adminAuth';
 
 export async function GET(request: Request) {
     try {
@@ -32,6 +33,13 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
     try {
+        // Verify admin authentication
+        const authHeader = request.headers.get('authorization');
+        const token = getAdminTokenFromHeaders(authHeader);
+        if (!token || !verifyAdminToken(token)) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const body = await request.json();
         const { name, description, price, unit, imageUrl, category, tags, isFeatured, stock, costPrice } = body;
 

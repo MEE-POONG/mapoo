@@ -39,7 +39,9 @@ export default function LoginPage() {
         setIsLoading(false);
 
         if (result.success) {
-            router.push('/account');
+            const params = new URLSearchParams(window.location.search);
+            const redirect = params.get('redirect');
+            router.push(redirect || '/account');
         } else {
             setError(result.error || 'เกิดข้อผิดพลาด');
         }
@@ -137,13 +139,21 @@ export default function LoginPage() {
                         </button>
                     </form>
 
-                    {/* Register link */}
-                    <p className="text-center mt-6 text-brand-600">
-                        ยังไม่มีบัญชี?{' '}
-                        <Link href="/register" className="text-accent-600 font-semibold hover:text-accent-700 hover:underline">
-                            สมัครสมาชิก
+                    {/* Forgot password & Register links */}
+                    <div className="text-center mt-6 space-y-3">
+                        <Link
+                            href="/forgot-password"
+                            className="block text-sm text-brand-500 hover:text-accent-600 transition-colors"
+                        >
+                            ลืมรหัสผ่าน?
                         </Link>
-                    </p>
+                        <p className="text-brand-600">
+                            ยังไม่มีบัญชี?{' '}
+                            <Link href="/register" className="text-accent-600 font-semibold hover:text-accent-700 hover:underline">
+                                สมัครสมาชิก
+                            </Link>
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>

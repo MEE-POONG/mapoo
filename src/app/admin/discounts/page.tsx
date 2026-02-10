@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { useRouter } from 'next/navigation';
+import { useAdminAuth } from '@/context/AdminAuthContext';
 import Link from 'next/link';
 import {
     Ticket,
@@ -22,8 +22,10 @@ import {
     Copy,
     ChevronDown,
     ChevronUp,
-    ArrowLeft,
-    Pencil
+    ChevronLeft,
+    Pencil,
+    ShieldCheck,
+    LogOut
 } from "lucide-react";
 
 interface Discount {
@@ -44,6 +46,9 @@ interface Discount {
 }
 
 export default function AdminDiscountsPage() {
+    const router = useRouter();
+    const { admin, isLoading: authLoading, isAuthenticated, logout } = useAdminAuth();
+
     const [discounts, setDiscounts] = useState<Discount[]>([]);
     const [loading, setLoading] = useState(true);
     const [isAdding, setIsAdding] = useState(false);
@@ -67,8 +72,21 @@ export default function AdminDiscountsPage() {
     const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
-        fetchDiscounts();
-    }, []);
+        if (!authLoading && !isAuthenticated) {
+            router.push('/admin/login');
+        }
+    }, [authLoading, isAuthenticated, router]);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            fetchDiscounts();
+        }
+    }, [isAuthenticated]);
+
+    const handleLogout = () => {
+        logout();
+        router.push('/admin/login');
+    };
 
     const fetchDiscounts = async () => {
         setLoading(true);
@@ -198,26 +216,55 @@ export default function AdminDiscountsPage() {
         (d.description && d.description.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
+    if (authLoading || !isAuthenticated) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+                <Loader2 className="w-12 h-12 text-amber-500 animate-spin" />
+            </div>
+        );
+    }
+
     return (
-        <main className="min-h-screen bg-gray-50/50">
-            <Navbar />
+        <main className="min-h-screen bg-gray-50">
+            {/* Admin Header */}
+            <nav className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between items-center h-16">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center">
+                                <ShieldCheck className="w-5 h-5 text-white" />
+                            </div>
+                            <div>
+                                <h1 className="font-bold text-gray-900">Admin Panel</h1>
+                                <p className="text-xs text-gray-500">SiamSausage</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <div className="text-right hidden sm:block">
+                                <p className="text-sm font-bold text-gray-700">{admin?.name}</p>
+                                <p className="text-xs text-gray-400">{admin?.role}</p>
+                            </div>
+                            <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors font-medium">
+                                <LogOut className="w-4 h-4" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-32">
-                <Link
-                    href="/admin"
-                    className="flex items-center gap-2 text-gray-400 hover:text-accent-500 font-bold text-sm mb-6 transition-colors group w-fit"
-                >
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    หน้าควบคุมหลัก (Dashboard)
-                </Link>
-
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3 font-black tracking-tight">
-                            <Ticket className="w-8 h-8 text-accent-600" />
-                            จัดการโค้ดส่วนลด
-                        </h1>
-                        <p className="text-gray-500 font-medium italic">สร้างโปรโมชั่นและมอบสิทธิพิเศษให้นักกิน</p>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                    <div className="flex items-center gap-4">
+                        <Link href="/admin" className="p-2 bg-white rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors">
+                            <ChevronLeft className="w-5 h-5 text-gray-600" />
+                        </Link>
+                        <div>
+                            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                                <Ticket className="w-7 h-7 text-amber-600" />
+                                จัดการโค้ดส่วนลด
+                            </h1>
+                            <p className="text-gray-500">โค้ดทั้งหมด {discounts.length} รายการ</p>
+                        </div>
                     </div>
 
                     <button
@@ -230,7 +277,7 @@ export default function AdminDiscountsPage() {
                         }}
                         className={`flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-sm transition-all shadow-lg ${isAdding
                             ? 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                            : 'bg-accent-500 text-white hover:bg-accent-600 shadow-accent-200'
+                            : 'bg-gradient-to-r from-amber-500 to-orange-600 text-white hover:from-amber-600 hover:to-orange-700 shadow-amber-500/30'
                             }`}
                     >
                         {isAdding ? <XCircle className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
@@ -508,8 +555,6 @@ export default function AdminDiscountsPage() {
                     )}
                 </div>
             </div>
-
-            <Footer />
         </main>
     );
 }
