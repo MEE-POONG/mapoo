@@ -14,8 +14,17 @@ export default function CartPage() {
     useEffect(() => {
         fetch('/api/wholesale')
             .then(res => res.json())
-            .then(data => setWholesaleRates(data))
-            .catch(err => console.error(err));
+            .then(data => {
+                if (Array.isArray(data)) {
+                    setWholesaleRates(data);
+                } else {
+                    setWholesaleRates([]);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                setWholesaleRates([]);
+            });
     }, []);
 
     // Calculate total quantity of items eligible for wholesale (e.g., Sausages)

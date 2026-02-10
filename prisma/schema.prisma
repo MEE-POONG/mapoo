@@ -105,8 +105,8 @@ model CartItem {
 
 model Review {
     id           String   @id @default(auto()) @map("_id") @db.ObjectId
-    productId    String   @db.ObjectId
-    product      Product  @relation(fields: [productId], references: [id])
+    productId    String?  @db.ObjectId
+    product      Product? @relation(fields: [productId], references: [id])
     customerName String
     rating       Int
     comment      String

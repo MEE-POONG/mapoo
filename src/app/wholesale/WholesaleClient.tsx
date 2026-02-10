@@ -22,11 +22,17 @@ export default function WholesalePage() {
         fetch('/api/wholesale')
             .then(res => res.json())
             .then(data => {
-                setRates(data);
+                if (Array.isArray(data)) {
+                    setRates(data);
+                } else {
+                    console.error('Wholesale rates data is not an array:', data);
+                    setRates([]);
+                }
                 setLoading(false);
             })
             .catch(err => {
                 console.error(err);
+                setRates([]);
                 setLoading(false);
             });
     }, []);

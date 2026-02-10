@@ -85,7 +85,7 @@ export default function AdminProductsPage() {
         try {
             const res = await fetch('/api/products');
             const data = await res.json();
-            setProducts(data);
+            setProducts(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error('Error fetching products:', error);
         } finally {

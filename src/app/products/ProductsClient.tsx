@@ -93,9 +93,15 @@ export default function ProductsPage() {
             const query = filter !== 'All' ? `?category=${filter}` : '';
             const res = await fetch(`/api/products${query}`);
             const data = await res.json();
-            setProducts(data);
+            if (Array.isArray(data)) {
+                setProducts(data);
+            } else {
+                console.error('Products data is not an array:', data);
+                setProducts([]);
+            }
         } catch (error) {
-            console.error(error);
+            console.error('Error fetching products:', error);
+            setProducts([]);
         } finally {
             setLoading(false);
         }
