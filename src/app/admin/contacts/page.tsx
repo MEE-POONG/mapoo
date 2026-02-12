@@ -28,6 +28,8 @@ interface ContactMessage {
     createdAt: string;
 }
 
+import AdminHeader from '@/components/AdminHeader';
+
 export default function ContactsPage() {
     const router = useRouter();
     const { admin, token, isLoading: authLoading, isAuthenticated, logout } = useAdminAuth();
@@ -107,64 +109,41 @@ export default function ContactsPage() {
     }
 
     return (
-        <main className="min-h-screen bg-gray-50">
-            {/* Admin Header */}
-            <nav className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center">
-                                <ShieldCheck className="w-5 h-5 text-white" />
+        <main className="min-h-screen bg-[#F8F9FB]">
+            <AdminHeader />
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                {/* Page Header */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
+                    <div className="flex items-center gap-6">
+                        <Link
+                            href="/admin"
+                            className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 hover:border-gray-900 transition-all group"
+                        >
+                            <ChevronLeft className="w-6 h-6 text-gray-400 group-hover:text-gray-900" />
+                        </Link>
+                        <div>
+                            <div className="flex items-center gap-3 mb-1">
+                                <div className="w-8 h-8 bg-indigo-50 rounded-xl flex items-center justify-center">
+                                    <MessageSquare className="w-4 h-4 text-indigo-600" />
+                                </div>
+                                <h1 className="text-3xl font-black text-gray-900 tracking-tight">ข้อความติดต่อ</h1>
                             </div>
-                            <div>
-                                <h1 className="font-bold text-gray-900">Admin Panel</h1>
-                                <p className="text-xs text-gray-500">SiamSausage</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            <div className="text-right hidden sm:block">
-                                <p className="text-sm font-bold text-gray-700">{admin?.name}</p>
-                                <p className="text-xs text-gray-400">{admin?.role}</p>
-                            </div>
-                            <button
-                                onClick={handleLogout}
-                                className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors font-medium"
-                            >
-                                <LogOut className="w-4 h-4" />
-                            </button>
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider ml-11">Customer Support & Inquiries: {messages.length} Pending Messages</p>
                         </div>
                     </div>
                 </div>
-            </nav>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* Header */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                    <div className="flex items-center gap-4">
-                        <Link
-                            href="/admin"
-                            className="p-2 bg-white rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors"
-                        >
-                            <ChevronLeft className="w-5 h-5 text-gray-600" />
-                        </Link>
-                        <div>
-                            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-                                <MessageSquare className="w-7 h-7 text-indigo-500" />
-                                จัดการข้อความติดต่อ
-                            </h1>
-                            <p className="text-gray-500">รวมข้อความสอบถามจากหน้าเว็บไซต์</p>
-                        </div>
-                    </div>
-
-                    {/* Search */}
-                    <div className="relative">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                {/* Search Box */}
+                <div className="bg-white p-6 rounded-[2.5rem] shadow-sm border border-gray-100 mb-10 ring-4 ring-gray-100/50">
+                    <div className="relative group">
+                        <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 w-5 h-5 group-focus-within:text-gray-900 transition-colors" />
                         <input
                             type="text"
-                            placeholder="ค้นหาชื่อ, หัวข้อ, ข้อความ..."
+                            placeholder="ค้นหาตามชื่อ, หัวข้อ หรือ เนื้อหาข้อความ..."
+                            className="w-full pl-14 pr-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all font-bold placeholder:font-medium placeholder:text-gray-300"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl w-full md:w-80 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-sm"
                         />
                     </div>
                 </div>

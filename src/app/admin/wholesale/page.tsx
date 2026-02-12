@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import Link from 'next/link';
+import AdminHeader from '@/components/AdminHeader';
 import {
     TrendingUp,
     Plus,
@@ -163,61 +164,36 @@ export default function AdminWholesalePage() {
     }
 
     return (
-        <main className="min-h-screen bg-gray-50 pb-20">
-            {/* Admin Header */}
-            <nav className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center">
-                                <ShieldCheck className="w-5 h-5 text-white" />
-                            </div>
-                            <div>
-                                <h1 className="font-bold text-gray-900">Admin Panel</h1>
-                                <p className="text-xs text-gray-500">SiamSausage</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            <div className="text-right hidden sm:block">
-                                <p className="text-sm font-bold text-gray-700">{admin?.name}</p>
-                                <p className="text-xs text-gray-400">{admin?.role}</p>
-                            </div>
-                            <button
-                                onClick={handleLogout}
-                                className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors font-medium"
-                            >
-                                <LogOut className="w-4 h-4" />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </nav>
+        <main className="min-h-screen bg-[#F8F9FB]">
+            <AdminHeader />
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* Header Actions */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-                    <div className="flex items-center gap-4">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                {/* Page Header */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
+                    <div className="flex items-center gap-6">
                         <Link
                             href="/admin"
-                            className="p-3 bg-white rounded-2xl border border-gray-100 shadow-sm hover:bg-gray-50 transition-all"
+                            className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 hover:border-gray-900 transition-all group"
                         >
-                            <ChevronLeft className="w-5 h-5 text-gray-600" />
+                            <ChevronLeft className="w-6 h-6 text-gray-400 group-hover:text-gray-900" />
                         </Link>
                         <div>
-                            <h1 className="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-3">
-                                <TrendingUp className="w-8 h-8 text-green-500" />
-                                จัดการเรทราคาส่ง
-                            </h1>
-                            <p className="text-gray-500 font-medium">กำหนดราคาต่อกิโลกรัมตามจำนวนที่สั่งซื้อ</p>
+                            <div className="flex items-center gap-3 mb-1">
+                                <div className="w-8 h-8 bg-blue-50 rounded-xl flex items-center justify-center">
+                                    <TrendingUp className="w-4 h-4 text-blue-600" />
+                                </div>
+                                <h1 className="text-3xl font-black text-gray-900 tracking-tight">จัดการราคาขายส่ง</h1>
+                            </div>
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider ml-11">Bulk Pricing & Volume Discounts: {rates.length} Active Tiers</p>
                         </div>
                     </div>
 
                     <button
                         onClick={() => handleOpenModal()}
-                        className="bg-brand-900 text-white px-8 py-4 rounded-2xl font-black flex items-center gap-3 shadow-xl shadow-brand-900/20 hover:scale-105 transition-all"
+                        className="bg-gray-900 text-white px-8 py-4 rounded-[1.5rem] font-black flex items-center justify-center gap-3 hover:scale-[1.02] transition-all shadow-xl shadow-gray-200"
                     >
                         <Plus className="w-6 h-6" />
-                        เพิ่มเรทใหม่
+                        เพิ่มช่วงราคา
                     </button>
                 </div>
 

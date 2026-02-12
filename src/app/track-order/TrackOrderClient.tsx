@@ -42,14 +42,14 @@ const statusConfig: Record<string, { label: string; color: string; bgColor: stri
         icon: Clock,
         step: 1
     },
-    CONFIRMED: {
-        label: 'ยืนยันแล้ว',
+    PROCESSING: {
+        label: 'กำลังเตรียมของ',
         color: 'text-blue-600',
         bgColor: 'bg-blue-50 border-blue-200',
         icon: CheckCircle,
         step: 2
     },
-    SHIPPING: {
+    SHIPPED: {
         label: 'กำลังจัดส่ง',
         color: 'text-purple-600',
         bgColor: 'bg-purple-50 border-purple-200',
@@ -57,7 +57,7 @@ const statusConfig: Record<string, { label: string; color: string; bgColor: stri
         step: 3
     },
     DELIVERED: {
-        label: 'จัดส่งสำเร็จ',
+        label: 'ส่งสำเร็จ',
         color: 'text-green-600',
         bgColor: 'bg-green-50 border-green-200',
         icon: CheckCircle,
@@ -74,9 +74,9 @@ const statusConfig: Record<string, { label: string; color: string; bgColor: stri
 
 const steps = [
     { key: 'PENDING', label: 'รอดำเนินการ', icon: Clock },
-    { key: 'CONFIRMED', label: 'ยืนยันแล้ว', icon: CheckCircle },
-    { key: 'SHIPPING', label: 'กำลังจัดส่ง', icon: Truck },
-    { key: 'DELIVERED', label: 'จัดส่งสำเร็จ', icon: Package },
+    { key: 'PROCESSING', label: 'กำลังเตรียมของ', icon: CheckCircle },
+    { key: 'SHIPPED', label: 'กำลังจัดส่ง', icon: Truck },
+    { key: 'DELIVERED', label: 'ส่งสำเร็จ', icon: Package },
 ];
 
 export default function TrackOrderPage() {

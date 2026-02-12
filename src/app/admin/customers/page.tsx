@@ -21,6 +21,7 @@ import {
     Clock,
     ChevronDown
 } from 'lucide-react';
+import AdminHeader from '@/components/AdminHeader';
 
 interface Customer {
     id: string;
@@ -42,7 +43,7 @@ interface Customer {
 
 export default function CustomersPage() {
     const router = useRouter();
-    const { admin, isLoading: authLoading, isAuthenticated, logout } = useAdminAuth();
+    const { admin, token, isLoading: authLoading, isAuthenticated, logout } = useAdminAuth();
     const [customers, setCustomers] = useState<Customer[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -62,7 +63,9 @@ export default function CustomersPage() {
 
     const fetchCustomers = async () => {
         try {
-            const res = await fetch('/api/admin/customers');
+            const res = await fetch('/api/admin/customers', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             const data = await res.json();
             setCustomers(data.customers || []);
         } catch (error) {
@@ -103,179 +106,148 @@ export default function CustomersPage() {
     }
 
     return (
-        <main className="min-h-screen bg-gray-50">
-            {/* Admin Header */}
-            <nav className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center">
-                                <ShieldCheck className="w-5 h-5 text-white" />
+        <main className="min-h-screen bg-[#F8F9FB]">
+            <AdminHeader />
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                {/* Page Header */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
+                    <div className="flex items-center gap-6">
+                        <Link
+                            href="/admin"
+                            className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 hover:border-gray-900 transition-all group"
+                        >
+                            <ChevronLeft className="w-6 h-6 text-gray-400 group-hover:text-gray-900" />
+                        </Link>
+                        <div>
+                            <div className="flex items-center gap-3 mb-1">
+                                <div className="w-8 h-8 bg-purple-50 rounded-xl flex items-center justify-center">
+                                    <Users className="w-4 h-4 text-purple-600" />
+                                </div>
+                                <h1 className="text-3xl font-black text-gray-900 tracking-tight">รายชื่อลูกค้า</h1>
                             </div>
-                            <div>
-                                <h1 className="font-bold text-gray-900">Admin Panel</h1>
-                                <p className="text-xs text-gray-500">SiamSausage</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            <div className="text-right hidden sm:block">
-                                <p className="text-sm font-bold text-gray-700">{admin?.name}</p>
-                                <p className="text-xs text-gray-400">{admin?.role}</p>
-                            </div>
-                            <button
-                                onClick={handleLogout}
-                                className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors font-medium"
-                            >
-                                <LogOut className="w-4 h-4" />
-                            </button>
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider ml-11">Customer CRM & Data Insights: {customers.length} Registered Users</p>
                         </div>
                     </div>
                 </div>
-            </nav>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* Header */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                    <div className="flex items-center gap-4">
-                        <Link
-                            href="/admin"
-                            className="p-2 bg-white rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors"
-                        >
-                            <ChevronLeft className="w-5 h-5 text-gray-600" />
-                        </Link>
-                        <div>
-                            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-                                <Users className="w-7 h-7 text-blue-600" />
-                                จัดการลูกค้า
-                            </h1>
-                            <p className="text-gray-500">ลูกค้าทั้งหมด {customers.length} คน</p>
-                        </div>
-                    </div>
-
-                    {/* Search */}
-                    <div className="relative">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                {/* Search Box */}
+                <div className="bg-white p-6 rounded-[2.5rem] shadow-sm border border-gray-100 mb-10 ring-4 ring-gray-100/50">
+                    <div className="relative group">
+                        <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 w-5 h-5 group-focus-within:text-gray-900 transition-colors" />
                         <input
                             type="text"
-                            placeholder="ค้นหาชื่อ, อีเมล, เบอร์โทร..."
+                            placeholder="ค้นหาตามชื่อ, อีเมล หรือ เบอร์โทรศัพท์..."
+                            className="w-full pl-14 pr-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all font-bold placeholder:font-medium placeholder:text-gray-300"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl w-full md:w-80 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                     </div>
                 </div>
 
-                {/* Customer List */}
-                {loading ? (
-                    <div className="flex justify-center py-20">
-                        <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
-                    </div>
-                ) : filteredCustomers.length === 0 ? (
-                    <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
-                        <Users className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-                        <p className="text-gray-500 font-medium">ไม่พบลูกค้า</p>
-                    </div>
-                ) : (
-                    <div className="space-y-4">
-                        {filteredCustomers.map((customer) => (
-                            <div
-                                key={customer.id}
-                                className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
-                            >
+                {/* Customers Table/List */}
+                <div className="space-y-6">
+                    {loading ? (
+                        <div className="flex justify-center py-20">
+                            <Loader2 className="w-10 h-10 text-gray-900 animate-spin" />
+                        </div>
+                    ) : filteredCustomers.length > 0 ? (
+                        filteredCustomers.map(customer => (
+                            <div key={customer.id} className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-300">
                                 <div
-                                    className="p-6 cursor-pointer hover:bg-gray-50 transition-colors"
+                                    className="p-8 cursor-pointer"
                                     onClick={() => setExpandedId(expandedId === customer.id ? null : customer.id)}
                                 >
-                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-lg">
-                                                {customer.name.charAt(0).toUpperCase()}
+                                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                                        <div className="flex items-center gap-6">
+                                            <div className="w-16 h-16 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl flex items-center justify-center border border-gray-100">
+                                                <Users className="w-8 h-8 text-gray-400" />
                                             </div>
                                             <div>
-                                                <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                                                    {customer.name}
+                                                <div className="flex items-center gap-3 mb-1">
+                                                    <h3 className="text-xl font-black text-gray-900">{customer.name}</h3>
                                                     {customer.isVerified && (
                                                         <CheckCircle className="w-4 h-4 text-green-500" />
                                                     )}
-                                                </h3>
-                                                <p className="text-sm text-gray-500 flex items-center gap-2">
-                                                    <Mail className="w-3 h-3" />
-                                                    {customer.email}
-                                                </p>
+                                                </div>
+                                                <div className="flex items-center gap-4 text-gray-400 font-bold text-xs uppercase tracking-wider">
+                                                    <span className="flex items-center gap-1.5">
+                                                        <Mail className="w-3 h-3" />
+                                                        {customer.email}
+                                                    </span>
+                                                    <span>•</span>
+                                                    <span>สั่งซื้อแล้ว {customer.totalOrders} ครั้ง</span>
+                                                </div>
                                             </div>
                                         </div>
 
-                                        <div className="flex flex-wrap items-center gap-6">
-                                            <div className="text-center">
-                                                <p className="text-xs text-gray-400 font-medium">คำสั่งซื้อ</p>
-                                                <p className="font-bold text-gray-900">{customer.totalOrders}</p>
+                                        <div className="flex items-center gap-6">
+                                            <div className="text-right hidden sm:block">
+                                                <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-1">ยอดสั่งซื้อสะสม</p>
+                                                <p className="text-2xl font-black text-gray-900">฿{customer.totalSpent.toLocaleString()}</p>
                                             </div>
-                                            <div className="text-center">
-                                                <p className="text-xs text-gray-400 font-medium">ยอดรวม</p>
-                                                <p className="font-bold text-green-600">฿{customer.totalSpent.toLocaleString()}</p>
+                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-gray-50 transition-transform duration-300 ${expandedId === customer.id ? 'rotate-180 bg-gray-900 text-white' : 'text-gray-400'}`}>
+                                                <ChevronDown className="w-5 h-5" />
                                             </div>
-                                            <div className="text-center">
-                                                <p className="text-xs text-gray-400 font-medium">วันที่สมัคร</p>
-                                                <p className="font-medium text-gray-700 text-sm">
-                                                    {new Date(customer.createdAt).toLocaleDateString('th-TH')}
-                                                </p>
-                                            </div>
-                                            <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${expandedId === customer.id ? 'rotate-180' : ''}`} />
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* Expanded Details */}
                                 {expandedId === customer.id && (
-                                    <div className="px-6 pb-6 border-t border-gray-100 pt-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            {/* Contact Info */}
-                                            <div className="bg-gray-50 rounded-xl p-4">
-                                                <h4 className="font-bold text-gray-700 mb-3 text-sm">ข้อมูลติดต่อ</h4>
-                                                <div className="space-y-2 text-sm">
-                                                    <p className="flex items-center gap-2 text-gray-600">
-                                                        <Phone className="w-4 h-4 text-gray-400" />
-                                                        {customer.phone || 'ไม่ระบุ'}
-                                                    </p>
-                                                    <p className="flex items-start gap-2 text-gray-600">
-                                                        <MapPin className="w-4 h-4 text-gray-400 mt-0.5" />
-                                                        {customer.address || 'ไม่ระบุที่อยู่'}
-                                                    </p>
+                                    <div className="px-8 pb-8 animate-in slide-in-from-top-4 duration-300">
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 pt-8 border-t border-gray-50">
+                                            <div className="space-y-6">
+                                                <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">ข้อมูลติดต่อ</h4>
+                                                <div className="bg-gray-50 p-6 rounded-[2rem] space-y-4">
+                                                    <div className="flex items-center gap-3 text-gray-700 font-bold">
+                                                        <Phone className="w-5 h-5 text-gray-400" />
+                                                        {customer.phone || 'ไม่ระบุเบอร์โทรศัพท์'}
+                                                    </div>
+                                                    <div className="flex items-start gap-3 text-gray-700 font-bold">
+                                                        <MapPin className="w-5 h-5 text-gray-400 mt-1" />
+                                                        <span className="flex-1">{customer.address || 'ไม่มีข้อมูลที่อยู่'}</span>
+                                                    </div>
                                                 </div>
                                             </div>
 
-                                            {/* Recent Orders */}
-                                            <div className="bg-gray-50 rounded-xl p-4">
-                                                <h4 className="font-bold text-gray-700 mb-3 text-sm">คำสั่งซื้อล่าสุด</h4>
-                                                {customer.recentOrders.length === 0 ? (
-                                                    <p className="text-gray-400 text-sm">ยังไม่มีคำสั่งซื้อ</p>
-                                                ) : (
-                                                    <div className="space-y-2">
-                                                        {customer.recentOrders.map((order) => (
-                                                            <div key={order.id} className="flex items-center justify-between text-sm">
-                                                                <div className="flex items-center gap-2">
-                                                                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                                            <div className="space-y-6">
+                                                <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">คำสั่งซื้อล่าสุด</h4>
+                                                <div className="space-y-3">
+                                                    {customer.recentOrders.length > 0 ? (
+                                                        customer.recentOrders.map(order => (
+                                                            <div key={order.id} className="flex items-center justify-between p-4 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                                                                <div>
+                                                                    <p className="text-sm font-black text-gray-900 mb-1">#{order.id.slice(-6).toUpperCase()}</p>
+                                                                    <p className="text-[10px] text-gray-400 font-bold uppercase">{new Date(order.createdAt).toLocaleDateString('th-TH')}</p>
+                                                                </div>
+                                                                <div className="text-right">
+                                                                    <p className="text-sm font-black text-gray-900 mb-1">฿{order.totalAmount.toLocaleString()}</p>
+                                                                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-black uppercase ${getStatusColor(order.status)}`}>
                                                                         {order.status}
                                                                     </span>
-                                                                    <span className="text-gray-500">
-                                                                        {new Date(order.createdAt).toLocaleDateString('th-TH')}
-                                                                    </span>
                                                                 </div>
-                                                                <span className="font-bold text-gray-900">
-                                                                    ฿{order.totalAmount.toLocaleString()}
-                                                                </span>
                                                             </div>
-                                                        ))}
-                                                    </div>
-                                                )}
+                                                        ))
+                                                    ) : (
+                                                        <div className="p-10 text-center bg-gray-50 rounded-[2rem] border-2 border-dashed border-gray-200">
+                                                            <p className="text-gray-400 font-bold italic">ยังไม่มีประวัติการสั่งซื้อ</p>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 )}
                             </div>
-                        ))}
-                    </div>
-                )}
+                        ))
+                    ) : (
+                        <div className="text-center py-20 bg-white rounded-[3rem] border border-gray-100 shadow-sm">
+                            <Users className="w-16 h-16 text-gray-100 mx-auto mb-6" />
+                            <h3 className="text-xl font-black text-gray-900 mb-2">ไม่พบรายชื่อลูกค้า</h3>
+                            <p className="text-gray-400 font-bold">ข้อมูลลูกค้าจากการสมัครสมาชิกและสั่งซื้อจะปรากฏที่นี่</p>
+                        </div>
+                    )}
+                </div>
             </div>
         </main>
     );

@@ -12,9 +12,7 @@ import {
     Users,
     ChevronLeft,
     ChevronRight,
-    Loader2,
-    ShieldCheck,
-    LogOut
+    Loader2
 } from "lucide-react";
 import Link from 'next/link';
 import {
@@ -29,9 +27,10 @@ import {
     Legend,
     Filler
 } from 'chart.js';
-import { Line, Bar } from 'react-chartjs-2';
+import { Line } from 'react-chartjs-2';
 import { format, addDays, subDays, addMonths, subMonths, addYears, subYears } from 'date-fns';
 import { th } from 'date-fns/locale';
+import AdminHeader from '@/components/AdminHeader';
 
 ChartJS.register(
     CategoryScale,
@@ -67,11 +66,6 @@ export default function SalesReportPage() {
         }
     }, [period, date, isAuthenticated]);
 
-    const handleLogout = () => {
-        logout();
-        router.push('/admin/login');
-    };
-
     const fetchData = async () => {
         setLoading(true);
         try {
@@ -98,21 +92,16 @@ export default function SalesReportPage() {
     };
 
     const handleCalendarClick = () => {
-        if (dateInputRef.current) {
-            try {
-                // Modern browsers support showPicker()
-                if ('showPicker' in HTMLInputElement.prototype) {
-                    dateInputRef.current.showPicker();
-                } else {
-                    dateInputRef.current.click();
-                }
-            } catch (e) {
-                dateInputRef.current.click();
-            }
-        }
+        dateInputRef.current?.showPicker();
     };
 
-    const chartOptions = {
+    const getPeriodText = () => {
+        if (period === 'day') return format(date, 'd MMMM yyyy', { locale: th });
+        if (period === 'month') return format(date, 'MMMM yyyy', { locale: th });
+        return format(date, 'yyyy', { locale: th });
+    };
+
+    const chartOptions: any = {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
@@ -120,21 +109,24 @@ export default function SalesReportPage() {
                 display: false,
             },
             tooltip: {
-                backgroundColor: '#1e293b',
+                backgroundColor: '#111827',
                 padding: 12,
-                titleFont: { size: 14, weight: 'bold' as const },
+                titleFont: { size: 14, weight: 'bold' },
                 bodyFont: { size: 13 },
                 displayColors: false,
+                callbacks: {
+                    label: (context: any) => `ยอดขาย: ฿${context.raw.toLocaleString()}`
+                }
             }
         },
         scales: {
             y: {
                 beginAtZero: true,
                 grid: {
-                    color: 'rgba(0, 0, 0, 0.05)',
+                    color: '#f3f4f6',
                 },
                 ticks: {
-                    callback: (value: any) => '฿' + value.toLocaleString()
+                    callback: (value: any) => `฿${value.toLocaleString()}`
                 }
             },
             x: {
@@ -161,12 +153,6 @@ export default function SalesReportPage() {
         ]
     };
 
-    const getPeriodText = () => {
-        if (period === 'day') return format(date, 'd MMMM yyyy', { locale: th });
-        if (period === 'month') return format(date, 'MMMM yyyy', { locale: th });
-        return format(date, 'yyyy', { locale: th });
-    };
-
     if (authLoading || !isAuthenticated) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
@@ -176,119 +162,117 @@ export default function SalesReportPage() {
     }
 
     return (
-        <main className="min-h-screen bg-gray-50">
-            {/* Admin Header */}
-            <nav className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center">
-                                <ShieldCheck className="w-5 h-5 text-white" />
-                            </div>
-                            <div>
-                                <h1 className="font-bold text-gray-900">Admin Panel</h1>
-                                <p className="text-xs text-gray-500">SiamSausage</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            <div className="text-right hidden sm:block">
-                                <p className="text-sm font-bold text-gray-700">{admin?.name}</p>
-                                <p className="text-xs text-gray-400">{admin?.role}</p>
-                            </div>
-                            <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors font-medium">
-                                <LogOut className="w-4 h-4" />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </nav>
+        <main className="min-h-screen bg-[#F8F9FB]">
+            <AdminHeader />
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
-                    <div className="flex items-center gap-4">
-                        <Link href="/admin" className="p-2 bg-white rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors">
-                            <ChevronLeft className="w-5 h-5 text-gray-600" />
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                {/* Page Header */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
+                    <div className="flex items-center gap-6">
+                        <Link
+                            href="/admin"
+                            className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 hover:border-gray-900 transition-all group"
+                        >
+                            <ChevronLeft className="w-6 h-6 text-gray-400 group-hover:text-gray-900" />
                         </Link>
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-                                <TrendingUp className="w-7 h-7 text-orange-600" />
-                                สรุปยอดขาย
-                            </h1>
-                            <p className="text-gray-500">ติดตามภาพรวมรายได้และประสิทธิภาพการขาย</p>
+                            <div className="flex items-center gap-3 mb-1">
+                                <div className="w-8 h-8 bg-amber-50 rounded-xl flex items-center justify-center">
+                                    <TrendingUp className="w-4 h-4 text-amber-600" />
+                                </div>
+                                <h1 className="text-3xl font-black text-gray-900 tracking-tight">รายงานยอดขาย</h1>
+                            </div>
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider ml-11">Sales Analytics & Data Visualization / {period.toUpperCase()} View</p>
                         </div>
                     </div>
 
-                    <div className="flex bg-white p-1 rounded-2xl shadow-sm border border-gray-100">
+                    <button
+                        onClick={() => window.print()}
+                        className="bg-white text-gray-900 border-2 border-gray-900 px-8 py-4 rounded-[1.5rem] font-black flex items-center justify-center gap-3 hover:bg-gray-900 hover:text-white transition-all shadow-xl shadow-gray-200"
+                    >
+                        <Download className="w-6 h-6" />
+                        ส่งออกรายงาน
+                    </button>
+                </div>
+
+                {/* Period & Date Controller */}
+                <div className="bg-white p-6 rounded-[2.5rem] shadow-sm border border-gray-100 mb-10 flex flex-col md:flex-row items-stretch md:items-center gap-6 ring-4 ring-gray-100/50">
+                    <div className="flex bg-gray-50 p-1.5 rounded-2xl">
                         {(['day', 'month', 'year'] as const).map((p) => (
                             <button
                                 key={p}
                                 onClick={() => setPeriod(p)}
-                                className={`px-6 py-2 rounded-xl text-sm font-black transition-all ${period === p
-                                    ? 'bg-orange-500 text-white shadow-lg shadow-orange-200'
-                                    : 'text-gray-400 hover:text-gray-600'
-                                    }`}
+                                className={`px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all ${period === p ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-400 hover:text-gray-900'}`}
                             >
                                 {p === 'day' ? 'รายวัน' : p === 'month' ? 'รายเดือน' : 'รายปี'}
                             </button>
                         ))}
                     </div>
-                </div>
 
-                {/* Date Navigation */}
-                <div className="bg-white p-4 rounded-3xl shadow-sm border border-brand-100 mb-8 flex items-center justify-between">
-                    <button onClick={handlePrev} className="p-2 hover:bg-gray-50 rounded-xl transition-colors text-gray-400 hover:text-accent-500">
-                        <ChevronLeft className="w-6 h-6" />
-                    </button>
+                    <div className="flex-1 flex items-center justify-between md:justify-end gap-6 relative">
+                        <button
+                            onClick={handlePrev}
+                            className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center hover:bg-gray-100 transition-colors"
+                        >
+                            <ChevronLeft className="w-6 h-6 text-gray-400" />
+                        </button>
 
-                    <div
-                        onClick={handleCalendarClick}
-                        className="relative group cursor-pointer flex items-center gap-3 bg-gray-50 px-6 py-2 rounded-2xl border border-gray-100 hover:border-accent-200 transition-all select-none active:scale-95"
-                    >
-                        <Calendar className="w-5 h-5 text-accent-500" />
-                        <span className="text-lg font-black text-gray-900">{getPeriodText()}</span>
-
-                        {period === 'year' ? (
-                            <select
-                                className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
-                                value={date.getFullYear()}
-                                onChange={(e) => {
-                                    const newDate = new Date(date);
-                                    newDate.setFullYear(parseInt(e.target.value));
-                                    setDate(newDate);
-                                }}
-                            >
-                                {Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - 5 + i).map(y => (
-                                    <option key={y} value={y}>{y + 543} (พ.ศ.) / {y}</option>
-                                ))}
-                            </select>
-                        ) : (
-                            <input
-                                ref={dateInputRef}
-                                type={period === 'month' ? 'month' : 'date'}
-                                className="absolute inset-0 opacity-0 pointer-events-none w-full h-full"
-                                value={
-                                    period === 'month' ? format(date, 'yyyy-MM') :
-                                        format(date, 'yyyy-MM-dd')
-                                }
-                                onChange={(e) => {
-                                    if (!e.target.value) return;
-                                    const selectedDate = new Date(e.target.value);
-                                    if (!isNaN(selectedDate.getTime())) {
-                                        setDate(selectedDate);
+                        <div
+                            className="flex items-center gap-4 cursor-pointer group"
+                            onClick={handleCalendarClick}
+                        >
+                            <div className="w-12 h-12 bg-gray-900 rounded-xl flex items-center justify-center shadow-lg shadow-gray-200">
+                                <Calendar className="w-5 h-5 text-white" />
+                            </div>
+                            <div className="text-right">
+                                <p className="text-2xl font-black text-gray-900">{getPeriodText()}</p>
+                            </div>
+                            {period === 'year' ? (
+                                <select
+                                    className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                                    value={date.getFullYear()}
+                                    onChange={(e) => {
+                                        const newDate = new Date(date);
+                                        newDate.setFullYear(parseInt(e.target.value));
+                                        setDate(newDate);
+                                    }}
+                                >
+                                    {Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - 5 + i).map(y => (
+                                        <option key={y} value={y}>{y + 543} (พ.ศ.) / {y}</option>
+                                    ))}
+                                </select>
+                            ) : (
+                                <input
+                                    ref={dateInputRef}
+                                    type={period === 'month' ? 'month' : 'date'}
+                                    className="absolute inset-0 opacity-0 pointer-events-none w-full h-full"
+                                    value={
+                                        period === 'month' ? format(date, 'yyyy-MM') :
+                                            format(date, 'yyyy-MM-dd')
                                     }
-                                }}
-                            />
-                        )}
-                    </div>
+                                    onChange={(e) => {
+                                        if (!e.target.value) return;
+                                        const selectedDate = new Date(e.target.value);
+                                        if (!isNaN(selectedDate.getTime())) {
+                                            setDate(selectedDate);
+                                        }
+                                    }}
+                                />
+                            )}
+                        </div>
 
-                    <button onClick={handleNext} className="p-2 hover:bg-gray-50 rounded-xl transition-colors text-gray-400 hover:text-accent-500">
-                        <ChevronRight className="w-6 h-6" />
-                    </button>
+                        <button
+                            onClick={handleNext}
+                            className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center hover:bg-gray-100 transition-colors"
+                        >
+                            <ChevronRight className="w-6 h-6 text-gray-400" />
+                        </button>
+                    </div>
                 </div>
 
                 {loading ? (
                     <div className="flex flex-col items-center justify-center py-32 bg-white rounded-[2.5rem] border border-gray-100">
-                        <Loader2 className="w-12 h-12 text-accent-500 animate-spin mb-4" />
+                        <Loader2 className="w-12 h-12 text-amber-500 animate-spin mb-4" />
                         <p className="text-gray-400 font-bold italic">กำลังวิเคราะห์ข้อมูลยอดขาย...</p>
                     </div>
                 ) : (
@@ -339,7 +323,7 @@ export default function SalesReportPage() {
                         {/* Chart */}
                         <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 mb-8">
                             <h3 className="text-xl font-black text-gray-900 mb-8 flex items-center gap-2">
-                                <div className="w-2 h-6 bg-accent-500 rounded-full"></div>
+                                <div className="w-2 h-6 bg-amber-500 rounded-full"></div>
                                 กราฟแสดงแนวโน้มยอดขาย
                             </h3>
                             <div className="h-[400px] w-full">
@@ -379,10 +363,10 @@ export default function SalesReportPage() {
                                         ) : (
                                             data?.orders.map((order: any) => (
                                                 <tr key={order.id} className="hover:bg-gray-50/50 transition-colors">
-                                                    <td className="px-8 py-4 text-sm font-black text-gray-500 font-mono">{order.id.slice(-6)}</td>
+                                                    <td className="px-8 py-4 text-sm font-black text-gray-500 font-mono">{order.id.slice(-6).toUpperCase()}</td>
                                                     <td className="px-8 py-4 text-sm font-bold text-gray-700">{format(new Date(order.createdAt), 'dd MMM yy HH:mm', { locale: th })}</td>
                                                     <td className="px-8 py-4 text-sm font-black text-gray-900">{order.customerName}</td>
-                                                    <td className="px-8 py-4 text-sm font-black text-accent-600">฿{order.totalAmount.toLocaleString()}</td>
+                                                    <td className="px-8 py-4 text-sm font-black text-amber-600">฿{order.totalAmount.toLocaleString()}</td>
                                                     <td className="px-8 py-4">
                                                         {order.discountAmount > 0 ? (
                                                             <span className="text-xs font-black text-green-600 bg-green-50 px-2 py-1 rounded-lg">
@@ -393,11 +377,11 @@ export default function SalesReportPage() {
                                                         )}
                                                     </td>
                                                     <td className="px-8 py-4">
-                                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${order.status === 'COMPLETED' ? 'bg-green-100 text-green-700' :
-                                                            order.status === 'PENDING' ? 'bg-orange-100 text-orange-700' :
-                                                                'bg-gray-100 text-gray-600'
+                                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${order.status === 'DELIVERED' ? 'bg-green-100 text-green-700' :
+                                                                order.status === 'PENDING' ? 'bg-orange-100 text-orange-700' :
+                                                                    'bg-gray-100 text-gray-600'
                                                             }`}>
-                                                            {order.status === 'COMPLETED' ? 'สำเร็จ' : order.status === 'PENDING' ? 'รอดำเนินการ' : order.status}
+                                                            {order.status}
                                                         </span>
                                                     </td>
                                                 </tr>

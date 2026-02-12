@@ -30,9 +30,11 @@ interface Admin {
     createdAt: string;
 }
 
+import AdminHeader from '@/components/AdminHeader';
+
 export default function AdminsPage() {
     const router = useRouter();
-    const { admin: currentAdmin, isLoading: authLoading, isAuthenticated, logout } = useAdminAuth();
+    const { admin: currentAdmin, token, isLoading: authLoading, isAuthenticated, logout } = useAdminAuth();
     const [admins, setAdmins] = useState<Admin[]>([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -54,7 +56,9 @@ export default function AdminsPage() {
 
     const fetchAdmins = async () => {
         try {
-            const res = await fetch('/api/admin/admins');
+            const res = await fetch('/api/admin/admins', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             const data = await res.json();
             setAdmins(data.admins || []);
         } catch (error) {
@@ -72,7 +76,7 @@ export default function AdminsPage() {
         try {
             const res = await fetch('/api/admin/admins', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(formData)
             });
 
@@ -96,7 +100,7 @@ export default function AdminsPage() {
         try {
             await fetch(`/api/admin/admins/${id}`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({ isActive: !currentStatus })
             });
             fetchAdmins();
@@ -110,7 +114,8 @@ export default function AdminsPage() {
 
         try {
             await fetch(`/api/admin/admins/${id}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
             });
             fetchAdmins();
         } catch (error) {
@@ -132,61 +137,36 @@ export default function AdminsPage() {
     }
 
     return (
-        <main className="min-h-screen bg-gray-50">
-            {/* Admin Header */}
-            <nav className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center">
-                                <ShieldCheck className="w-5 h-5 text-white" />
-                            </div>
-                            <div>
-                                <h1 className="font-bold text-gray-900">Admin Panel</h1>
-                                <p className="text-xs text-gray-500">SiamSausage</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            <div className="text-right hidden sm:block">
-                                <p className="text-sm font-bold text-gray-700">{currentAdmin?.name}</p>
-                                <p className="text-xs text-gray-400">{currentAdmin?.role}</p>
-                            </div>
-                            <button
-                                onClick={handleLogout}
-                                className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors font-medium"
-                            >
-                                <LogOut className="w-4 h-4" />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </nav>
+        <main className="min-h-screen bg-[#F8F9FB]">
+            <AdminHeader />
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* Header */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                    <div className="flex items-center gap-4">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                {/* Page Header */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
+                    <div className="flex items-center gap-6">
                         <Link
                             href="/admin"
-                            className="p-2 bg-white rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors"
+                            className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 hover:border-gray-900 transition-all group"
                         >
-                            <ChevronLeft className="w-5 h-5 text-gray-600" />
+                            <ChevronLeft className="w-6 h-6 text-gray-400 group-hover:text-gray-900" />
                         </Link>
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-                                <ShieldCheck className="w-7 h-7 text-amber-600" />
-                                จัดการ Admin
-                            </h1>
-                            <p className="text-gray-500">Admin ทั้งหมด {admins.length} คน</p>
+                            <div className="flex items-center gap-3 mb-1">
+                                <div className="w-8 h-8 bg-amber-50 rounded-xl flex items-center justify-center">
+                                    <ShieldCheck className="w-4 h-4 text-amber-600" />
+                                </div>
+                                <h1 className="text-3xl font-black text-gray-900 tracking-tight">จัดการผู้ดูแลระบบ</h1>
+                            </div>
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider ml-11">Administrative Access Control: {admins.length} Total Moderators</p>
                         </div>
                     </div>
 
                     <button
                         onClick={() => setShowModal(true)}
-                        className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-xl font-bold hover:from-amber-600 hover:to-orange-700 transition-all shadow-lg shadow-amber-500/30"
+                        className="bg-gray-900 text-white px-8 py-4 rounded-[1.5rem] font-black flex items-center justify-center gap-3 hover:scale-[1.02] transition-all shadow-xl shadow-gray-200"
                     >
-                        <Plus className="w-5 h-5" />
-                        เพิ่ม Admin
+                        <Plus className="w-6 h-6" />
+                        เพิ่มผู้ดูแลระบบ
                     </button>
                 </div>
 
@@ -234,8 +214,8 @@ export default function AdminsPage() {
                                             onClick={() => handleToggleActive(admin.id, admin.isActive)}
                                             disabled={admin.id === currentAdmin?.id}
                                             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${admin.isActive
-                                                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                                    : 'bg-red-100 text-red-700 hover:bg-red-200'
+                                                ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                                                : 'bg-red-100 text-red-700 hover:bg-red-200'
                                                 } disabled:opacity-50 disabled:cursor-not-allowed`}
                                         >
                                             {admin.isActive ? (

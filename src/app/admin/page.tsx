@@ -50,9 +50,11 @@ const STATUS_OPTIONS = [
     { value: 'CANCELLED', label: 'ยกเลิก', color: 'bg-red-100 text-red-700', icon: XCircle },
 ];
 
+import AdminHeader from '@/components/AdminHeader';
+
 export default function AdminDashboard() {
     const router = useRouter();
-    const { admin, isLoading: authLoading, isAuthenticated, logout } = useAdminAuth();
+    const { admin, token, isLoading: authLoading, isAuthenticated, logout } = useAdminAuth();
 
     const [stats, setStats] = useState<Stats | null>(null);
     const [loading, setLoading] = useState(true);
@@ -75,7 +77,9 @@ export default function AdminDashboard() {
     const fetchStats = async () => {
         setLoading(true);
         try {
-            const res = await fetch('/api/admin/stats');
+            const res = await fetch('/api/admin/stats', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             const data = await res.json();
             setStats(data);
         } catch (error) {
@@ -90,7 +94,7 @@ export default function AdminDashboard() {
         try {
             const res = await fetch(`/api/admin/orders/${orderId}`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({ status: newStatus }),
             });
 
@@ -132,339 +136,234 @@ export default function AdminDashboard() {
     }
 
     return (
-        <main className="min-h-screen bg-gray-50/50">
-            {/* Admin Header */}
-            <nav className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center">
-                                <ShieldCheck className="w-5 h-5 text-white" />
-                            </div>
-                            <div>
-                                <h1 className="font-bold text-gray-900">Admin Panel</h1>
-                                <p className="text-xs text-gray-500">SiamSausage</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            <div className="text-right hidden sm:block">
-                                <p className="text-sm font-bold text-gray-700">{admin?.name}</p>
-                                <p className="text-xs text-gray-400">{admin?.role}</p>
-                            </div>
-                            <button
-                                onClick={handleLogout}
-                                className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors font-medium"
-                            >
-                                <LogOut className="w-4 h-4" />
-                                <span className="hidden sm:inline">ออกจากระบบ</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </nav>
+        <main className="min-h-screen bg-[#F8F9FB]">
+            <AdminHeader />
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                {/* Dashboard Heading with Style */}
+                <div className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2 font-black tracking-tight">Dashboard ศูนย์ควบคุม</h1>
-                        <p className="text-gray-500 font-medium italic">Siam Sausage Premium Admin Terminal</p>
-                    </div>
-                    <div className="bg-white px-4 py-2 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-3">
-                        <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-                        <span className="text-xs font-bold text-gray-600 uppercase tracking-widest">System Online</span>
-                    </div>
-                </div>
-
-                {/* Quick Navigation */}
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-                    <Link href="/admin/customers" className="bg-white p-4 rounded-2xl border border-gray-100 hover:border-blue-200 hover:shadow-lg transition-all group">
-                        <div className="flex flex-col items-center text-center gap-2">
-                            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-500 transition-colors">
-                                <Users className="w-6 h-6 text-blue-600 group-hover:text-white transition-colors" />
-                            </div>
-                            <div>
-                                <p className="font-bold text-gray-900 text-xs">ลูกค้า</p>
-                                <p className="text-[10px] text-gray-400">Customers</p>
-                            </div>
+                        <div className="flex items-center gap-2 mb-2">
+                            <div className="w-1 h-8 bg-amber-500 rounded-full" />
+                            <h1 className="text-4xl font-black text-gray-900 tracking-tight">ศูนย์ควบคุมหลัก</h1>
                         </div>
-                    </Link>
-                    <Link href="/admin/products" className="bg-white p-4 rounded-2xl border border-gray-100 hover:border-green-200 hover:shadow-lg transition-all group">
-                        <div className="flex flex-col items-center text-center gap-2">
-                            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center group-hover:bg-green-500 transition-colors">
-                                <Package className="w-6 h-6 text-green-600 group-hover:text-white transition-colors" />
-                            </div>
-                            <div>
-                                <p className="font-bold text-gray-900 text-xs">สินค้า</p>
-                                <p className="text-[10px] text-gray-400">Products</p>
-                            </div>
-                        </div>
-                    </Link>
-                    <Link href="/admin/orders" className="bg-white p-4 rounded-2xl border border-gray-100 hover:border-purple-200 hover:shadow-lg transition-all group">
-                        <div className="flex flex-col items-center text-center gap-2">
-                            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center group-hover:bg-purple-500 transition-colors">
-                                <ShoppingCart className="w-6 h-6 text-purple-600 group-hover:text-white transition-colors" />
-                            </div>
-                            <div>
-                                <p className="font-bold text-gray-900 text-xs">ออร์เดอร์</p>
-                                <p className="text-[10px] text-gray-400">Orders</p>
-                            </div>
-                        </div>
-                    </Link>
-                    <Link href="/admin/contacts" className="bg-white p-4 rounded-2xl border border-gray-100 hover:border-indigo-200 hover:shadow-lg transition-all group">
-                        <div className="flex flex-col items-center text-center gap-2">
-                            <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center group-hover:bg-indigo-500 transition-colors">
-                                <MessageSquare className="w-6 h-6 text-indigo-600 group-hover:text-white transition-colors" />
-                            </div>
-                            <div>
-                                <p className="font-bold text-gray-900 text-xs">ข้อความ</p>
-                                <p className="text-[10px] text-gray-400">Contacts</p>
-                            </div>
-                        </div>
-                    </Link>
-                    <Link href="/admin/reviews" className="bg-white p-4 rounded-2xl border border-gray-100 hover:border-yellow-200 hover:shadow-lg transition-all group">
-                        <div className="flex flex-col items-center text-center gap-2">
-                            <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center group-hover:bg-yellow-500 transition-colors">
-                                <Star className="w-6 h-6 text-yellow-600 group-hover:text-white transition-colors" />
-                            </div>
-                            <div>
-                                <p className="font-bold text-gray-900 text-xs">รีวิว</p>
-                                <p className="text-[10px] text-gray-400">Reviews</p>
-                            </div>
-                        </div>
-                    </Link>
-                    <Link href="/admin/wholesale" className="bg-white p-4 rounded-2xl border border-gray-100 hover:border-emerald-200 hover:shadow-lg transition-all group">
-                        <div className="flex flex-col items-center text-center gap-2">
-                            <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center group-hover:bg-emerald-500 transition-colors">
-                                <TrendingUp className="w-6 h-6 text-emerald-600 group-hover:text-white transition-colors" />
-                            </div>
-                            <div>
-                                <p className="font-bold text-gray-900 text-xs">ราคาส่ง</p>
-                                <p className="text-[10px] text-gray-400">Wholesale</p>
-                            </div>
-                        </div>
-                    </Link>
-                </div>
-
-                {/* KPI Cards */}
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50/50 rounded-bl-[4rem] -mr-8 -mt-8 transition-all group-hover:scale-110" />
-                        <div className="flex items-center justify-between mb-4 relative">
-                            <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
-                                <DollarSign className="w-6 h-6" />
-                            </div>
-                        </div>
-                        <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">ยอดขายรวม</p>
-                        <p className="text-2xl font-black text-gray-900">฿{(stats?.totalRevenue || 0).toLocaleString()}</p>
+                        <p className="text-gray-400 font-bold uppercase tracking-[0.3em] text-[10px] ml-3">Siam Sausage Premium Admin Terminal</p>
                     </div>
 
-                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-green-50/50 rounded-bl-[4rem] -mr-8 -mt-8 transition-all group-hover:scale-110" />
-                        <div className="flex items-center justify-between mb-4 relative">
-                            <div className="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center text-green-600">
-                                <TrendingUp className="w-6 h-6" />
-                            </div>
+                    <div className="flex items-center gap-3 bg-white px-6 py-3 rounded-[2rem] shadow-sm border border-gray-100 ring-4 ring-gray-50/50">
+                        <div className="relative">
+                            <div className="w-3 h-3 bg-green-500 rounded-full animate-ping absolute" />
+                            <div className="w-3 h-3 bg-green-500 rounded-full relative" />
                         </div>
-                        <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">กำไรสุทธิ</p>
-                        <p className="text-2xl font-black text-green-600">฿{(stats?.totalProfit || 0).toLocaleString()}</p>
-                    </div>
-
-                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-orange-50/50 rounded-bl-[4rem] -mr-8 -mt-8 transition-all group-hover:scale-110" />
-                        <div className="flex items-center justify-between mb-4 relative">
-                            <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-600">
-                                <ShoppingCart className="w-6 h-6" />
-                            </div>
-                        </div>
-                        <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">ออเดอร์ทั้งหมด</p>
-                        <p className="text-2xl font-black text-gray-900">{(stats?.totalOrders || 0).toLocaleString()} รายการ</p>
-                    </div>
-
-                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-purple-50/50 rounded-bl-[4rem] -mr-8 -mt-8 transition-all group-hover:scale-110" />
-                        <div className="flex items-center justify-between mb-4 relative">
-                            <div className="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600">
-                                <Box className="w-6 h-6" />
-                            </div>
-                        </div>
-                        <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">รายการสินค้า</p>
-                        <p className="text-2xl font-black text-gray-900">{(stats?.topProducts?.length || 0)} รายการ</p>
+                        <span className="text-xs font-black text-gray-700 uppercase tracking-widest">System Online</span>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-12">
-                    {/* Compact Navigation */}
-                    <div className="lg:col-span-1 space-y-4">
-                        <h2 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                            <ChevronRight className="w-3 h-3 text-accent-500" />
-                            เมนูการจัดการ
-                        </h2>
+                {/* KPI Overview Cards - More PREMIUM */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                    {[
+                        { label: 'ยอดขายรวม', value: `฿${(stats?.totalRevenue || 0).toLocaleString()}`, icon: DollarSign, color: 'blue', desc: 'Total sales revenue' },
+                        { label: 'กำไรสุทธิ', value: `฿${(stats?.totalProfit || 0).toLocaleString()}`, icon: TrendingUp, color: 'green', desc: 'Net profit calculation' },
+                        { label: 'ออเดอร์ทั้งหมด', value: `${(stats?.totalOrders || 0).toLocaleString()} รายการ`, icon: ShoppingCart, color: 'orange', desc: 'Volume of orders' },
+                        { label: 'รายการสินค้า', value: `${(stats?.topProducts?.length || 0)} รายการ`, icon: Package, color: 'purple', desc: 'Active products in store' }
+                    ].map((item, idx) => (
+                        <div key={idx} className="bg-white p-7 rounded-[2.5rem] shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-500">
+                            <div className={`absolute top-0 right-0 w-32 h-32 bg-${item.color}-50/30 rounded-bl-[5rem] -mr-10 -mt-10 transition-all duration-700 group-hover:scale-125`} />
 
-                        <Link href="/admin/products" className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-accent-300 hover:shadow-md transition-all group">
-                            <div className="w-10 h-10 bg-accent-50 rounded-xl flex items-center justify-center text-accent-600 group-hover:bg-accent-500 group-hover:text-white transition-all">
-                                <Package className="w-5 h-5" />
+                            <div className="relative z-10">
+                                <div className={`w-14 h-14 bg-${item.color}-50 rounded-[1.5rem] flex items-center justify-center text-${item.color}-600 mb-6 group-hover:rotate-12 transition-transform duration-500 shadow-sm border border-${item.color}-100`}>
+                                    <item.icon className="w-7 h-7" />
+                                </div>
+                                <p className="text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] mb-1">{item.label}</p>
+                                <p className="text-3xl font-black text-gray-900 tracking-tighter mb-2">{item.value}</p>
+                                <p className="text-[10px] text-gray-400 font-bold italic opacity-0 group-hover:opacity-100 transition-opacity">{item.desc}</p>
                             </div>
-                            <div>
-                                <p className="font-bold text-gray-900 text-sm">จัดการสินค้า</p>
-                                <p className="text-[10px] text-gray-400 font-medium italic">สต๊อก & ราคา</p>
-                            </div>
-                            <ArrowUpRight className="ml-auto w-4 h-4 text-gray-300 group-hover:text-accent-500 transition-colors" />
-                        </Link>
+                        </div>
+                    ))}
+                </div>
 
-                        <Link href="/admin/orders" className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-blue-300 hover:shadow-md transition-all group">
-                            <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 group-hover:bg-blue-500 group-hover:text-white transition-all">
-                                <Clock className="w-5 h-5" />
-                            </div>
-                            <div>
-                                <p className="font-bold text-gray-900 text-sm">ประวัติสั่งซื้อ</p>
-                                <p className="text-[10px] text-gray-400 font-medium italic">รายการทั้งหมด</p>
-                            </div>
-                            <ArrowUpRight className="ml-auto w-4 h-4 text-gray-300 group-hover:text-blue-500 transition-colors" />
-                        </Link>
+                {/* Main Content Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
 
-                        <Link
-                            href="/admin/reports/sales"
-                            className="flex items-center gap-4 p-5 rounded-3xl bg-blue-50/50 hover:bg-blue-100/50 transition-all border border-blue-100 group"
-                        >
-                            <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
-                                <BarChart3 className="w-6 h-6 text-blue-600" />
+                    {/* Left Sidebar: Structured Navigation */}
+                    <div className="lg:col-span-4 space-y-8">
+                        <div>
+                            <h2 className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
+                                <div className="w-6 h-[2px] bg-gray-200" />
+                                เมนูการจัดการ (Management)
+                            </h2>
+                            <div className="grid grid-cols-1 gap-4">
+                                {[
+                                    { href: '/admin/products', label: 'จัดการรายการสินค้า', desc: 'สต๊อก, ราคา, ข้อมูลสินค้า', icon: Package, color: 'amber' },
+                                    { href: '/admin/orders', label: 'จัดการคำสั่งซื้อ', desc: 'ดูประวัติ และ อัปเดตสถานะ', icon: ShoppingBag, color: 'blue' },
+                                    { href: '/admin/reports/sales', label: 'สรุปรายงานยอดขาย', desc: 'ดูสถิติและกำไรย้อนหลัง', icon: BarChart3, color: 'purple' },
+                                    { href: '/admin/wholesale', label: 'ตั้งค่าราคาส่ง', desc: 'กำหนดเรทราคาตามจำนวน', icon: TrendingUp, color: 'emerald' },
+                                    { href: '/admin/discounts', label: 'โค้ดส่วนลด & คูปอง', desc: 'โปรโมชั่น และ แคมเปญ', icon: Ticket, color: 'orange' },
+                                    { href: '/admin/reviews', label: 'จัดการรีวิวลูกค้า', desc: 'ตรวจสอบและลบรีวิวที่ไม่เหมาะสม', icon: Star, color: 'yellow' },
+                                    { href: '/admin/contacts', label: 'ข้อความจากลูกค้า', desc: 'ฝ่ายบริการลูกค้าสัมพันธ์', icon: MessageSquare, color: 'indigo' },
+                                    { href: '/admin/customers', label: 'ระบบสมาชิก', desc: 'ฐานข้อมูลสมาชิกทั้งหมด', icon: Users, color: 'slate' }
+                                ].map((menu, i) => (
+                                    <Link key={i} href={menu.href} className="flex items-center gap-4 p-5 bg-white rounded-[2rem] border border-gray-100 shadow-sm hover:border-gray-900 hover:shadow-xl transition-all duration-300 group overflow-hidden relative">
+                                        <div className={`w-12 h-12 bg-${menu.color}-50 rounded-2xl flex items-center justify-center text-${menu.color}-600 group-hover:bg-gray-900 group-hover:text-white transition-all duration-300`}>
+                                            <menu.icon className="w-6 h-6" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="font-black text-gray-900 text-sm group-hover:translate-x-1 transition-transform">{menu.label}</p>
+                                            <p className="text-[10px] text-gray-400 font-bold italic">{menu.desc}</p>
+                                        </div>
+                                        <ArrowUpRight className="w-5 h-5 text-gray-200 group-hover:text-gray-900 transition-colors" />
+                                    </Link>
+                                ))}
                             </div>
-                            <div>
-                                <h3 className="font-black text-gray-900">สรุปยอดขาย</h3>
-                                <p className="text-xs text-gray-500 font-bold italic">ดูรายงานรายได้ย้อนหลัง</p>
-                            </div>
-                        </Link>
+                        </div>
 
-                        <Link href="/admin/discounts" className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-orange-300 hover:shadow-md transition-all group">
-                            <div className="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600 group-hover:bg-orange-500 group-hover:text-white transition-all">
-                                <Ticket className="w-5 h-5" />
-                            </div>
-                            <div>
-                                <p className="font-bold text-gray-900 text-sm">โค้ดส่วนลด</p>
-                                <p className="text-[10px] text-gray-400 font-medium italic">โปรโมชั่น & คูปอง</p>
-                            </div>
-                            <ArrowUpRight className="ml-auto w-4 h-4 text-gray-300 group-hover:text-orange-500 transition-colors" />
-                        </Link>
-
-                        <Link href="/contact" className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-green-300 hover:shadow-md transition-all group">
-                            <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center text-green-600 group-hover:bg-green-500 group-hover:text-white transition-all">
-                                <Users className="w-5 h-5" />
-                            </div>
-                            <div>
-                                <p className="font-bold text-gray-900 text-sm">ข้อความลูกค้า</p>
-                                <p className="text-[10px] text-gray-400 font-medium italic">ตอบกลับผ่านเว็บ</p>
-                            </div>
-                            <ArrowUpRight className="ml-auto w-4 h-4 text-gray-300 group-hover:text-green-500 transition-colors" />
-                        </Link>
-
-                        {/* Top Products Compact */}
-                        <div className="mt-8 pt-8 border-t border-gray-100">
-                            <h2 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-4">5 อันดับขายดี</h2>
-                            <div className="space-y-3">
+                        {/* Top Products Box with NEW UI */}
+                        <div className="bg-gray-900 rounded-[3rem] p-8 text-white relative overflow-hidden shadow-2xl shadow-gray-400/20">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-3xl" />
+                            <h2 className="text-[11px] font-black text-amber-400 uppercase tracking-[0.2em] mb-8 flex items-center gap-3 relative z-10">
+                                <Star className="w-4 h-4" /> 5 อันดับยอดนิยม
+                            </h2>
+                            <div className="space-y-4 relative z-10">
                                 {stats?.topProducts?.map((p, i) => (
-                                    <div key={i} className="flex items-center justify-between p-3 bg-white rounded-xl border border-gray-50 text-[11px]">
-                                        <span className="font-bold text-gray-400 mr-2">#0{i + 1}</span>
-                                        <span className="font-bold text-gray-700 truncate flex-1">{p.name}</span>
-                                        <span className="font-black text-accent-600 ml-2">฿{p.revenue.toLocaleString()}</span>
+                                    <div key={i} className="flex items-center gap-4 p-3 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 transition-colors">
+                                        <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-500 flex items-center justify-center font-black text-xs">
+                                            {i + 1}
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="font-bold text-sm truncate">{p.name}</p>
+                                            <p className="text-[10px] text-gray-400 font-bold italic">ขายได้ {p.quantity} หน่วย</p>
+                                        </div>
+                                        <p className="font-black text-amber-500">฿{p.revenue.toLocaleString()}</p>
                                     </div>
                                 ))}
                             </div>
                         </div>
                     </div>
 
-                    {/* BIG BROTHER: Recent Orders Expansion */}
-                    <div className="lg:col-span-3">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-2xl font-black text-gray-900 flex flex-col md:flex-row md:items-center gap-1 md:gap-3">
-                                <div className="flex items-center gap-3">
-                                    <ShoppingBag className="w-6 h-6 text-accent-600" />
-                                    ออเดอร์วันนี้
-                                </div>
-                                <span className="bg-accent-100 text-accent-700 px-3 py-1 rounded-full text-xs font-black">
-                                    {stats?.todayOrdersCount || 0} รายการ
-                                </span>
-                            </h2>
-                            <Link href="/admin/orders" className="text-sm font-bold text-gray-400 hover:text-accent-500 transition-colors underline decoration-dotted">
-                                ดูทั้งหมด
+                    {/* Right Content: Modern Orders List */}
+                    <div className="lg:col-span-8">
+                        <div className="flex items-center justify-between mb-8">
+                            <div>
+                                <h2 className="text-2xl font-black text-gray-900 flex items-center gap-4">
+                                    <ShoppingBag className="w-8 h-8 text-amber-500" />
+                                    ออเดอร์ล่าสุดวันนี้
+                                </h2>
+                                <p className="text-gray-400 font-bold text-xs mt-1 ml-12">ตรวจสอบ และ จัดการสถานะการจัดส่ง</p>
+                            </div>
+                            <Link href="/admin/orders" className="bg-white px-6 py-3 rounded-2xl text-sm font-black text-gray-500 hover:text-gray-900 border border-gray-100 shadow-sm transition-all hover:-translate-y-1">
+                                ดูออเดอร์ทั้งหมด
                             </Link>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-5">
                             {(!stats?.todayOrders || stats?.todayOrders?.length === 0) ? (
-                                <div className="bg-white p-12 rounded-3xl border border-dashed border-gray-200 text-center">
-                                    <Clock className="w-12 h-12 text-gray-200 mx-auto mb-4" />
-                                    <p className="text-gray-400 font-bold">ยังไม่มีออเดอร์ในวันนี้</p>
+                                <div className="bg-white p-20 rounded-[3rem] border border-dashed border-gray-200 text-center shadow-inner">
+                                    <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                                        <Clock className="w-10 h-10 text-gray-200" />
+                                    </div>
+                                    <h3 className="text-xl font-black text-gray-900 mb-2">ยังไม่มีออเดอร์ในตัวควบคุม</h3>
+                                    <p className="text-gray-400 font-bold max-w-xs mx-auto text-sm italic">รายการที่สั่งซื้อเข้ามาภายในวันนี้จะปรากฏที่นี่แบบ Real-time</p>
                                 </div>
                             ) : stats?.todayOrders?.map((order, i) => {
                                 const statusInfo = getStatusInfo(order.status);
-                                const StatusIcon = statusInfo.icon;
                                 const isExpanded = expandedOrder === order.id;
 
                                 return (
-                                    <div key={order.id} className={`bg-white rounded-3xl border transition-all duration-300 ${isExpanded ? 'border-accent-300 shadow-xl shadow-accent-100/20 ring-4 ring-accent-50' : 'border-gray-100 shadow-sm hover:border-accent-200'}`}>
+                                    <div key={order.id} className={`bg-white rounded-[2.5rem] border transition-all duration-500 ${isExpanded ? 'border-gray-900 shadow-2xl shadow-gray-200 ring-[12px] ring-gray-900/5' : 'border-gray-100 shadow-sm hover:shadow-xl hover:shadow-gray-100 hover:border-amber-200'}`}>
                                         <div
-                                            className="p-6 md:p-8 cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-6"
+                                            className="p-8 cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-8"
                                             onClick={() => setExpandedOrder(isExpanded ? null : order.id)}
                                         >
-                                            <div className="flex items-center gap-5">
-                                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${statusInfo.color.replace('text-', 'text-opacity-80 text-')}`}>
-                                                    <Package className="w-6 h-6" />
+                                            <div className="flex items-center gap-6">
+                                                <div className={`w-16 h-16 rounded-[1.5rem] flex items-center justify-center flex-shrink-0 bg-gray-50 text-gray-400 group-hover:bg-amber-50 group-hover:text-amber-600 transition-colors shadow-inner`}>
+                                                    <Package className="w-8 h-8" />
                                                 </div>
                                                 <div>
-                                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">ID: #{order.id.slice(-6).toUpperCase()}</p>
-                                                    <h3 className="font-black text-gray-900">{order.customerName}</h3>
+                                                    <div className="flex items-center gap-3 mb-1">
+                                                        <span className="text-[10px] font-black text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg uppercase tracking-wider">#{order.id.slice(-6).toUpperCase()}</span>
+                                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${statusInfo.color}`}>
+                                                            {statusInfo.label}
+                                                        </span>
+                                                    </div>
+                                                    <h3 className="text-xl font-black text-gray-900">{order.customerName}</h3>
                                                 </div>
                                             </div>
 
-                                            <div className="flex flex-wrap items-center gap-6 md:gap-10">
-                                                <div className="text-center md:text-left">
-                                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-0.5">วันที่</p>
-                                                    <p className="text-xs font-bold text-gray-900">{new Date(order.createdAt).toLocaleDateString('th-TH')}</p>
+                                            <div className="flex flex-wrap items-center gap-10">
+                                                <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 min-w-[120px]">
+                                                    <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-1">ยอดรวมสุทธิ</p>
+                                                    <p className="text-lg font-black text-gray-900">฿{order.totalAmount.toLocaleString()}</p>
                                                 </div>
-                                                <div className="text-center md:text-left">
-                                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-0.5">ยอดรวม</p>
-                                                    <p className="text-sm font-black text-accent-600">฿{order.totalAmount.toLocaleString()}</p>
+                                                <div className="text-right">
+                                                    <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-1">สั่งซื้อเมื่อ</p>
+                                                    <p className="text-sm font-black text-gray-700">{new Date(order.createdAt).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })} น.</p>
                                                 </div>
-                                                <div className="text-center md:text-left">
-                                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-0.5">เวลาที่สั่ง</p>
-                                                    <p className="text-sm font-bold text-gray-900 flex items-center gap-1.5">
-                                                        <Clock className="w-3 h-3 text-accent-500" />
-                                                        {new Date(order.createdAt).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })} น.
-                                                    </p>
+                                                <div className={`w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center transition-transform duration-500 ${isExpanded ? 'rotate-180 bg-gray-900 border-gray-900 text-white shadow-lg' : 'bg-white text-gray-300'}`}>
+                                                    <ChevronDown className="w-5 h-5" />
                                                 </div>
-                                                <ChevronDown className={`w-5 h-5 text-gray-300 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                                             </div>
                                         </div>
 
                                         {isExpanded && (
-                                            <div className="px-8 pb-8 animate-in fade-in slide-in-from-top-2 duration-300">
-                                                <div className="pt-8 border-t border-gray-50 grid grid-cols-1 md:grid-cols-2 gap-8">
-                                                    <div className="bg-gray-50 p-6 rounded-2xl space-y-4">
-                                                        <div className="flex justify-between items-center mb-2">
-                                                            <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">ข้อมูลที่อยู่จัดส่ง</h4>
-                                                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${statusInfo.color}`}>
-                                                                {statusInfo.label}
-                                                            </span>
-                                                        </div>
-                                                        <div className="flex items-center gap-3 text-sm font-bold text-gray-700">
-                                                            <Phone className="w-4 h-4 text-accent-500" /> {order.phone}
-                                                        </div>
-                                                        <div className="flex items-start gap-3 text-sm font-medium text-gray-600">
-                                                            <MapPin className="w-4 h-4 text-accent-500 mt-0.5" /> <span className="flex-1 italic">{order.address || 'ไม่ระบุที่อยู่'}</span>
-                                                        </div>
-                                                    </div>
-                                                    <div className="bg-gray-50 p-6 rounded-2xl space-y-3">
-                                                        <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">รายการสินค้า</h4>
-                                                        {order.items?.map((item: any) => (
-                                                            <div key={item.id} className="flex justify-between items-center text-xs font-bold">
-                                                                <span className="text-gray-700">{item.product?.name} x {item.quantity}</span>
-                                                                <span className="text-accent-600">฿{(item.price * item.quantity).toLocaleString()}</span>
+                                            <div className="px-10 pb-10 animate-in fade-in slide-in-from-top-4 duration-500">
+                                                <div className="pt-8 border-t border-gray-100 grid grid-cols-1 md:grid-cols-2 gap-10">
+                                                    <div className="space-y-6">
+                                                        <div>
+                                                            <h4 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                                                <Phone className="w-4 h-4" /> ข้อมูลผู้รับ
+                                                            </h4>
+                                                            <div className="bg-gray-50 p-6 rounded-[2rem] space-y-4 border border-gray-100 shadow-inner">
+                                                                <p className="text-base font-black text-gray-800 flex items-center gap-3">
+                                                                    <div className="w-8 h-8 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                                                                        <Users className="w-4 h-4 text-amber-500" />
+                                                                    </div>
+                                                                    {order.customerName}
+                                                                </p>
+                                                                <p className="text-sm font-bold text-gray-600 flex items-center gap-3">
+                                                                    <div className="w-8 h-8 bg-white rounded-xl flex items-center justify-center shadow-sm text-amber-500">📞</div>
+                                                                    {order.phone}
+                                                                </p>
+                                                                <div className="flex items-start gap-3">
+                                                                    <div className="w-8 h-8 bg-white rounded-xl flex items-center justify-center shadow-sm text-amber-500 shrink-0">📍</div>
+                                                                    <p className="text-sm font-medium text-gray-500 italic leading-relaxed">{order.address || 'ไม่ระบุที่อยู่จัดส่ง'}</p>
+                                                                </div>
                                                             </div>
-                                                        )) || <p className="text-xs text-gray-400 italic">ไม่มีข้อมูลสินค้า</p>}
-                                                        <div className="pt-3 mt-3 border-t border-gray-200 flex justify-between font-black">
-                                                            <span className="text-gray-900">ค่าจัดส่ง</span>
-                                                            <span className="text-gray-900">฿40</span>
+                                                        </div>
+
+                                                        {/* Quick Action Button */}
+                                                        <Link href={`/admin/orders?id=${order.id}`} className="flex items-center justify-center gap-3 w-full py-4 bg-gray-900 text-white rounded-2xl font-black text-sm hover:scale-[1.02] transition-transform shadow-xl shadow-gray-900/10">
+                                                            <Package className="w-5 h-5" />
+                                                            จัดการสถานะออเดอร์นี้
+                                                        </Link>
+                                                    </div>
+
+                                                    <div className="space-y-6">
+                                                        <h4 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                                            <ShoppingCart className="w-4 h-4" /> สรุปสินค้า
+                                                        </h4>
+                                                        <div className="space-y-3">
+                                                            {order.items?.map((item: any) => (
+                                                                <div key={item.id} className="flex justify-between items-center p-4 bg-white rounded-2xl border border-gray-100 shadow-sm border-l-4 border-l-amber-500">
+                                                                    <div className="flex items-center gap-4">
+                                                                        <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center text-xs font-black text-gray-400">
+                                                                            x{item.quantity}
+                                                                        </div>
+                                                                        <p className="font-black text-gray-800 text-sm">{item.product?.name}</p>
+                                                                    </div>
+                                                                    <p className="font-black text-amber-600">฿{(item.price * item.quantity).toLocaleString()}</p>
+                                                                </div>
+                                                            )) || <p className="text-sm font-bold text-gray-400 italic">ไม่มีข้อมูลสินค้า</p>}
+
+                                                            <div className="pt-6 mt-6 border-t-2 border-dashed border-gray-100 space-y-3">
+                                                                <div className="flex justify-between items-center text-sm font-bold text-gray-400">
+                                                                    <span>ค่าจัดส่ง (เหมา)</span>
+                                                                    <span>฿40</span>
+                                                                </div>
+                                                                <div className="flex justify-between items-center text-xl font-black text-gray-900">
+                                                                    <span>รวมยอดทั้งหมด</span>
+                                                                    <span className="text-2xl text-amber-600">฿{order.totalAmount.toLocaleString()}</span>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>

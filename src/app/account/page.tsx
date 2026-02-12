@@ -45,20 +45,20 @@ const statusConfig: Record<string, { label: string; color: string; bgColor: stri
         bgColor: 'bg-amber-50 border-amber-200',
         icon: Clock
     },
-    CONFIRMED: {
-        label: 'ยืนยันแล้ว',
+    PROCESSING: {
+        label: 'กำลังเตรียมของ',
         color: 'text-blue-600',
         bgColor: 'bg-blue-50 border-blue-200',
         icon: CheckCircle
     },
-    SHIPPING: {
+    SHIPPED: {
         label: 'กำลังจัดส่ง',
         color: 'text-purple-600',
         bgColor: 'bg-purple-50 border-purple-200',
         icon: Truck
     },
     DELIVERED: {
-        label: 'จัดส่งสำเร็จ',
+        label: 'ส่งสำเร็จ',
         color: 'text-green-600',
         bgColor: 'bg-green-50 border-green-200',
         icon: CheckCircle
