@@ -21,7 +21,9 @@ import {
     Clock,
     XCircle,
     ShieldCheck,
-    LogOut
+    LogOut,
+    CreditCard,
+    ImageIcon
 } from "lucide-react";
 
 interface OrderItem {
@@ -41,6 +43,7 @@ interface Order {
     address: string;
     totalAmount: number;
     status: string;
+    slipImageUrl: string | null;
     createdAt: string;
     items: OrderItem[];
 }
@@ -297,6 +300,20 @@ export default function AdminOrdersPage() {
                                                     <p className="text-lg font-black text-accent-600">฿{order.totalAmount.toLocaleString()}</p>
                                                 </div>
                                                 <div>
+                                                    <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">การชำระเงิน</p>
+                                                    {order.slipImageUrl ? (
+                                                        <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase flex items-center gap-1.5 bg-green-100 text-green-700">
+                                                            <CreditCard className="w-3 h-3" />
+                                                            ชำระแล้ว
+                                                        </span>
+                                                    ) : (
+                                                        <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase flex items-center gap-1.5 bg-orange-100 text-orange-700">
+                                                            <Clock className="w-3 h-3" />
+                                                            รอชำระ
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <div>
                                                     <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">สถานะ</p>
                                                     <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase flex items-center gap-1.5 ${statusInfo.color}`}>
                                                         <StatusIcon className="w-3 h-3" />
@@ -330,6 +347,45 @@ export default function AdminOrdersPage() {
                                                                     <span className="flex-1">{order.address}</span>
                                                                 </div>
                                                             </div>
+                                                        </div>
+
+                                                        {/* Payment Evidence */}
+                                                        <div>
+                                                            <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">หลักฐานการชำระเงิน</h4>
+                                                            {order.slipImageUrl ? (
+                                                                <div className="bg-green-50 p-4 rounded-2xl border border-green-200">
+                                                                    <div className="flex items-center gap-3 mb-3">
+                                                                        <div className="w-8 h-8 bg-green-500 rounded-xl flex items-center justify-center">
+                                                                            <CreditCard className="w-4 h-4 text-white" />
+                                                                        </div>
+                                                                        <div>
+                                                                            <p className="font-bold text-green-800 text-sm">ลูกค้าชำระเงินแล้ว</p>
+                                                                            <p className="text-xs text-green-600">อัปโหลดสลิปเรียบร้อย</p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="relative group cursor-pointer" onClick={() => window.open(order.slipImageUrl!, '_blank')}>
+                                                                        <img
+                                                                            src={order.slipImageUrl}
+                                                                            alt="สลิปการโอนเงิน"
+                                                                            className="w-full max-h-64 object-contain rounded-xl border border-green-200 bg-white"
+                                                                        />
+                                                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 rounded-xl transition-all flex items-center justify-center">
+                                                                            <span className="opacity-0 group-hover:opacity-100 bg-white/90 px-4 py-2 rounded-xl text-sm font-bold text-gray-800 shadow-lg transition-all flex items-center gap-2">
+                                                                                <ImageIcon className="w-4 h-4" />
+                                                                                ดูภาพเต็ม
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <div className="bg-orange-50 p-6 rounded-2xl border border-orange-200 text-center">
+                                                                    <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                                                                        <CreditCard className="w-6 h-6 text-orange-500" />
+                                                                    </div>
+                                                                    <p className="font-bold text-orange-800 text-sm">ยังไม่ได้ชำระเงิน</p>
+                                                                    <p className="text-xs text-orange-600 mt-1">ลูกค้ายังไม่ได้อัปโหลดสลิปโอนเงิน</p>
+                                                                </div>
+                                                            )}
                                                         </div>
 
                                                         {/* Status Update */}
