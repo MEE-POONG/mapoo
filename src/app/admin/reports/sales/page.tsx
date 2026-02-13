@@ -46,7 +46,7 @@ ChartJS.register(
 
 export default function SalesReportPage() {
     const router = useRouter();
-    const { admin, isLoading: authLoading, isAuthenticated, logout } = useAdminAuth();
+    const { admin, token, isLoading: authLoading, isAuthenticated, logout } = useAdminAuth();
 
     const [period, setPeriod] = useState<'day' | 'month' | 'year'>('month');
     const [date, setDate] = useState(new Date());
@@ -69,7 +69,9 @@ export default function SalesReportPage() {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`/api/admin/reports/sales?period=${period}&date=${date.toISOString()}`);
+            const res = await fetch(`/api/admin/reports/sales?period=${period}&date=${date.toISOString()}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             const result = await res.json();
             setData(result);
         } catch (error) {
@@ -378,8 +380,8 @@ export default function SalesReportPage() {
                                                     </td>
                                                     <td className="px-8 py-4">
                                                         <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${order.status === 'DELIVERED' ? 'bg-green-100 text-green-700' :
-                                                                order.status === 'PENDING' ? 'bg-orange-100 text-orange-700' :
-                                                                    'bg-gray-100 text-gray-600'
+                                                            order.status === 'PENDING' ? 'bg-orange-100 text-orange-700' :
+                                                                'bg-gray-100 text-gray-600'
                                                             }`}>
                                                             {order.status}
                                                         </span>

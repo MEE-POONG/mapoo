@@ -47,7 +47,7 @@ interface Discount {
 
 export default function AdminDiscountsPage() {
     const router = useRouter();
-    const { admin, isLoading: authLoading, isAuthenticated, logout } = useAdminAuth();
+    const { admin, token, isLoading: authLoading, isAuthenticated, logout } = useAdminAuth();
 
     const [discounts, setDiscounts] = useState<Discount[]>([]);
     const [loading, setLoading] = useState(true);
@@ -91,7 +91,9 @@ export default function AdminDiscountsPage() {
     const fetchDiscounts = async () => {
         setLoading(true);
         try {
-            const res = await fetch('/api/admin/discounts');
+            const res = await fetch('/api/admin/discounts', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             const data = await res.json();
             setDiscounts(data);
         } catch (error) {
@@ -183,7 +185,7 @@ export default function AdminDiscountsPage() {
         try {
             const res = await fetch(`/api/admin/discounts/${id}`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({ isActive: !currentStatus }),
             });
 
@@ -201,6 +203,7 @@ export default function AdminDiscountsPage() {
         try {
             const res = await fetch(`/api/admin/discounts/${id}`, {
                 method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
             });
 
             if (res.ok) {
