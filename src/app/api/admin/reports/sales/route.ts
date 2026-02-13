@@ -1,9 +1,16 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { verifyAdminToken, getAdminTokenFromHeaders } from '@/lib/adminAuth';
 import { startOfDay, endOfDay, startOfMonth, endOfMonth, startOfYear, endOfYear, format, eachDayOfInterval, eachMonthOfInterval, isSameDay, isSameMonth } from 'date-fns';
 
 export async function GET(request: Request) {
     try {
+        const authHeader = request.headers.get('authorization');
+        const token = getAdminTokenFromHeaders(authHeader);
+        if (!token || !verifyAdminToken(token)) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const { searchParams } = new URL(request.url);
         const period = searchParams.get('period') || 'day'; // day, month, year
         const dateStr = searchParams.get('date');
@@ -61,7 +68,6 @@ export async function GET(request: Request) {
         // Chart Data
         let chartData = [];
         if (period === 'day') {
-            // Should probably show hourly, but for simplicity let's stick to the day for now or just the single point
             chartData = [{
                 label: format(targetDate, 'dd/MM/yyyy'),
                 revenue: totalRevenue,
