@@ -30,7 +30,8 @@ import {
     LogOut,
     ShieldCheck,
     MessageSquare,
-    Star
+    Star,
+    CreditCard
 } from "lucide-react";
 
 interface Stats {
@@ -284,6 +285,17 @@ export default function AdminDashboard() {
                                                         <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${statusInfo.color}`}>
                                                             {statusInfo.label}
                                                         </span>
+                                                        {order.slipImageUrl ? (
+                                                            <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-green-100 text-green-700 flex items-center gap-1">
+                                                                <CreditCard className="w-3 h-3" />
+                                                                ชำระแล้ว
+                                                            </span>
+                                                        ) : (
+                                                            <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-orange-100 text-orange-700 flex items-center gap-1">
+                                                                <Clock className="w-3 h-3" />
+                                                                รอชำระ
+                                                            </span>
+                                                        )}
                                                     </div>
                                                     <h3 className="text-xl font-black text-gray-900">{order.customerName}</h3>
                                                 </div>
