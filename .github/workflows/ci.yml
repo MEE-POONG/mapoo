@@ -122,11 +122,11 @@ jobs:
              docker rm $CONTAINER_NAME || true
              docker pull $IMAGE_NAME:$TAG
              
-             echo "🚀 Starting new container on http://49.231.43.177:7081"
+             echo "🚀 Starting new container on http://49.231.43.177:7074"
              docker run --name $CONTAINER_NAME \
                --network kong_kong-net \
                --label io.portainer.accesscontrol.teams=discord \
-               --restart=always -d -p 7081:3000 \
+               --restart=always -d -p 7074:3000 \
                -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
                -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
                -e ADMIN_JWT_SECRET="${{ secrets.ADMIN_JWT_SECRET }}" \
@@ -148,4 +148,4 @@ jobs:
              docker ps | grep $CONTAINER_NAME
              docker logs $CONTAINER_NAME --tail 50
              
-             echo "✅ Deployment successful at http://49.231.43.177:7081"
+             echo "✅ Deployment successful at http://49.231.43.177:7074"
