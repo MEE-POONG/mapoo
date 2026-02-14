@@ -80,11 +80,6 @@ jobs:
              # Pull new image
              docker pull $IMAGE_NAME:$TAG
              
-             # Open Firewall Port
-             echo "🛡️ Opening firewall port 7081..."
-             sudo ufw allow 7081/tcp || true
-             sudo ufw reload || true
-             
              echo "🚀 Starting new container on http://49.231.43.177:7081"
              docker run --name $CONTAINER_NAME \
                --network kong_kong-net \
@@ -107,8 +102,14 @@ jobs:
                $IMAGE_NAME:$TAG
              
              # Verify running
-             sleep 10
+             echo "⏳ Waiting 15s for startup..."
+             sleep 15
+             
+             echo "🔍 Checking status..."
              docker ps | grep $CONTAINER_NAME
+             
+             echo "📜 Last 50 logs:"
+             docker logs $CONTAINER_NAME --tail 50
              
              echo "🧹 Cleaning up old images..."
              docker image prune -a -f
