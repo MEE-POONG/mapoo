@@ -65,11 +65,7 @@ jobs:
           private_key: ${{ secrets.SSH_KEY }}
           command: |
              set -e
-             TAG="${{ github.event.inputs.tag }}"
-             if [ -z "$TAG" ]; then
-               TAG="${{ github.run_id }}"
-             fi
-             
+             TAG="${{ github.event.inputs.tag || github.run_id }}"
              CONTAINER_NAME="mapoo-shop-dashboard"
              IMAGE_NAME="chunwarayut/mapoo-shop"
              
