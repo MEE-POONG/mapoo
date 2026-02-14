@@ -1,90 +1,107 @@
-name: Mapoo CI/CD
+name: CI/CD Pipeline
 
 on:
   push:
     branches: ["main"]
   pull_request:
     branches: ["main"]
-  workflow_dispatch:
 
 jobs:
-  build-and-push:
-    name: 🏗️ Build & Push
+  # 1. 🧪 Test & Verify Code
+  verify-code:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
+    - name: Use Node.js 20
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+    - name: Install dependencies
+      run: npm install
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    - name: Generate Prisma Client
+      run: npx prisma generate
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    - name: Check Build
+      run: npm run build
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        NEXT_TELEMETRY_DISABLED: 1
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Prisma Generate
-        run: npx prisma generate
-
-      - name: Build Next.js
-        run: npm run build
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          NEXT_TELEMETRY_DISABLED: 1
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and Push Docker Image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/mapoo-shop:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/mapoo-shop:${{ github.sha }}
-
-  deploy:
-    name: 🚀 Deploy to Production
-    needs: build-and-push
+  # 2. 🐳 Build Docker & Push
+  build-push:
+    needs: verify-code
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.0
+    - uses: actions/checkout@v4
+    
+    - name: Convert repository name to lowercase
+      id: string
+      run: echo "lowercase=$(echo '${{ github.event.repository.name }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_TOKEN }}
+
+    - name: Build and Push Docker Image
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        push: true
+        tags: |
+          chunwarayut/mapoo-shop:latest
+          chunwarayut/mapoo-shop:${{ github.run_id }}
+        build-args: |
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
+          BUILD_ID=${{ github.run_id }}
+          COMMIT_SHA=${{ github.sha }}
+          BUILD_TIME=${{ github.event.head_commit.timestamp }}
+        no-cache: true
+
+  # 3. 🚀 Deploy to Server
+  deploy:
+    needs: build-push
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH Deploy
+        uses: D3rHase/ssh-command-action@v0.2.2
         with:
           host: 49.231.43.177
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: 22
-          script_stop: true
-          command_timeout: 10m
-          script: |
+          user: ${{ secrets.SERVER_USER }}
+          private_key: ${{ secrets.SSH_KEY }}
+          command: |
             set -e
+            TAG="${{ github.run_id }}"
+            CONTAINER_NAME="mapoo-shop-dashboard"
+            IMAGE_NAME="chunwarayut/mapoo-shop"
             
-            # Configuration
-            REPO="${{ secrets.DOCKERHUB_USERNAME }}/mapoo-shop"
-            CONTAINER_NAME="mapoo-shop-app"
-            PORT="7081"
+            echo "🚀 Starting Deployment for หมูเเดดเดียว mapoo..."
+            echo "🕒 Time: $(date)"
+            echo "⬇️ Pulling image with tag: $TAG"
             
-            echo "🚀 Starting Deployment to http://49.231.43.177:$PORT"
-            
-            # Pull latest image
-            docker pull $REPO:latest
-            
-            # Stop and remove old container
+            # Remove old container and image to avoid using cache
             docker stop $CONTAINER_NAME || true
             docker rm $CONTAINER_NAME || true
             
-            # Start new container
+            # Pull new image
+            docker pull $IMAGE_NAME:$TAG
+            
+            echo "🚀 Starting new container on http://49.231.43.177:7081"
             docker run --name $CONTAINER_NAME \
-              --restart=always -d -p $PORT:3000 \
+              --restart=always -d -p 7081:3000 \
               -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
               -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
               -e SMTP_HOST="${{ secrets.SMTP_HOST }}" \
@@ -95,11 +112,13 @@ jobs:
               -e NODE_ENV="production" \
               --memory=1g --memory-swap=1g --cpus=1.0 \
               --log-opt max-size=10m --log-opt max-file=3 \
-              $REPO:latest
+              $IMAGE_NAME:$TAG
             
-            # Verify
-            echo "🔎 Verifying deployment..."
+            # Verify running
             sleep 10
             docker ps | grep $CONTAINER_NAME
-            echo "✅ Deployment Successful at http://49.231.43.177:$PORT"
-鼓
+            
+            echo "🧹 Cleaning up old images..."
+            docker image prune -a -f
+            
+            echo "✅ Deployment successful at http://49.231.43.177:7081 with tag: $TAG"
