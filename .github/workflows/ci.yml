@@ -101,6 +101,8 @@ jobs:
             
             echo "🚀 Starting new container on http://49.231.43.177:7081"
             docker run --name $CONTAINER_NAME \
+              --network kong_kong-net \
+              --label io.portainer.accesscontrol.teams=discord \
               --restart=always -d -p 7081:3000 \
               -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
               -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
