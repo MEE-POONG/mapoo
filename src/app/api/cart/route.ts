@@ -31,7 +31,7 @@ export async function GET() {
         const response = NextResponse.json(cart);
         response.cookies.set('cart_session_id', sessionId, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: false, // Set to false to support HTTP IP access
             sameSite: 'lax',
             maxAge: 60 * 60 * 24 * 7 // 1 week
         });
@@ -96,7 +96,7 @@ export async function POST(request: Request) {
         const response = NextResponse.json(updatedCart);
         response.cookies.set('cart_session_id', sessionId, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: false,
             sameSite: 'lax',
             maxAge: 60 * 60 * 24 * 7
         });
@@ -151,10 +151,28 @@ export async function PATCH(request: Request) {
             include: { items: { include: { product: true } } }
         });
 
-        return NextResponse.json(updatedCart);
-    } catch (error) {
+        const response = NextResponse.json(updatedCart);
+        // Refresh session cookie
+        const cookieStore = await cookies();
+        const sessionId = cookieStore.get('cart_session_id')?.value;
+        if (sessionId) {
+            response.cookies.set('cart_session_id', sessionId, {
+                httpOnly: true,
+                secure: false,
+                sameSite: 'lax',
+                maxAge: 60 * 60 * 24 * 7
+            });
+        }
+        return response;
+    } catch (error: any) {
         console.error('Error updating cart:', error);
-        return NextResponse.json({ error: 'Error updating cart' }, { status: 500 });
+
+        // Handle record not found specifically
+        if (error.code === 'P2025') {
+            return NextResponse.json({ error: 'ไม่พบสินค้าในตะกร้า' }, { status: 404 });
+        }
+
+        return NextResponse.json({ error: 'Error updating cart: ' + (error.message || 'Unknown error') }, { status: 500 });
     }
 }
 
@@ -185,7 +203,19 @@ export async function DELETE(request: Request) {
             include: { items: { include: { product: true } } }
         });
 
-        return NextResponse.json(updatedCart);
+        const response = NextResponse.json(updatedCart);
+        // Refresh session cookie
+        const cookieStore = await cookies();
+        const sessionId = cookieStore.get('cart_session_id')?.value;
+        if (sessionId) {
+            response.cookies.set('cart_session_id', sessionId, {
+                httpOnly: true,
+                secure: false,
+                sameSite: 'lax',
+                maxAge: 60 * 60 * 24 * 7
+            });
+        }
+        return response;
     } catch (error) {
         console.error('Error clearing cart:', error);
         return NextResponse.json({ error: 'Error clearing cart' }, { status: 500 });
