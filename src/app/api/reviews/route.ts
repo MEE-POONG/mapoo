@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { verifyToken, getTokenFromHeaders } from '@/lib/auth';
 
 export async function GET() {
     try {
@@ -15,6 +16,25 @@ export async function GET() {
 
 export async function POST(request: Request) {
     try {
+        // Verify customer is logged in before allowing review
+        const authHeader = request.headers.get('authorization');
+        const token = getTokenFromHeaders(authHeader);
+
+        if (!token) {
+            return NextResponse.json(
+                { error: 'กรุณาเข้าสู่ระบบก่อนรีวิว' },
+                { status: 401 }
+            );
+        }
+
+        const payload = verifyToken(token);
+        if (!payload) {
+            return NextResponse.json(
+                { error: 'Token ไม่ถูกต้องหรือหมดอายุ' },
+                { status: 401 }
+            );
+        }
+
         const body = await request.json();
         const { customerName, rating, comment, imageUrl, source } = body;
 

@@ -1,38 +1,20 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-// Check if any admin exists in the system
+// Check if any admin exists in the system (used for initial setup flow)
 export async function GET() {
     try {
         const adminCount = await prisma.admin.count();
-        const admins = await prisma.admin.findMany({
-            select: {
-                id: true,
-                email: true,
-                name: true,
-                role: true,
-                isActive: true,
-                createdAt: true
-            }
-        });
 
+        // Only return whether an admin exists, NOT admin details
         return NextResponse.json({
-            hasAdmin: adminCount > 0,
-            count: adminCount,
-            admins: admins.map(a => ({
-                id: a.id,
-                email: a.email,
-                name: a.name,
-                role: a.role,
-                isActive: a.isActive,
-                createdAt: a.createdAt
-            }))
+            hasAdmin: adminCount > 0
         });
 
     } catch (error) {
         console.error('Error checking admins:', error);
         return NextResponse.json(
-            { error: 'เกิดข้อผิดพลาดในการตรวจสอบ', details: String(error) },
+            { error: 'เกิดข้อผิดพลาดในการตรวจสอบ' },
             { status: 500 }
         );
     }

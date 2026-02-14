@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/context/AuthContext';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {
@@ -30,6 +31,7 @@ export default function ReviewsPage() {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [submitting, setSubmitting] = useState(false);
+    const { token, customer } = useAuth();
 
     // Form state
     const [formData, setFormData] = useState({
@@ -67,9 +69,14 @@ export default function ReviewsPage() {
         e.preventDefault();
         setSubmitting(true);
         try {
+            const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
             const res = await fetch('/api/reviews', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers,
                 body: JSON.stringify(formData),
             });
 
@@ -84,7 +91,8 @@ export default function ReviewsPage() {
                 });
                 fetchReviews();
             } else {
-                alert('เกิดข้อผิดพลาดในการส่งรีวิว');
+                const errorData = await res.json();
+                alert(errorData.error || 'เกิดข้อผิดพลาดในการส่งรีวิว');
             }
         } catch (error) {
             console.error('Error submitting review:', error);
