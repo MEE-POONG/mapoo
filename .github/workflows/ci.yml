@@ -1,15 +1,16 @@
-name: Mapoo Build & Test
+name: Mapoo CI/CD
 
 on:
   push:
     branches: ["main"]
   pull_request:
     branches: ["main"]
+  workflow_dispatch:
 
 jobs:
-  build:
+  build-and-push:
+    name: 🏗️ Build & Push
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -29,9 +30,76 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          # Skip linting if it's too strict for now
           NEXT_TELEMETRY_DISABLED: 1
 
-      - name: Docker Build Check
-        run: |
-          docker build -t mapoo-app .
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/mapoo-shop:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/mapoo-shop:${{ github.sha }}
+
+  deploy:
+    name: 🚀 Deploy to Production
+    needs: build-and-push
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: 49.231.43.177
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          script_stop: true
+          command_timeout: 10m
+          script: |
+            set -e
+            
+            # Configuration
+            REPO="${{ secrets.DOCKERHUB_USERNAME }}/mapoo-shop"
+            CONTAINER_NAME="mapoo-shop-app"
+            PORT="7081"
+            
+            echo "🚀 Starting Deployment to http://49.231.43.177:$PORT"
+            
+            # Pull latest image
+            docker pull $REPO:latest
+            
+            # Stop and remove old container
+            docker stop $CONTAINER_NAME || true
+            docker rm $CONTAINER_NAME || true
+            
+            # Start new container
+            docker run --name $CONTAINER_NAME \
+              --restart=always -d -p $PORT:3000 \
+              -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
+              -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+              -e SMTP_HOST="${{ secrets.SMTP_HOST }}" \
+              -e SMTP_PORT="${{ secrets.SMTP_PORT }}" \
+              -e SMTP_USER="${{ secrets.SMTP_USER }}" \
+              -e SMTP_PASS="${{ secrets.SMTP_PASS }}" \
+              -e SMTP_FROM="${{ secrets.SMTP_FROM }}" \
+              -e NODE_ENV="production" \
+              --memory=1g --memory-swap=1g --cpus=1.0 \
+              --log-opt max-size=10m --log-opt max-file=3 \
+              $REPO:latest
+            
+            # Verify
+            echo "🔎 Verifying deployment..."
+            sleep 10
+            docker ps | grep $CONTAINER_NAME
+            echo "✅ Deployment Successful at http://49.231.43.177:$PORT"
+鼓
