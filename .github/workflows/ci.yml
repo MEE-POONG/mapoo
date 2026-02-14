@@ -5,6 +5,12 @@ on:
     branches: ["main"]
   pull_request:
     branches: ["main"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Docker Tag to Deploy'
+        required: false
+        default: 'latest'
 
 jobs:
   # 1. 🧪 Test & Verify Code
@@ -83,53 +89,57 @@ jobs:
           user: ${{ secrets.SERVER_USER }}
           private_key: ${{ secrets.SSH_KEY }}
           command: |
-            set -e
-            TAG="${{ github.run_id }}"
-            CONTAINER_NAME="mapoo-shop-dashboard"
-            IMAGE_NAME="chunwarayut/mapoo-shop"
-            
-            echo "🚀 Starting Deployment for หมูเเดดเดียว mapoo..."
-            echo "🕒 Time: $(date)"
-            echo "⬇️ Pulling image with tag: $TAG"
-            
-            # Remove old container and image to avoid using cache
-            docker stop $CONTAINER_NAME || true
-            docker rm $CONTAINER_NAME || true
-            
-            # Pull new image
-            docker pull $IMAGE_NAME:$TAG
-            
-            # Open Firewall Port
-            echo "🛡️ Opening firewall port 7081..."
-            sudo ufw allow 7081/tcp || true
-            sudo ufw reload || true
-            
-            echo "🚀 Starting new container on http://49.231.43.177:7081"
-            docker run --name $CONTAINER_NAME \
-              --network kong_kong-net \
-              --label io.portainer.accesscontrol.teams=discord \
-              --restart=always -d -p 7081:3000 \
-              -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
-              -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
-              -e ADMIN_JWT_SECRET="${{ secrets.ADMIN_JWT_SECRET }}" \
-              -e ADMIN_SETUP_KEY="${{ secrets.ADMIN_SETUP_KEY }}" \
-              -e LINE_NOTIFY_TOKEN="${{ secrets.LINE_NOTIFY_TOKEN }}" \
-              -e SMTP_HOST="${{ secrets.SMTP_HOST }}" \
-              -e SMTP_PORT="${{ secrets.SMTP_PORT }}" \
-              -e SMTP_USER="${{ secrets.SMTP_USER }}" \
-              -e SMTP_PASS="${{ secrets.SMTP_PASS }}" \
-              -e SMTP_FROM="${{ secrets.SMTP_FROM }}" \
-              -e SMTP_SECURE="${{ secrets.SMTP_SECURE }}" \
-              -e NODE_ENV="production" \
-              --memory=1g --memory-swap=1g --cpus=1.0 \
-              --log-opt max-size=10m --log-opt max-file=3 \
-              $IMAGE_NAME:$TAG
-            
-            # Verify running
-            sleep 10
-            docker ps | grep $CONTAINER_NAME
-            
-            echo "🧹 Cleaning up old images..."
-            docker image prune -a -f
-            
-            echo "✅ Deployment successful at http://49.231.43.177:7081 with tag: $TAG"
+             set -e
+             TAG="${{ github.event.inputs.tag }}"
+             if [ -z "$TAG" ]; then
+               TAG="${{ github.run_id }}"
+             fi
+             
+             CONTAINER_NAME="mapoo-shop-dashboard"
+             IMAGE_NAME="chunwarayut/mapoo-shop"
+             
+             echo "🚀 Starting Deployment for หมูเเดดเดียว mapoo..."
+             echo "🕒 Time: $(date)"
+             echo "⬇️ Pulling image with tag: $TAG"
+             
+             # Remove old container and image to avoid using cache
+             docker stop $CONTAINER_NAME || true
+             docker rm $CONTAINER_NAME || true
+             
+             # Pull new image
+             docker pull $IMAGE_NAME:$TAG
+             
+             # Open Firewall Port
+             echo "🛡️ Opening firewall port 7085..."
+             sudo ufw allow 7085/tcp || true
+             sudo ufw reload || true
+             
+             echo "🚀 Starting new container on http://49.231.43.177:7085"
+             docker run --name $CONTAINER_NAME \
+               --network kong_kong-net \
+               --label io.portainer.accesscontrol.teams=discord \
+               --restart=always -d -p 7085:3000 \
+               -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
+               -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+               -e ADMIN_JWT_SECRET="${{ secrets.ADMIN_JWT_SECRET }}" \
+               -e ADMIN_SETUP_KEY="${{ secrets.ADMIN_SETUP_KEY }}" \
+               -e LINE_NOTIFY_TOKEN="${{ secrets.LINE_NOTIFY_TOKEN }}" \
+               -e SMTP_HOST="${{ secrets.SMTP_HOST }}" \
+               -e SMTP_PORT="${{ secrets.SMTP_PORT }}" \
+               -e SMTP_USER="${{ secrets.SMTP_USER }}" \
+               -e SMTP_PASS="${{ secrets.SMTP_PASS }}" \
+               -e SMTP_FROM="${{ secrets.SMTP_FROM }}" \
+               -e SMTP_SECURE="${{ secrets.SMTP_SECURE }}" \
+               -e NODE_ENV="production" \
+               --memory=1g --memory-swap=1g --cpus=1.0 \
+               --log-opt max-size=10m --log-opt max-file=3 \
+               $IMAGE_NAME:$TAG
+             
+             # Verify running
+             sleep 10
+             docker ps | grep $CONTAINER_NAME
+             
+             echo "🧹 Cleaning up old images..."
+             docker image prune -a -f
+             
+             echo "✅ Deployment successful at http://49.231.43.177:7085 with tag: $TAG"
