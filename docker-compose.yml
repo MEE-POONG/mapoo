@@ -1,5 +1,18 @@
 version: '3.8'
+
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=mongodb://mongodb:27017/mapoo
+      - JWT_SECRET=mapoo-super-secret-jwt-key-2024-change-in-production
+    depends_on:
+      - mongodb
+
   mongodb:
     image: mongo:latest
     ports:
@@ -7,7 +20,9 @@ services:
     volumes:
       - mongodb_data:/data/db
     environment:
-      - MONGO_INITDB_DATABASE=siamsausage
+      - MONGO_INITDB_DATABASE=mapoo
 
 volumes:
   mongodb_data:
+
+
