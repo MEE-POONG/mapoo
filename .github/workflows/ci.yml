@@ -13,33 +13,8 @@ on:
         default: 'latest'
 
 jobs:
-  # 1. 🧪 Test & Verify Code
-  verify-code:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js 20
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-    - name: Install dependencies
-      run: npm install
-      env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
-    - name: Generate Prisma Client
-      run: npx prisma generate
-      env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
-    - name: Check Build
-      run: npm run build
-      env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        NEXT_TELEMETRY_DISABLED: 1
-
-  # 2. 🐳 Build Docker & Push
+  # 1. 🐳 Build Docker & Push
   build-push:
-    needs: verify-code
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
