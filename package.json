@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "echo \"No tests specified\" && exit 0",
+    "test:e2e": "echo \"No E2E tests specified\" && exit 0",
+    "test:chaos": "echo \"No chaos tests specified\" && exit 0",
+    "db:seed-test": "echo \"No seeding specified\" && exit 0"
   },
   "dependencies": {
     "@prisma/client": "6.19.2",

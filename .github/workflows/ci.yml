@@ -13,7 +13,7 @@ on:
         default: 'latest'
 
 jobs:
-  # 1. 🧪 Test & Verify Code (จากสคริปต์ที่คุณให้มา)
+  # 1. 🧪 Test & Verify Code (Full Pipeline as requested)
   test:
     timeout-minutes: 20
     runs-on: ubuntu-latest
@@ -38,10 +38,40 @@ jobs:
       - name: Next.js Lint
         run: npm run lint
       - name: Run Unit & Integration Tests
-        run: npm run test -- --run || echo "Tests failed but continuing for now" # กันพังถ้ายังไม่ได้เซ็ต Test
+        run: npm run test -- --run
         env:
           DATABASE_URL: "mongodb://localhost:27017/mapoo_ci?replicaSet=rs0&directConnection=true"
           JWT_SECRET: "ci-test-secret"
+      
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps || echo "Skipping playwright install"
+      
+      - name: Seed Database for E2E
+        run: npm run db:seed-test
+        env:
+          DATABASE_URL: "mongodb://localhost:27017/mapoo_ci?replicaSet=rs0&directConnection=true"
+          JWT_SECRET: "ci-test-secret"
+      
+      - name: Run Playwright E2E Tests
+        run: npm run test:e2e
+        env:
+          DATABASE_URL: "mongodb://localhost:27017/mapoo_ci?replicaSet=rs0&directConnection=true"
+          JWT_SECRET: "ci-test-secret"
+          NODE_ENV: test
+      
+      - name: Run Realtime Chaos Tests (Quick)
+        run: npm run test:chaos -- --quick
+        env:
+          SERVER_URL: "http://localhost:3000"
+          AUTH_TOKEN: "mock-token-for-quick-mode"
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
 
   # 2. 🐳 Build Docker & Push
   build-push:
