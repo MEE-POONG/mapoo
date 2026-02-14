@@ -28,6 +28,18 @@ export async function POST(
             return NextResponse.json({ error: 'กรุณาเลือกไฟล์หลักฐานการโอนเงิน' }, { status: 400 });
         }
 
+        // --- 1. ตรวจสอบขนาดไฟล์ (จำกัด 5MB) ---
+        const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+        if (file.size > MAX_FILE_SIZE) {
+            return NextResponse.json({ error: 'ขนาดไฟล์ต้องไม่เกิน 5MB' }, { status: 400 });
+        }
+
+        // --- 2. ตรวจสอบประเภทไฟล์ (เฉพาะรูปภาพ) ---
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+            return NextResponse.json({ error: 'กรุณาอัปโหลดเฉพาะไฟล์รูปภาพ (JPG, PNG, WEBP)' }, { status: 400 });
+        }
+
         const orderId = params.id;
         const order = await prisma.order.findUnique({ where: { id: orderId } });
 
@@ -46,7 +58,7 @@ export async function POST(
         try {
             await mkdir(uploadDir, { recursive: true });
         } catch (e) {
-            // Directory exists
+            // Directory exists or other error handled by writeFile
         }
 
         const fileName = `${orderId}_${Date.now()}${path.extname(file.name)}`;
@@ -62,7 +74,7 @@ export async function POST(
             where: { id: orderId },
             data: {
                 slipImageUrl: fileUrl,
-                status: 'PENDING' // Keep as pending or change to 'AWAITING_VERIFICATION' if you add that status
+                status: 'PENDING'
             }
         });
 

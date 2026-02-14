@@ -12,11 +12,11 @@ export default function Footer() {
                     {/* Brand Column */}
                     <div>
                         <Link href="/" className="flex items-center gap-2 mb-6">
-                            <div className="w-10 h-10 bg-accent-500 rounded-full flex items-center justify-center text-white font-bold font-serif text-xl border-2 border-white/20">S</div>
-                            <span className="font-bold text-2xl tracking-tight text-white">SiamSausage</span>
+                            <div className="w-10 h-10 bg-accent-500 rounded-full flex items-center justify-center text-white font-bold font-serif text-xl border-2 border-white/20">M</div>
+                            <span className="font-bold text-2xl tracking-tight text-white">หมูเเดดเดียว mapoo</span>
                         </Link>
                         <p className="text-brand-300 text-sm leading-relaxed mb-6">
-                            ต้นตำรับไส้กรอกอีสานและหมูแดดเดียว สูตรลับกว่า 20 ปี
+                            ต้นตำรับหมูแดดเดียวและไส้กรอกอีสาน สูตรลับกว่า 20 ปี
                             คัดสรรวัตถุดิบชั้นดี เพื่อส่งมอบความอร่อยระดับพรีเมียมถึงมือคุณ
                         </p>
                         <div className="flex gap-4">
@@ -75,7 +75,7 @@ export default function Footer() {
                 </div>
 
                 <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-brand-400">
-                    <p>&copy; 2024 SiamSausage & Co. All rights reserved.</p>
+                    <p>&copy; 2026 หมูเเดดเดียว mapoo & Co. All rights reserved.</p>
                     <div className="flex gap-6">
                         <a href="#" className="hover:text-white transition-colors">นโยบายความเป็นส่วนตัว</a>
                         <a href="#" className="hover:text-white transition-colors">เงื่อนไขการให้บริการ</a>

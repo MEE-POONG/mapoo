@@ -10,8 +10,13 @@ export async function DELETE(
     try {
         const authHeader = request.headers.get('authorization');
         const token = getAdminTokenFromHeaders(authHeader);
-        if (!token || !verifyAdminToken(token)) {
+        const adminData = verifyAdminToken(token || '');
+        if (!token || !adminData) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        if (adminData.role !== 'SUPER_ADMIN') {
+            return NextResponse.json({ error: 'เฉพาะ Super Admin เท่านั้นที่สามาถลบ Admin ได้' }, { status: 403 });
         }
 
         const { id } = params;
@@ -25,6 +30,14 @@ export async function DELETE(
             return NextResponse.json(
                 { error: 'ไม่พบ Admin นี้' },
                 { status: 404 }
+            );
+        }
+
+        // Prevent self-deletion
+        if (admin.id === adminData.adminId) {
+            return NextResponse.json(
+                { error: 'ไม่สามารถลบบัญชีตัวเองได้' },
+                { status: 400 }
             );
         }
 
@@ -52,8 +65,13 @@ export async function PATCH(
     try {
         const authHeader = request.headers.get('authorization');
         const token = getAdminTokenFromHeaders(authHeader);
-        if (!token || !verifyAdminToken(token)) {
+        const adminData = verifyAdminToken(token || '');
+        if (!token || !adminData) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        if (adminData.role !== 'SUPER_ADMIN') {
+            return NextResponse.json({ error: 'เฉพาะ Super Admin เท่านั้นที่สามารถแก้ไข Admin ได้' }, { status: 403 });
         }
 
         const { id } = params;

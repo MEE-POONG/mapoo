@@ -77,7 +77,7 @@ export default function ContactPage() {
                                     </div>
                                     <div>
                                         <p className="text-brand-300 text-sm mb-1">LINE Official</p>
-                                        <p className="text-xl font-semibold">@siamsausage</p>
+                                        <p className="text-xl font-semibold">@mapoo</p>
                                     </div>
                                 </div>
                             </div>

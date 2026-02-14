@@ -14,6 +14,10 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
+        if (adminData.role !== 'SUPER_ADMIN') {
+            return NextResponse.json({ error: 'เฉพาะ Super Admin เท่านั้นที่เข้าถึงส่วนนี้ได้' }, { status: 403 });
+        }
+
         const admins = await prisma.admin.findMany({
             orderBy: { createdAt: 'desc' },
             select: {
@@ -43,8 +47,13 @@ export async function POST(request: Request) {
     try {
         const authHeader = request.headers.get('authorization');
         const token = getAdminTokenFromHeaders(authHeader);
-        if (!token || !verifyAdminToken(token)) {
+        const adminData = verifyAdminToken(token || '');
+        if (!token || !adminData) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        if (adminData.role !== 'SUPER_ADMIN') {
+            return NextResponse.json({ error: 'เฉพาะ Super Admin เท่านั้นที่สามารถสร้าง Admin ได้' }, { status: 403 });
         }
 
         const { email, password, name, role } = await request.json();

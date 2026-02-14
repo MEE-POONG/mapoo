@@ -34,6 +34,11 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
             setToken(savedToken);
             setAdmin(JSON.parse(savedAdmin));
 
+            // Sync cookie if missing
+            if (!document.cookie.includes('admin_token=')) {
+                document.cookie = `admin_token=${savedToken}; path=/; max-age=86400; samesite=lax`;
+            }
+
             // Verify token is still valid
             verifyToken(savedToken);
         } else {
@@ -81,6 +86,10 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
                 setAdmin(data.admin);
                 localStorage.setItem('admin_token', data.token);
                 localStorage.setItem('admin_data', JSON.stringify(data.admin));
+
+                // Set cookie for middleware
+                document.cookie = `admin_token=${data.token}; path=/; max-age=86400; samesite=lax`;
+
                 return { success: true };
             } else {
                 return { success: false, error: data.error };
@@ -96,6 +105,8 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         setToken(null);
         localStorage.removeItem('admin_token');
         localStorage.removeItem('admin_data');
+        // Clear cookie
+        document.cookie = 'admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     };
 
     return (

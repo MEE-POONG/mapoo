@@ -36,7 +36,7 @@ export async function POST(request: Request) {
         }
 
         const body = await request.json();
-        const { customerName, rating, comment, imageUrl, source } = body;
+        const { customerName, rating, comment, imageUrl, source, productId } = body;
 
         const review = await prisma.review.create({
             data: {
@@ -44,7 +44,8 @@ export async function POST(request: Request) {
                 rating: parseInt(rating),
                 comment,
                 imageUrl,
-                source: source || 'Website'
+                source: source || 'Website',
+                productId: productId || null
             }
         });
 

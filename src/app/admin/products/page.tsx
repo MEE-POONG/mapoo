@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import Link from 'next/link';
+import { useToast } from '@/context/ToastContext';
 import {
     Plus,
     Pencil,
@@ -42,6 +43,7 @@ import AdminHeader from '@/components/AdminHeader';
 export default function AdminProductsPage() {
     const router = useRouter();
     const { admin, token, isLoading: authLoading, isAuthenticated, logout } = useAdminAuth();
+    const { showToast } = useToast();
 
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
@@ -49,6 +51,7 @@ export default function AdminProductsPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [submitting, setSubmitting] = useState(false);
+    const [isUploadingImage, setIsUploadingImage] = useState(false);
 
     // Form states
     const [formData, setFormData] = useState({
@@ -76,10 +79,6 @@ export default function AdminProductsPage() {
         }
     }, [isAuthenticated]);
 
-    const handleLogout = () => {
-        logout();
-        router.push('/admin/login');
-    };
 
     const fetchProducts = async () => {
         setLoading(true);
@@ -148,12 +147,13 @@ export default function AdminProductsPage() {
             if (res.ok) {
                 setIsModalOpen(false);
                 fetchProducts();
+                showToast(editingProduct ? 'อัปเดตข้อมูลสินค้าสำเร็จ' : 'เพิ่มสินค้าใหม่สำเร็จ', 'success');
             } else {
-                alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+                showToast('เกิดข้อผิดพลาดในการบันทึกข้อมูล', 'error');
             }
         } catch (error) {
             console.error('Error saving product:', error);
-            alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+            showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
         } finally {
             setSubmitting(false);
         }
@@ -170,11 +170,13 @@ export default function AdminProductsPage() {
             });
             if (res.ok) {
                 fetchProducts();
+                showToast('ลบสินค้าเรียบร้อยแล้ว', 'success');
             } else {
-                alert('เกิดข้อผิดพลาดในการลบสินค้า');
+                showToast('เกิดข้อผิดพลาดในการลบสินค้า', 'error');
             }
         } catch (error) {
             console.error('Error deleting product:', error);
+            showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
         }
     };
 
@@ -458,21 +460,66 @@ export default function AdminProductsPage() {
                                 <div className="md:col-span-2">
                                     <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
                                         <ImageIcon className="w-4 h-4 text-gray-400" />
-                                        URL รูปภาพ
+                                        รูปภาพสินค้า
                                     </label>
-                                    <input
-                                        required
-                                        type="url"
-                                        className="w-full px-4 py-3 bg-gray-50 border-gray-200 rounded-xl focus:ring-2 focus:ring-accent-500 focus:border-transparent transition-all"
-                                        placeholder="https://images.unsplash.com/..."
-                                        value={formData.imageUrl}
-                                        onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                                    />
-                                    {formData.imageUrl && (
-                                        <div className="mt-4 w-32 h-32 rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
-                                            <img src={formData.imageUrl} alt="Preview" className="w-full h-full object-cover" />
+                                    <div className="space-y-3">
+                                        <input
+                                            required
+                                            type="url"
+                                            className="w-full px-4 py-3 bg-gray-50 border-gray-200 rounded-xl focus:ring-2 focus:ring-accent-500 focus:border-transparent transition-all"
+                                            placeholder="https://..."
+                                            value={formData.imageUrl}
+                                            onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                                        />
+                                        <div className="flex items-center gap-4">
+                                            <label className="flex-1 cursor-pointer group">
+                                                <div className="flex items-center justify-center gap-3 py-3 px-4 border-2 border-dashed border-gray-300 rounded-xl group-hover:border-accent-500 group-hover:bg-orange-50 transition-all">
+                                                    <Plus className="w-5 h-5 text-gray-400 group-hover:text-accent-500" />
+                                                    <span className="text-sm font-bold text-gray-500 group-hover:text-accent-700">
+                                                        {isUploadingImage ? 'กำลังอัปโหลด...' : 'เลือกไฟล์ภาพเพื่ออัปโหลด'}
+                                                    </span>
+                                                </div>
+                                                <input
+                                                    type="file"
+                                                    className="hidden"
+                                                    accept="image/*"
+                                                    disabled={isUploadingImage}
+                                                    onChange={async (e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (!file) return;
+
+                                                        setIsUploadingImage(true);
+                                                        const upFormData = new FormData();
+                                                        upFormData.append('file', file);
+
+                                                        try {
+                                                            const res = await fetch('/api/admin/products/upload-image', {
+                                                                method: 'POST',
+                                                                headers: { 'Authorization': `Bearer ${token}` },
+                                                                body: upFormData
+                                                            });
+                                                            const data = await res.json();
+                                                            if (res.ok) {
+                                                                setFormData({ ...formData, imageUrl: data.url });
+                                                                showToast('อัปโหลดรูปภาพสำเร็จ', 'success');
+                                                            } else {
+                                                                showToast(data.error || 'อัปโหลดไม่สำเร็จ', 'error');
+                                                            }
+                                                        } catch (err) {
+                                                            showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
+                                                        } finally {
+                                                            setIsUploadingImage(false);
+                                                        }
+                                                    }}
+                                                />
+                                            </label>
+                                            {formData.imageUrl && (
+                                                <div className="w-20 h-20 rounded-xl border border-gray-200 overflow-hidden bg-gray-50 shadow-sm flex-shrink-0">
+                                                    <img src={formData.imageUrl} alt="Preview" className="w-full h-full object-cover" />
+                                                </div>
+                                            )}
                                         </div>
-                                    )}
+                                    </div>
                                 </div>
 
                                 {/* Description */}

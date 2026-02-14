@@ -7,7 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import {
     User, Package, MapPin, Phone, Mail, LogOut,
     ArrowLeft, Loader2, Clock, CheckCircle, Truck,
-    XCircle, Edit3, Save, X, Plus
+    XCircle, Edit3, Save, X, Plus, FileText
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { th } from 'date-fns/locale';
@@ -297,18 +297,28 @@ export default function AccountPage() {
                                                     </p>
                                                 </div>
                                                 <div className="flex flex-col items-end gap-2">
-                                                    <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl border ${status.bgColor} ${status.color}`}>
-                                                        <StatusIcon className="w-4 h-4" />
-                                                        <span className="font-medium">{status.label}</span>
+                                                    <div className="flex flex-col gap-2">
+                                                        <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl border ${status.bgColor} ${status.color}`}>
+                                                            <StatusIcon className="w-4 h-4" />
+                                                            <span className="font-medium">{status.label}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-3">
+                                                            <Link
+                                                                href={`/account/orders/${order.id}/receipt`}
+                                                                className="text-xs text-brand-500 hover:text-accent-600 hover:underline transition-colors flex items-center gap-1"
+                                                            >
+                                                                <FileText className="w-3 h-3" /> ใบเสร็จ/ใบสั่งซื้อ
+                                                            </Link>
+                                                            {order.status === 'PENDING' && (
+                                                                <button
+                                                                    onClick={() => handleCancelOrder(order.id)}
+                                                                    className="text-xs text-red-500 hover:text-red-700 hover:underline transition-colors"
+                                                                >
+                                                                    ยกเลิกออเดอร์
+                                                                </button>
+                                                            )}
+                                                        </div>
                                                     </div>
-                                                    {order.status === 'PENDING' && (
-                                                        <button
-                                                            onClick={() => handleCancelOrder(order.id)}
-                                                            className="text-xs text-red-500 hover:text-red-700 hover:underline transition-colors p-1"
-                                                        >
-                                                            ยกเลิกคำสั่งซื้อ
-                                                        </button>
-                                                    )}
                                                 </div>
                                             </div>
 

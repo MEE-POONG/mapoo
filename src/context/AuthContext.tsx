@@ -51,15 +51,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                         setToken(savedToken);
                         setCustomer(data.customer);
                         localStorage.setItem('auth_customer', JSON.stringify(data.customer));
+
+                        // Sync cookie
+                        if (!document.cookie.includes('auth_token=')) {
+                            document.cookie = `auth_token=${savedToken}; path=/; max-age=86400; samesite=lax`;
+                        }
                     } else {
                         // Token expired or invalid
                         localStorage.removeItem('auth_token');
                         localStorage.removeItem('auth_customer');
+                        document.cookie = 'auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
                     }
                 } catch {
                     // Network error - use cached data
                     setToken(savedToken);
                     setCustomer(JSON.parse(savedCustomer));
+
+                    if (!document.cookie.includes('auth_token=')) {
+                        document.cookie = `auth_token=${savedToken}; path=/; max-age=86400; samesite=lax`;
+                    }
                 }
             }
             setIsLoading(false);
@@ -87,6 +97,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setCustomer(data.customer);
             localStorage.setItem('auth_token', data.token);
             localStorage.setItem('auth_customer', JSON.stringify(data.customer));
+            // Set cookie for middleware
+            document.cookie = `auth_token=${data.token}; path=/; max-age=86400; samesite=lax`;
 
             return { success: true };
         } catch (error) {
@@ -114,6 +126,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setCustomer(result.customer);
             localStorage.setItem('auth_token', result.token);
             localStorage.setItem('auth_customer', JSON.stringify(result.customer));
+            // Set cookie for middleware
+            document.cookie = `auth_token=${result.token}; path=/; max-age=86400; samesite=lax`;
 
             return { success: true };
         } catch (error) {
@@ -127,6 +141,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setCustomer(null);
         localStorage.removeItem('auth_token');
         localStorage.removeItem('auth_customer');
+        // Clear cookie
+        document.cookie = 'auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     };
 
     const updateProfile = async (data: Partial<Customer>) => {

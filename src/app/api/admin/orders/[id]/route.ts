@@ -50,13 +50,27 @@ export async function PATCH(
             // 3. ถ้าเปลี่ยนสถานะจาก CANCELLED กลับมาเป็นสถานะอื่น (เผื่อแอดมินแก้ผิด)
             // ให้ไปตัดสต๊อกอีกรอบ (ถ้าต้องการป้องกันความผิดพลาด)
             // แต่เบื้องต้นทำส่วน "คืนสต๊อกเมื่อยกเลิก" ตามที่คุยกันก่อนครับ
-
             // 4. อัปเดตสถานะออเดอร์
             return await tx.order.update({
                 where: { id: orderId },
                 data: { status },
             });
         });
+
+        // 5. ส่งแจ้งเตือนเมื่อสถานะเปลี่ยน (ถ้าต้องการ)
+        try {
+            const fullOrder = await prisma.order.findUnique({
+                where: { id: orderId },
+                include: { customer: { select: { email: true } } }
+            });
+
+            if (fullOrder?.customer?.email && status === 'SHIPPED') {
+                // ส่งเมลแจ้งลูกค้าว่าของส่งแล้ว (สามารถเพิ่มฟังก์ชันนี้ใน lib/email ได้)
+                console.log('Order shipped, notify:', fullOrder.customer.email);
+            }
+        } catch (err) {
+            console.error('Notification error:', err);
+        }
 
         return NextResponse.json(updatedOrder);
     } catch (error: any) {

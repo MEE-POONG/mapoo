@@ -31,10 +31,10 @@ interface Product {
     stock: number;
 }
 
-export default function ProductDetailClient({ params }: { params: { id: string } }) {
+export default function ProductDetailClient({ params, initialProduct }: { params: { id: string }, initialProduct?: Product }) {
     const { addToCart } = useCart();
-    const [product, setProduct] = useState<Product | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [product, setProduct] = useState<Product | null>(initialProduct || null);
+    const [loading, setLoading] = useState(!initialProduct);
     const [quantity, setQuantity] = useState(1);
     const [addingToCart, setAddingToCart] = useState(false);
     const [addedSuccess, setAddedSuccess] = useState(false);

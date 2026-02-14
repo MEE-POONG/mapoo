@@ -125,7 +125,7 @@ export default function AdminLoginPage() {
 
                 {/* Footer */}
                 <p className="text-center text-slate-500 text-sm mt-8">
-                    © 2024 SiamSausage Admin Panel
+                    © 2026 หมูเเดดเดียว mapoo Admin Panel
                 </p>
             </div>
         </div>

@@ -48,7 +48,7 @@ export default function AdminHeader() {
                         </div>
                         <div>
                             <h1 className="font-bold text-gray-900 leading-tight">Admin Panel</h1>
-                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">SiamSausage</p>
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">หมูเเดดเดียว mapoo</p>
                         </div>
                     </Link>
 

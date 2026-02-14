@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Plus, Loader2, Search, Star, ShoppingBag } from "lucide-react";
 import Link from "next/link";
+import { useToast } from "@/context/ToastContext";
 
 interface Product {
     id: string;
@@ -56,7 +57,7 @@ export default function ProductsPage() {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('All');
     const [addingToCart, setAddingToCart] = useState<string | null>(null);
-    const [showToast, setShowToast] = useState(false);
+    const { showToast } = useToast();
     const [searchQuery, setSearchQuery] = useState('');
 
     const [sortBy, setSortBy] = useState('POPULAR');
@@ -111,10 +112,9 @@ export default function ProductsPage() {
         setAddingToCart(productId);
         const success = await contextAddToCart(productId);
         if (success) {
-            setShowToast(true);
-            setTimeout(() => setShowToast(false), 3000);
+            showToast('เพิ่มสินค้าลงในตะกร้าแล้ว', 'success');
         } else {
-            alert('เกิดข้อผิดพลาดในการเพิ่มสินค้า');
+            showToast('เกิดข้อผิดพลาดในการเพิ่มสินค้า', 'error');
         }
         setAddingToCart(null);
     };
@@ -286,19 +286,6 @@ export default function ProductsPage() {
                 </div>
             </div>
             <Footer />
-
-            {/* Toast Notification */}
-            <div className={`fixed bottom-8 right-8 z-50 transition-all duration-300 transform ${showToast ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0 pointer-events-none'}`}>
-                <div className="bg-brand-900 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4">
-                    <div className="bg-accent-500 rounded-full p-1">
-                        <Plus className="w-5 h-5" />
-                    </div>
-                    <div>
-                        <p className="font-bold">เพิ่มลงในตะกร้าแล้ว</p>
-                        <Link href="/cart" className="text-accent-400 text-sm hover:text-accent-300 underline font-medium">ดูตะกร้าสินค้า</Link>
-                    </div>
-                </div>
-            </div>
         </main>
     );
 }

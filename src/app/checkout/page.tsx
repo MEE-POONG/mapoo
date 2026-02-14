@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/context/ToastContext";
 
 export default function CheckoutPage() {
     const { cart, loading: cartLoading, itemCount, refreshCart } = useCart();
@@ -30,6 +31,7 @@ export default function CheckoutPage() {
     const [isSuccess, setIsSuccess] = useState(false);
     const [orderData, setOrderData] = useState<any>(null);
     const router = useRouter();
+    const { showToast } = useToast();
 
     const [formData, setFormData] = useState({
         customerName: '',
@@ -72,7 +74,7 @@ export default function CheckoutPage() {
         return acc + (price * item.quantity);
     }, 0) || 0;
 
-    const shipping = subtotal > 0 ? 40 : 0;
+    const shipping = subtotal > 0 && wholesaleItemsCount < 10 ? 40 : 0;
 
     // Calculate discount
     let discountAmount = 0;
@@ -131,7 +133,7 @@ export default function CheckoutPage() {
 
         // Final Validation
         if (!formData.phone.match(/^[0-9]{10}$/)) {
-            alert('กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง (10 หลัก)');
+            showToast('กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง (10 หลัก)', 'warning');
             return;
         }
 
@@ -182,13 +184,14 @@ export default function CheckoutPage() {
                 setIsSuccess(true);
                 // Refresh order state to clear the cart badge
                 refreshCart();
+                showToast('สั่งซื้อสินค้าเรียบร้อยแล้ว', 'success');
             } else {
                 const errorData = await res.json();
-                alert(errorData.error || 'เกิดข้อผิดพลาดในการสั่งซื้อ');
+                showToast(errorData.error || 'เกิดข้อผิดพลาดในการสั่งซื้อ', 'error');
             }
         } catch (error) {
             console.error('Checkout error:', error);
-            alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+            showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
         } finally {
             setSubmitting(false);
         }
@@ -220,7 +223,7 @@ export default function CheckoutPage() {
                         </div>
                         <h1 className="text-3xl font-bold text-brand-900 mb-4">สั่งซื้อเรียบร้อยแล้ว!</h1>
                         <p className="text-brand-600 mb-8 text-lg">
-                            ขอบคุณคุณ <span className="font-bold text-brand-900">{formData.customerName}</span> ที่ไว้วางใจ SiamSausage <br />
+                            ขอบคุณคุณ <span className="font-bold text-brand-900">{formData.customerName}</span> ที่ไว้วางใจ หมูเเดดเดียว mapoo <br />
                             กรุณาโอนเงินตามยอดด้านล่างและแจ้งชำระเงินเพื่อดำเนินการจัดส่ง
                         </p>
 
@@ -235,7 +238,7 @@ export default function CheckoutPage() {
                                 </div>
                                 <div>
                                     <p className="font-bold">ธนาคารกสิกรไทย (KBank)</p>
-                                    <p className="text-sm text-brand-300">บจก. สยามซอสเซจ</p>
+                                    <p className="text-sm text-brand-300">หมูเเดดเดียว mapoo</p>
                                     <p className="text-xl font-mono font-bold text-accent-400 tracking-wider">123-4-56789-0</p>
                                 </div>
                             </div>

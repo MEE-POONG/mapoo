@@ -6,13 +6,49 @@ import FeaturedProducts from "@/components/FeaturedProducts";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "ไส้กรอกอีสาน & หมูแดดเดียว ราคาส่ง | SiamSausage",
-    description: "สั่งซื้อไส้กรอกอีสานและหมูแดดเดียวราคาส่ง ออนไลน์ได้ที่นี่ ผลิตสดใหม่ รสดั้งเดิม จัดส่งทั่วประเทศ ยอดขายอันดับ 1 ในตลาดไท",
+    title: "หมูแดดเดียว & ไส้กรอกอีสาน ราคาส่ง | หมูเเดดเดียว mapoo",
+    description: "สั่งซื้อหมูแดดเดียวและไส้กรอกอีสานราคาส่ง ออนไลน์ได้ที่นี่ ผลิตสดใหม่ รสดั้งเดิม จัดส่งทั่วประเทศ ยอดขายอันดับ 1 ในตลาดไท",
 };
 
 export default function Home() {
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'LocalBusiness',
+        name: 'หมูเเดดเดียว mapoo',
+        image: 'https://images.unsplash.com/photo-1596796408226-5b487d605503?auto=format&fit=crop&q=80&w=1000',
+        '@id': 'https://siamsausage.com',
+        url: 'https://siamsausage.com',
+        telephone: '089-123-4567',
+        priceRange: '฿฿',
+        address: {
+            '@type': 'PostalAddress',
+            streetAddress: 'ตลาดไท',
+            addressLocality: 'Pathum Thani',
+            postalCode: '12120',
+            addressCountry: 'TH',
+        },
+        openingHoursSpecification: {
+            '@type': 'OpeningHoursSpecification',
+            dayOfWeek: [
+                'Monday',
+                'Tuesday',
+                'Wednesday',
+                'Thursday',
+                'Friday',
+                'Saturday',
+                'Sunday'
+            ],
+            opens: '08:00',
+            closes: '18:00'
+        }
+    };
+
     return (
         <main className="min-h-screen">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <Navbar />
 
             {/* Hero Section */}
@@ -25,9 +61,9 @@ export default function Home() {
                                 <span className="mr-2">🔥</span> ยอดขายอันดับ 1 ในตลาดไท
                             </div>
                             <h1 className="text-5xl lg:text-7xl font-bold tracking-tight text-brand-900 mb-6 leading-tight">
-                                ไส้กรอกอีสาน <br />
+                                หมูแดดเดียว <br />
                                 <span className="text-accent-600 bg-clip-text text-transparent bg-gradient-to-r from-accent-600 to-orange-500">
-                                    รสต้นตำรับ
+                                    สูตรแม่ปู
                                 </span>
                             </h1>
                             <p className="text-xl text-brand-600 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">

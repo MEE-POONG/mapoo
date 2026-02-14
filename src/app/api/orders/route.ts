@@ -62,7 +62,8 @@ export async function POST(request: Request) {
             return acc + (price * item.quantity);
         }, 0);
 
-        let shipping = 40;
+        // Calculate dynamic shipping: Free if 10+ kg/units, else 40 THB
+        let shipping = wholesaleItemsCount >= 10 ? 0 : 40;
         let discountAmount = 0;
 
         // 3. Validate and apply discount code if present
@@ -160,6 +161,33 @@ export async function POST(request: Request) {
 
             return newOrder;
         });
+
+        // 6. Send Notifications (Non-blocking)
+        try {
+            const customer = await prisma.customer.findUnique({
+                where: { id: customerId || '' },
+                select: { email: true }
+            });
+
+            const fullOrder = await prisma.order.findUnique({
+                where: { id: order.id },
+                include: { items: { include: { product: true } } }
+            });
+
+            if (customer?.email && fullOrder) {
+                // Import dynamically to avoid issues with edge runtime if needed, 
+                // but here we are in Node.js runtime (standard for API routes in Next.js)
+                const { sendOrderEmail } = await import('@/lib/email');
+                sendOrderEmail(customer.email, fullOrder);
+            }
+
+            if (fullOrder) {
+                const { sendNewOrderNotification } = await import('@/lib/line');
+                sendNewOrderNotification(fullOrder);
+            }
+        } catch (error) {
+            console.error('Notification error:', error);
+        }
 
         return NextResponse.json(order);
     } catch (error) {

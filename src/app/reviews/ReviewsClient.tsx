@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useToast } from "@/context/ToastContext";
 import {
     Star,
     MessageCircle,
@@ -32,6 +33,7 @@ export default function ReviewsPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const { token, customer } = useAuth();
+    const { showToast } = useToast();
 
     // Form state
     const [formData, setFormData] = useState({
@@ -90,13 +92,14 @@ export default function ReviewsPage() {
                     source: 'Website'
                 });
                 fetchReviews();
+                showToast('ขอบคุณสำหรับรีวิวความอร่อยครับ!', 'success');
             } else {
                 const errorData = await res.json();
-                alert(errorData.error || 'เกิดข้อผิดพลาดในการส่งรีวิว');
+                showToast(errorData.error || 'เกิดข้อผิดพลาดในการส่งรีวิว', 'error');
             }
         } catch (error) {
             console.error('Error submitting review:', error);
-            alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+            showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
         } finally {
             setSubmitting(false);
         }
@@ -118,7 +121,7 @@ export default function ReviewsPage() {
                         รีวิวจากลูกค้าจริง
                     </div>
                     <h1 className="text-4xl md:text-6xl font-bold text-brand-900 mb-6">ความประทับใจจากลูกค้า</h1>
-                    <p className="text-lg text-brand-500 max-w-2xl mx-auto mb-10">
+                    <p className="text-lg text-brand-50 max-w-2xl mx-auto mb-10">
                         เสียงตอบรับจากลูกค้ากว่า 1,000+ รายที่ไว้วางใจในคุณภาพรสชาติและการบริการของเรา
                     </p>
 
