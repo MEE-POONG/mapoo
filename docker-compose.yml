@@ -1,28 +1,52 @@
 version: '3.8'
 
 services:
+  # ==========================================
+  # Next.js Application (Production)
+  # ==========================================
   app:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: mapoo-dashboard
+    restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "${PORT:-7073}:3000"
     environment:
-      - DATABASE_URL=mongodb://mongodb:27017/mapoo
-      - JWT_SECRET=mapoo-super-secret-jwt-key-2024-change-in-production
-    depends_on:
-      - mongodb
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - SMTP_FROM=${SMTP_FROM}
+    networks:
+      - app-network
 
-  mongodb:
-    image: mongo:latest
+  # ==========================================
+  # Development Mode
+  # ==========================================
+  app-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: mapoo-dashboard-dev
     ports:
-      - "27017:27017"
+      - "${DEV_PORT:-7074}:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
     volumes:
-      - mongodb_data:/data/db
-    environment:
-      - MONGO_INITDB_DATABASE=mapoo
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - app-network
+    profiles:
+      - dev
 
-volumes:
-  mongodb_data:
-
-
+networks:
+  app-network:
+    driver: bridge
