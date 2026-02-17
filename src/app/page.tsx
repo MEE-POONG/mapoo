@@ -15,7 +15,7 @@ export default function Home() {
         '@context': 'https://schema.org',
         '@type': 'LocalBusiness',
         name: 'หมูเเดดเดียว mapoo',
-        image: 'https://images.unsplash.com/photo-1596796408226-5b487d605503?auto=format&fit=crop&q=80&w=1000',
+        image: '/2026-02-17 155123.png',
         '@id': 'https://siamsausage.com',
         url: 'https://siamsausage.com',
         telephone: '089-123-4567',
@@ -105,8 +105,8 @@ export default function Home() {
 
                             <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white rotate-2 hover:rotate-0 transition-transform duration-500">
                                 <img
-                                    src="https://images.unsplash.com/photo-1596796408226-5b487d605503?auto=format&fit=crop&q=80&w=1000"
-                                    alt="ไส้กรอกอีสานย่างร้อนๆ"
+                                    src="/2026-02-17 155123.png"
+                                    alt="หมูแดดเดียวสูตรแม่ปู ทอดเสร็จใหม่ๆ สวยงามน่ารับประทาน"
                                     className="object-cover w-full h-[600px] hover:scale-105 transition-transform duration-700"
                                 />
 
