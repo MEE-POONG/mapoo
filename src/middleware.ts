@@ -43,7 +43,7 @@ export function middleware(request: NextRequest) {
         // Skip check for login and setup pages
         if (pathname === '/admin/login' || pathname === '/admin/setup') {
             if (adminToken) {
-                return NextResponse.redirect(new URL('/admin/dashboard', request.url));
+                return NextResponse.redirect(new URL('/admin', request.url));
             }
             return NextResponse.next();
         }
