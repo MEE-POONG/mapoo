@@ -47,12 +47,18 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const verifyToken = async (tokenToVerify: string) => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+
         try {
             const res = await fetch('/api/admin/auth/verify', {
                 headers: {
                     'Authorization': `Bearer ${tokenToVerify}`
-                }
+                },
+                signal: controller.signal
             });
+
+            clearTimeout(timeoutId);
 
             if (res.ok) {
                 const data = await res.json();
@@ -63,10 +69,16 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
                 localStorage.removeItem('admin_data');
                 setAdmin(null);
                 setToken(null);
+                // Clear cookie
+                document.cookie = 'admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
             }
         } catch (error) {
             console.error('Token verification error:', error);
+            // On error (timeout), we still want to stop loading
+            // We might want to keep the local state if it's just a temporary network blip
+            // but for safety, if we can't verify, we might want to stay in loading or just proceed
         } finally {
+            clearTimeout(timeoutId);
             setIsLoading(false);
         }
     };

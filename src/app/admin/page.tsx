@@ -120,19 +120,46 @@ export default function AdminDashboard() {
         router.push('/admin/login');
     };
 
-    if (authLoading || (!isAuthenticated && !authLoading)) {
+    // 1. Initial Auth Check (Dark Background)
+    if (authLoading) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-                <Loader2 className="w-12 h-12 text-amber-500 animate-spin" />
+                <div className="text-center">
+                    <Loader2 className="w-12 h-12 text-amber-500 animate-spin mx-auto mb-4" />
+                    <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Verifying Credentials...</p>
+                </div>
             </div>
         );
     }
 
+    // 2. Not Authenticated (will be handled by useEffect redirect, but show one last loader just in case)
+    if (!isAuthenticated) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+                <div className="text-center">
+                    <Loader2 className="w-12 h-12 text-amber-500 animate-spin mx-auto mb-4" />
+                    <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Redirecting to Login...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // 3. Authenticated but Stats still loading (Light Background - within Dashboard)
+    // We show the Header first to make it feel faster
     if (loading && !stats) {
         return (
-            <div className="min-h-screen bg-gray-50/50 flex items-center justify-center">
-                <Loader2 className="w-12 h-12 text-accent-500 animate-spin" />
-            </div>
+            <main className="min-h-screen bg-[#F8F9FB]">
+                <AdminHeader />
+                <div className="flex flex-col items-center justify-center py-40">
+                    <div className="relative">
+                        <div className="w-20 h-20 border-4 border-amber-100 border-t-amber-500 rounded-full animate-spin" />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <ShieldCheck className="w-8 h-8 text-amber-500" />
+                        </div>
+                    </div>
+                    <p className="mt-6 text-gray-500 font-black uppercase tracking-[0.3em] text-[10px]">Loading Dashboard Data...</p>
+                </div>
+            </main>
         );
     }
 
