@@ -10,58 +10,83 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const orders = await prisma.order.findMany({
-            include: {
-                items: {
-                    include: {
-                        product: true
+        // Optimizing: Use date boundaries for today's orders
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+        const endOfToday = new Date();
+        endOfToday.setHours(23, 59, 59, 999);
+
+        // Fetch today's orders separately for the list (more efficient than filtering all orders)
+        const [orders, todayOrdersList] = await Promise.all([
+            prisma.order.findMany({
+                where: { status: { not: 'CANCELLED' } },
+                select: {
+                    totalAmount: true,
+                    status: true,
+                    items: {
+                        select: {
+                            quantity: true,
+                            price: true,
+                            productId: true,
+                            product: {
+                                select: {
+                                    name: true,
+                                    costPrice: true
+                                }
+                            }
+                        }
                     }
                 }
-            }
-        });
+            }),
+            prisma.order.findMany({
+                where: {
+                    createdAt: {
+                        gte: startOfToday,
+                        lte: endOfToday
+                    }
+                },
+                include: {
+                    items: {
+                        include: {
+                            product: {
+                                select: {
+                                    name: true,
+                                    imageUrl: true
+                                }
+                            }
+                        }
+                    }
+                },
+                orderBy: { createdAt: 'desc' }
+            })
+        ]);
 
-        const totalRevenue = orders
-            .filter(order => order.status !== 'CANCELLED')
-            .reduce((acc, order) => acc + order.totalAmount, 0);
-
+        const totalRevenue = orders.reduce((acc, order) => acc + order.totalAmount, 0);
         const totalOrders = orders.length;
 
-        // Calculate profit (only for non-cancelled orders)
+        // Calculate profit efficiently
         let totalProfit = 0;
-        orders.filter(order => order.status !== 'CANCELLED').forEach(order => {
+        const productStats: Record<string, { name: string, quantity: number, revenue: number }> = {};
+
+        orders.forEach(order => {
             let orderCost = 0;
             order.items.forEach(item => {
                 const cost = item.product.costPrice || 0;
                 orderCost += cost * item.quantity;
-            });
-            totalProfit += (order.totalAmount - orderCost);
-        });
 
-        // Top selling products (only from non-cancelled orders)
-        const productStats: Record<string, { name: string, quantity: number, revenue: number }> = {};
-        orders.filter(order => order.status !== 'CANCELLED').forEach(order => {
-            order.items.forEach(item => {
+                // Group product stats while we are at it
                 if (!productStats[item.productId]) {
                     productStats[item.productId] = { name: item.product.name, quantity: 0, revenue: 0 };
                 }
                 productStats[item.productId].quantity += item.quantity;
                 productStats[item.productId].revenue += item.price * item.quantity;
             });
+            totalProfit += (order.totalAmount - orderCost);
         });
 
         const topProducts = Object.values(productStats)
             .sort((a, b) => b.quantity - a.quantity)
             .slice(0, 5);
-
-        // Get today's orders
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const todayOrdersList = orders.filter(order => {
-            const orderDate = new Date(order.createdAt);
-            orderDate.setHours(0, 0, 0, 0);
-            return orderDate.getTime() === today.getTime();
-        }).reverse();
 
         const todayOrdersCount = todayOrdersList.length;
 
