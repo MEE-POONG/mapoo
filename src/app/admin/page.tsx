@@ -55,17 +55,38 @@ import AdminHeader from '@/components/AdminHeader';
 
 export default function AdminDashboard() {
     const router = useRouter();
-    const { admin, token, isLoading: authLoading, isAuthenticated, logout } = useAdminAuth();
-
+    const { admin, token, isLoading: authLoading, isAuthenticated, logout, clearStorageAndReload } = useAdminAuth();
     const [stats, setStats] = useState<Stats | null>(null);
     const [loading, setLoading] = useState(true);
     const [updatingId, setUpdatingId] = useState<string | null>(null);
     const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
+    const [showResetButton, setShowResetButton] = useState(false);
+
+    // Emergency Reset Timer: If it takes more than 5s, show the reset button
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+        if (authLoading || (loading && !stats)) {
+            timer = setTimeout(() => {
+                setShowResetButton(true);
+            }, 5000);
+        } else {
+            setShowResetButton(false);
+        }
+        return () => clearTimeout(timer);
+    }, [authLoading, loading, stats]);
 
     // Redirect if not authenticated
     useEffect(() => {
         if (!authLoading && !isAuthenticated) {
             router.push('/admin/login');
+
+            // Fallback: if client-side navigation hangs, force a full reload after 2 seconds
+            const timeout = setTimeout(() => {
+                if (window.location.pathname !== '/admin/login') {
+                    window.location.href = '/admin/login';
+                }
+            }, 2000);
+            return () => clearTimeout(timeout);
         }
     }, [authLoading, isAuthenticated, router]);
 
@@ -123,10 +144,31 @@ export default function AdminDashboard() {
     // 1. Initial Auth Check (Dark Background)
     if (authLoading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-                <div className="text-center">
-                    <Loader2 className="w-12 h-12 text-amber-500 animate-spin mx-auto mb-4" />
-                    <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Verifying Credentials...</p>
+            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-6">
+                <div className="text-center max-w-sm w-full">
+                    <div className="relative mb-8">
+                        <div className="w-20 h-20 border-4 border-amber-500/20 border-t-amber-500 rounded-full animate-spin mx-auto" />
+                        <div className="absolute inset-0 flex items-center justify-center text-amber-500">
+                            <ShieldCheck className="w-8 h-8" />
+                        </div>
+                    </div>
+
+                    <h2 className="text-white text-xl font-bold mb-2">Verifying Credentials</h2>
+                    <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mb-8">Siam Sausage Security Terminal</p>
+
+                    {showResetButton && (
+                        <div className="animate-in fade-in zoom-in duration-500">
+                            <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6 mb-4">
+                                <p className="text-amber-200 text-xs mb-4">ระบบหมุนนานผิดปกติ? ลองล้างข้อมูลแล้วเข้าใหม่ดูครับ</p>
+                                <button
+                                    onClick={clearStorageAndReload}
+                                    className="w-full py-3 bg-amber-500 text-white font-black rounded-xl hover:bg-amber-600 transition-all shadow-lg shadow-amber-500/20 text-xs uppercase"
+                                >
+                                    ล้างข้อมูลเซสชันและเข้าใหม่
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         );
@@ -150,14 +192,22 @@ export default function AdminDashboard() {
         return (
             <main className="min-h-screen bg-[#F8F9FB]">
                 <AdminHeader />
-                <div className="flex flex-col items-center justify-center py-40">
-                    <div className="relative">
-                        <div className="w-20 h-20 border-4 border-amber-100 border-t-amber-500 rounded-full animate-spin" />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <ShieldCheck className="w-8 h-8 text-amber-500" />
-                        </div>
+                <div className="flex flex-col items-center justify-center py-40 p-6 text-center">
+                    <div className="relative mb-6">
+                        <div className="w-16 h-16 border-4 border-amber-100 border-t-amber-500 rounded-full animate-spin" />
                     </div>
-                    <p className="mt-6 text-gray-500 font-black uppercase tracking-[0.3em] text-[10px]">Loading Dashboard Data...</p>
+                    <p className="text-gray-500 font-black uppercase tracking-[0.3em] text-[10px] mb-8">Accessing Encrypted Data...</p>
+
+                    {showResetButton && (
+                        <div className="max-w-xs animate-in fade-in slide-in-from-bottom-4 duration-700">
+                            <button
+                                onClick={clearStorageAndReload}
+                                className="text-amber-600 font-bold text-xs underline hover:text-amber-700"
+                            >
+                                ข้อมูลไม่โหลด? กดลองใหม่ตรงนี้ครับ
+                            </button>
+                        </div>
+                    )}
                 </div>
             </main>
         );

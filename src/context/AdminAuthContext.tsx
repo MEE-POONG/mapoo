@@ -16,6 +16,7 @@ interface AdminAuthContextType {
     isAuthenticated: boolean;
     login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
     logout: () => void;
+    clearStorageAndReload: () => void;
 }
 
 const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefined);
@@ -121,6 +122,11 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         document.cookie = 'admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     };
 
+    const clearStorageAndReload = () => {
+        logout();
+        window.location.href = '/admin/login';
+    };
+
     return (
         <AdminAuthContext.Provider value={{
             admin,
@@ -128,7 +134,8 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
             isLoading,
             isAuthenticated: !!admin && !!token,
             login,
-            logout
+            logout,
+            clearStorageAndReload
         }}>
             {children}
         </AdminAuthContext.Provider>
