@@ -53,33 +53,33 @@ export default function Home() {
 
             {/* Hero Section */}
             <header className="relative pt-20 overflow-hidden">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-24 lg:pt-32 lg:pb-40">
-                    <div className="lg:grid lg:grid-cols-2 lg:gap-8 items-center">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-20 lg:pt-32 lg:pb-40">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
                         {/* Text Content */}
                         <div className="text-center lg:text-left z-10 relative">
                             <div className="inline-flex items-center px-3 py-1 rounded-full bg-orange-100 text-orange-800 text-sm font-semibold mb-6 border border-orange-200">
                                 <span className="mr-2">🔥</span> ยอดขายอันดับ 1 ในตลาดไท
                             </div>
-                            <h1 className="text-5xl lg:text-7xl font-bold tracking-tight text-brand-900 mb-6 leading-tight">
+                            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-brand-900 mb-6 leading-tight">
                                 หมูแดดเดียว <br />
                                 <span className="text-accent-600 bg-clip-text text-transparent bg-gradient-to-r from-accent-600 to-orange-500">
                                     สูตรแม่ปู
                                 </span>
                             </h1>
-                            <p className="text-xl text-brand-600 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                                หมูล้วน มันน้อย เปรี้ยวกำลังดี สูตรลับจากรุ่นสู่รุ่น <br />
+                            <p className="text-lg sm:text-xl text-brand-600 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                                หมูล้วน มันน้อย เปรี้ยวกำลังดี สูตรลับจากรุ่นสู่รุ่น <br className="hidden sm:block" />
                                 เหมาะสำหรับร้านทอด ร้านปิ้งย่าง กำไรดี คืนทุนไว
                             </p>
-                            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start px-4 sm:px-0">
                                 <Link
                                     href="/products"
-                                    className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-medium rounded-2xl text-white bg-accent-600 hover:bg-accent-700 shadow-lg shadow-orange-500/30 transition-all hover:-translate-y-1"
+                                    className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-medium rounded-2xl text-white bg-accent-600 hover:bg-accent-700 shadow-lg shadow-orange-500/30 transition-all hover:-translate-y-1 w-full sm:w-auto"
                                 >
                                     สั่งซื้อราคาส่ง
                                 </Link>
                                 <Link
                                     href="/reviews"
-                                    className="inline-flex items-center justify-center px-8 py-4 border-2 border-brand-200 text-lg font-medium rounded-2xl text-brand-700 bg-white hover:bg-brand-50 hover:border-brand-300 transition-all font-bold"
+                                    className="inline-flex items-center justify-center px-8 py-4 border-2 border-brand-200 text-lg font-medium rounded-2xl text-brand-700 bg-white hover:bg-brand-50 hover:border-brand-300 transition-all font-bold w-full sm:w-auto"
                                 >
                                     ดูรีวิวลูกค้า ⭐️
                                 </Link>
@@ -107,7 +107,7 @@ export default function Home() {
                                 <img
                                     src="/2026-02-17 155123.png"
                                     alt="หมูแดดเดียวสูตรแม่ปู ทอดเสร็จใหม่ๆ สวยงามน่ารับประทาน"
-                                    className="object-cover w-full h-[600px] hover:scale-105 transition-transform duration-700"
+                                    className="object-cover w-full h-[400px] sm:h-[500px] lg:h-[600px] hover:scale-105 transition-transform duration-700"
                                 />
 
                                 {/* Floating Card */}
@@ -148,7 +148,7 @@ export default function Home() {
             <section className="py-20 bg-brand-900 text-white relative overflow-hidden">
                 <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/food.png')]"></div>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
                         <div className="p-6">
                             <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6 text-3xl">🐷</div>
                             <h4 className="text-lg font-bold mb-2">หมูสดจากฟาร์ม</h4>
@@ -184,10 +184,10 @@ export default function Home() {
                     <div className="space-y-6">
                         <div className="group bg-brand-50 p-6 rounded-3xl border border-transparent hover:border-accent-200 transition-all">
                             <h4 className="font-bold text-brand-900 text-lg mb-2 flex items-center gap-3">
-                                <span className="w-8 h-8 rounded-full bg-accent-500 text-white flex items-center justify-center text-sm">Q</span>
+                                <span className="w-8 h-8 rounded-full bg-accent-500 text-white flex-shrink-0 flex items-center justify-center text-sm">Q</span>
                                 สินค้าส่งกี่วันถึง จะเสียไหม?
                             </h4>
-                            <p className="text-brand-600 pl-11">
+                            <p className="text-brand-600 pl-0 sm:pl-11">
                                 ทางร้านใช้เวลาจัดส่ง 1-2 วันครับ เราแพ็คสุญญากาศอย่างดีและส่งผ่านรถห้องเย็นในบางพื้นที่
                                 รับประกันสินค้าไม่เสีย 100% หากได้รับแล้วมีปัญหา ทางร้านยินดีเคลมให้ทันทีครับ
                             </p>
@@ -195,10 +195,10 @@ export default function Home() {
 
                         <div className="group bg-brand-50 p-6 rounded-3xl border border-transparent hover:border-accent-200 transition-all">
                             <h4 className="font-bold text-brand-900 text-lg mb-2 flex items-center gap-3">
-                                <span className="w-8 h-8 rounded-full bg-accent-500 text-white flex items-center justify-center text-sm">Q</span>
+                                <span className="w-8 h-8 rounded-full bg-accent-500 text-white flex-shrink-0 flex items-center justify-center text-sm">Q</span>
                                 เก็บไว้ได้นานแค่ไหน?
                             </h4>
-                            <p className="text-brand-600 pl-11">
+                            <p className="text-brand-600 pl-0 sm:pl-11">
                                 แช่ตู้เย็นช่องธรรมดาเก็บได้ 1 สัปดาห์ หากแช่ช่องฟรีซ (ช่องแข็ง) จะเก็บได้นานถึง 1-2 เดือนครับ
                                 แนะนำให้แบ่งทานเท่าที่ต้องการเพื่อความสดใหม่
                             </p>
@@ -206,10 +206,10 @@ export default function Home() {
 
                         <div className="group bg-brand-50 p-6 rounded-3xl border border-transparent hover:border-accent-200 transition-all">
                             <h4 className="font-bold text-brand-900 text-lg mb-2 flex items-center gap-3">
-                                <span className="w-8 h-8 rounded-full bg-accent-500 text-white flex items-center justify-center text-sm">Q</span>
+                                <span className="w-8 h-8 rounded-full bg-accent-500 text-white flex-shrink-0 flex items-center justify-center text-sm">Q</span>
                                 สนใจสมัครตัวแทน/ซื้อราคาส่ง ต้องทำอย่างไร?
                             </h4>
-                            <p className="text-brand-600 pl-11">
+                            <p className="text-brand-600 pl-0 sm:pl-11">
                                 สามารถดู <Link href="/wholesale" className="text-accent-600 font-bold underline">เรทราคาส่ง</Link> ได้ที่หน้าหลักครับ
                                 เริ่มต้นเพียง 10 กิโลกรัมเท่านั้น หรือทักแชทสอบถามแอดมินทาง LINE ได้ตลอดเวลาครับ
                             </p>
