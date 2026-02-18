@@ -55,7 +55,7 @@ export default function WholesalePage() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
 
                 {/* Benefits */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
                     <div className="bg-white p-8 rounded-2xl shadow-sm border border-brand-100 text-center">
                         <div className="w-14 h-14 bg-accent-100 text-accent-600 rounded-full flex items-center justify-center mx-auto mb-4">
                             <DollarSign className="w-8 h-8" />

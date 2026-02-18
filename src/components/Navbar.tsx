@@ -65,12 +65,12 @@ export default function Navbar() {
                     </Link>
 
                     {/* Desktop Menu */}
-                    <div className="hidden md:flex space-x-8 items-center">
+                    <div className="hidden md:flex md:space-x-4 lg:space-x-8 items-center">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className={`font-medium transition-all duration-300 relative group ${pathname === link.href ? 'text-accent-600' : 'text-brand-700 hover:text-accent-600'
+                                className={`font-medium text-sm lg:text-base transition-all duration-300 relative group ${pathname === link.href ? 'text-accent-600' : 'text-brand-700 hover:text-accent-600'
                                     }`}
                             >
                                 {link.name}
