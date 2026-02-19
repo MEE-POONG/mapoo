@@ -79,9 +79,9 @@ export default function RegisterPage() {
                 {/* Back button */}
                 <Link
                     href="/"
-                    className="inline-flex items-center gap-2 text-brand-600 hover:text-brand-800 mb-6 group transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm text-brand-700 rounded-xl font-bold shadow-sm border border-brand-100 hover:text-accent-600 hover:border-accent-200 transition-all active:scale-95 group mb-6"
                 >
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                    <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
                     <span>กลับหน้าหลัก</span>
                 </Link>
 

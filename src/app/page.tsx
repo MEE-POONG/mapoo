@@ -14,7 +14,7 @@ export default function Home() {
     const jsonLd = {
         '@context': 'https://schema.org',
         '@type': 'LocalBusiness',
-        name: 'หมูเเดดเดียว mapoo',
+        name: 'หมูเเดดเดียว',
         image: '/2026-02-17 155123.png',
         '@id': 'https://siamsausage.com',
         url: 'https://siamsausage.com',

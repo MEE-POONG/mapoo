@@ -126,11 +126,6 @@ export default function TrackOrderPage() {
             <Navbar />
 
             <main className="max-w-3xl mx-auto px-4 pt-28 pb-16">
-                <Link href="/" className="inline-flex items-center gap-2 text-brand-600 hover:text-brand-800 mb-6 group transition-colors">
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    กลับหน้าหลัก
-                </Link>
-
                 <div className="text-center mb-8">
                     <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-accent-500 to-brand-600 rounded-2xl mb-4 shadow-lg shadow-accent-500/30">
                         <Search className="w-8 h-8 text-white" />
