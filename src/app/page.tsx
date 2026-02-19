@@ -6,15 +6,15 @@ import FeaturedProducts from "@/components/FeaturedProducts";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "หมูแดดเดียว & ไส้กรอกอีสาน ราคาส่ง | หมูเเดดเดียว mapoo",
-    description: "สั่งซื้อหมูแดดเดียวและไส้กรอกอีสานราคาส่ง ออนไลน์ได้ที่นี่ ผลิตสดใหม่ รสดั้งเดิม จัดส่งทั่วประเทศ ยอดขายอันดับ 1 ในตลาดไท",
+    title: "คุณปู หมูแดดเดียว & ไส้กรอกอีสาน ราคาส่ง โคราช",
+    description: "สั่งซื้อหมูแดดเดียวและไส้กรอกอีสานราคาส่ง ออนไลน์ได้ที่นี่ ผลิตสดใหม่ รสดั้งเดิม จัดส่งทั่วประเทศ ยอดขายอันดับ 1 ในตลาดไท โดยคุณปู หมูแดดเดียว โคราช",
 };
 
 export default function Home() {
     const jsonLd = {
         '@context': 'https://schema.org',
         '@type': 'LocalBusiness',
-        name: 'หมูเเดดเดียว',
+        name: 'คุณปู หมูแดดเดียว โคราช',
         image: '/2026-02-17 155123.png',
         '@id': 'https://siamsausage.com',
         url: 'https://siamsausage.com',
@@ -58,12 +58,12 @@ export default function Home() {
                         {/* Text Content */}
                         <div className="text-center lg:text-left z-10 relative">
                             <div className="inline-flex items-center px-3 py-1 rounded-full bg-orange-100 text-orange-800 text-sm font-semibold mb-6 border border-orange-200">
-                                <span className="mr-2">🔥</span> ยอดขายอันดับ 1 ในตลาดไท
+                                <span className="mr-2">🔥</span> 1 ในสินค้า OTOP จังหวัดนครราชสีมา
                             </div>
                             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-brand-900 mb-6 leading-tight">
-                                หมูแดดเดียว <br />
+                                คุณปู หมูแดดเดียว <br />
                                 <span className="text-accent-600 bg-clip-text text-transparent bg-gradient-to-r from-accent-600 to-orange-500">
-                                    สูตรแม่ปู
+                                    โคราช
                                 </span>
                             </h1>
                             <p className="text-lg sm:text-xl text-brand-600 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
@@ -105,7 +105,7 @@ export default function Home() {
 
                             <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white rotate-2 hover:rotate-0 transition-transform duration-500">
                                 <img
-                                    src="/2026-02-17 155123.png"
+                                    src="/edited-photo.png"
                                     alt="หมูแดดเดียวสูตรแม่ปู ทอดเสร็จใหม่ๆ สวยงามน่ารับประทาน"
                                     className="object-cover w-full h-[400px] sm:h-[500px] lg:h-[600px] hover:scale-105 transition-transform duration-700"
                                 />

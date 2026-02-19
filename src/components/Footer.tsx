@@ -11,9 +11,13 @@ export default function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
                     {/* Brand Column */}
                     <div>
-                        <Link href="/" className="flex items-center gap-2 mb-6">
-                            <div className="w-10 h-10 bg-accent-500 rounded-full flex items-center justify-center text-white font-bold font-serif text-xl border-2 border-white/20">M</div>
-                            <span className="font-bold text-2xl tracking-tight text-white">หมูเเดดเดียว mapoo</span>
+                        <Link href="/" className="flex items-center gap-2 mb-6 group">
+                            <img
+                                src="/logo.png"
+                                alt="Logo"
+                                className="w-10 h-10 object-contain group-hover:rotate-12 transition-transform duration-300"
+                            />
+                            <span className="font-bold text-2xl tracking-tight text-white group-hover:text-accent-400 transition-colors">คุณปู หมูแดดเดียว โคราช</span>
                         </Link>
                         <p className="text-brand-300 text-sm leading-relaxed mb-6">
                             ต้นตำรับหมูแดดเดียวและไส้กรอกอีสาน สูตรลับกว่า 20 ปี
@@ -75,7 +79,7 @@ export default function Footer() {
                 </div>
 
                 <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-brand-400">
-                    <p>&copy; 2026 หมูเเดดเดียว mapoo & Co. All rights reserved.</p>
+                    <p>&copy; 2026 คุณปู หมูแดดเดียว โคราช & Co. All rights reserved.</p>
                     <div className="flex gap-6">
                         <a href="#" className="hover:text-white transition-colors">นโยบายความเป็นส่วนตัว</a>
                         <a href="#" className="hover:text-white transition-colors">เงื่อนไขการให้บริการ</a>

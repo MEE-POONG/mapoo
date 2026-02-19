@@ -57,10 +57,14 @@ export default function Navbar() {
                 <div className="flex justify-between items-center h-20">
                     {/* Logo */}
                     <Link href="/" className="flex-shrink-0 flex items-center gap-2 cursor-pointer group">
-                        <div className="w-10 h-10 bg-accent-500 rounded-full flex items-center justify-center text-white text-xl font-bold font-serif group-hover:rotate-12 transition-transform duration-300">M</div>
+                        <img
+                            src="/logo.png"
+                            alt=" Logo"
+                            className="w-10 h-10 object-contain group-hover:rotate-12 transition-transform duration-300"
+                        />
                         <div>
-                            <span className="font-bold text-2xl tracking-tight text-brand-800 group-hover:text-accent-600 transition-colors">หมูเเดดเดียว</span>
-                            <p className="text-xs text-brand-500 -mt-1 tracking-wider uppercase font-semibold">Thai Taste</p>
+                            <span className="font-bold text-2xl tracking-tight text-brand-800 group-hover:text-accent-600 transition-colors">คุณปู หมูแดดเดียว</span>
+                            <p className="text-xs text-brand-500 -mt-1 tracking-wider uppercase font-semibold">โคราช</p>
                         </div>
                     </Link>
 

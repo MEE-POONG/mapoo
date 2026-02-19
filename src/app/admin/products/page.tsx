@@ -197,44 +197,44 @@ export default function AdminProductsPage() {
         <main className="min-h-screen bg-[#F8F9FB]">
             <AdminHeader />
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
                 {/* Page Header */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
-                    <div className="flex items-center gap-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-8 mb-6 md:mb-10">
+                    <div className="flex items-center gap-4 md:gap-6">
                         <Link
                             href="/admin"
-                            className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 hover:border-gray-900 transition-all group"
+                            className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-xl md:rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 hover:border-gray-900 transition-all group"
                         >
-                            <ChevronLeft className="w-6 h-6 text-gray-400 group-hover:text-gray-900" />
+                            <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-gray-400 group-hover:text-gray-900" />
                         </Link>
                         <div>
-                            <div className="flex items-center gap-3 mb-1">
-                                <div className="w-8 h-8 bg-green-50 rounded-xl flex items-center justify-center">
-                                    <Package className="w-4 h-4 text-green-600" />
+                            <div className="flex items-center gap-2 md:gap-3 mb-0.5 md:mb-1">
+                                <div className="hidden sm:flex w-6 h-6 md:w-8 md:h-8 bg-green-50 rounded-lg flex items-center justify-center">
+                                    <Package className="w-3 h-3 md:w-4 md:h-4 text-green-600" />
                                 </div>
-                                <h1 className="text-3xl font-black text-gray-900 tracking-tight">คลังเก็บสินค้า</h1>
+                                <h1 className="text-xl md:text-3xl font-black text-gray-900 tracking-tight">คลังเก็บสินค้า</h1>
                             </div>
-                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider ml-11">Management & Stock Control: {products.length} Items Total</p>
+                            <p className="text-[8px] md:text-[10px] text-gray-400 font-bold uppercase tracking-wider ml-1 sm:ml-11">{products.length} Items Total</p>
                         </div>
                     </div>
 
                     <button
                         onClick={() => handleOpenModal()}
-                        className="bg-gray-900 text-white px-8 py-4 rounded-[1.5rem] font-black flex items-center justify-center gap-3 hover:scale-[1.02] transition-all shadow-xl shadow-gray-200"
+                        className="bg-gray-900 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl md:rounded-[1.5rem] font-black text-sm md:text-base flex items-center justify-center gap-2 md:gap-3 hover:scale-[1.02] transition-all shadow-lg"
                     >
-                        <Plus className="w-6 h-6" />
-                        เพิ่มสินค้าใหม่
+                        <Plus className="w-5 h-5 md:w-6 md:h-6" />
+                        เพิ่มสินค้า
                     </button>
                 </div>
 
                 {/* Search and Filters */}
-                <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 mb-10 flex flex-col md:flex-row items-stretch md:items-center gap-6 ring-4 ring-gray-100/50">
+                <div className="bg-white p-3 md:p-6 rounded-2xl md:rounded-[2rem] shadow-sm border border-gray-100 mb-6 md:mb-10 flex flex-col md:flex-row items-stretch md:items-center gap-4 md:gap-6 ring-4 ring-gray-100/50">
                     <div className="relative flex-1 group">
-                        <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 w-5 h-5 group-focus-within:text-gray-900 transition-colors" />
+                        <Search className="absolute left-4 md:left-5 top-1/2 -translate-y-1/2 text-gray-300 w-4 h-4 md:w-5 md:h-5 group-focus-within:text-gray-900 transition-colors" />
                         <input
                             type="text"
-                            placeholder="ค้นหาตามชื่อสินค้า หรือ หมวดหมู่..."
-                            className="w-full pl-14 pr-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all font-bold placeholder:font-medium placeholder:text-gray-300"
+                            placeholder="ค้นหาชื่อสินค้า หรือ หมวดหมู่..."
+                            className="w-full pl-10 md:pl-14 pr-4 md:pr-6 py-2.5 md:py-4 bg-gray-50 border-none rounded-xl md:rounded-2xl focus:ring-2 focus:ring-gray-900 focus:bg-white transition-all text-sm md:text-base font-bold placeholder:font-medium placeholder:text-gray-300"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -252,38 +252,38 @@ export default function AdminProductsPage() {
                             <table className="w-full text-left">
                                 <thead className="bg-gray-50/80 border-b border-gray-100">
                                     <tr>
-                                        <th className="px-6 py-4 text-sm font-bold text-gray-500 uppercase">สินค้า</th>
-                                        <th className="px-6 py-4 text-sm font-bold text-gray-500 uppercase">หมวดหมู่</th>
-                                        <th className="px-6 py-4 text-sm font-bold text-gray-500 uppercase">ราคา/ต้นทุน</th>
-                                        <th className="px-6 py-4 text-sm font-bold text-gray-500 uppercase">สต๊อก</th>
-                                        <th className="px-6 py-4 text-sm font-bold text-gray-500 uppercase">การจัดการ</th>
+                                        <th className="px-3 md:px-6 py-3 md:py-4 text-[10px] md:text-sm font-bold text-gray-500 uppercase">สินค้า</th>
+                                        <th className="px-3 md:px-6 py-3 md:py-4 text-[10px] md:text-sm font-bold text-gray-500 uppercase hidden sm:table-cell">หมวดหมู่</th>
+                                        <th className="px-3 md:px-6 py-3 md:py-4 text-[10px] md:text-sm font-bold text-gray-500 uppercase">ราคา</th>
+                                        <th className="px-3 md:px-6 py-3 md:py-4 text-[10px] md:text-sm font-bold text-gray-500 uppercase">สต๊อก</th>
+                                        <th className="px-3 md:px-6 py-3 md:py-4 text-[10px] md:text-sm font-bold text-gray-500 uppercase text-center">จัดการ</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-50">
                                     {filteredProducts.map((p) => (
                                         <tr key={p.id} className="hover:bg-gray-50/50 transition-colors group">
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-14 h-14 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
+                                            <td className="px-3 md:px-6 py-3 md:py-4">
+                                                <div className="flex items-center gap-2 md:gap-4">
+                                                    <div className="w-10 h-10 md:w-14 md:h-14 rounded-lg md:rounded-xl overflow-hidden bg-gray-100 flex-shrink-0 border border-gray-100">
                                                         <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
                                                     </div>
-                                                    <div>
-                                                        <p className="font-bold text-gray-900 line-clamp-1">{p.name}</p>
-                                                        <p className="text-xs text-gray-400 line-clamp-1">{p.unit}</p>
+                                                    <div className="min-w-0">
+                                                        <p className="font-bold text-gray-900 text-xs md:text-sm line-clamp-1">{p.name}</p>
+                                                        <p className="text-[9px] md:text-xs text-gray-400 line-clamp-1">{p.unit}</p>
                                                         {p.isFeatured && (
-                                                            <span className="inline-block mt-1 px-2 py-0.5 bg-accent-100 text-accent-700 text-[10px] font-bold rounded-full uppercase">Recommend</span>
+                                                            <span className="inline-block mt-0.5 px-1.5 py-0.5 bg-orange-100 text-orange-700 text-[8px] md:text-[9px] font-black rounded-full uppercase">Recommend</span>
                                                         )}
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4">
-                                                <span className="px-3 py-1 bg-brand-50 text-brand-700 rounded-lg text-sm font-medium">
+                                            <td className="px-3 md:px-6 py-3 md:py-4 hidden sm:table-cell">
+                                                <span className="px-2 py-1 bg-brand-50 text-brand-700 rounded-lg text-[10px] md:text-xs font-bold">
                                                     {p.category}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4">
-                                                <p className="font-bold text-gray-900">฿{p.price}</p>
-                                                <p className="text-[10px] text-gray-400 font-medium">ทุน: ฿{p.costPrice || 0}</p>
+                                            <td className="px-3 md:px-6 py-3 md:py-4">
+                                                <p className="font-bold text-gray-900 text-xs md:text-sm">฿{p.price}</p>
+                                                <p className="text-[8px] md:text-[10px] text-gray-400 font-medium">ทุน: ฿{p.costPrice || 0}</p>
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-2">
@@ -294,21 +294,21 @@ export default function AdminProductsPage() {
                                                     </span>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center gap-2">
+                                            <td className="px-3 md:px-6 py-3 md:py-4 text-center">
+                                                <div className="flex items-center justify-center gap-1 md:gap-2">
                                                     <button
                                                         onClick={() => handleOpenModal(p)}
-                                                        className="p-2 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-all"
+                                                        className="p-1.5 md:p-2 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-all"
                                                         title="แก้ไข"
                                                     >
-                                                        <Pencil className="w-5 h-5" />
+                                                        <Pencil className="w-4 h-4 md:w-5 md:h-5" />
                                                     </button>
                                                     <button
                                                         onClick={() => handleDelete(p.id)}
-                                                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                                                        className="p-1.5 md:p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
                                                         title="ลบ"
                                                     >
-                                                        <Trash2 className="w-5 h-5" />
+                                                        <Trash2 className="w-4 h-4 md:w-5 md:h-5" />
                                                     </button>
                                                 </div>
                                             </td>

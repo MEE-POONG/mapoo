@@ -167,32 +167,32 @@ export default function AdminWholesalePage() {
         <main className="min-h-screen bg-[#F8F9FB]">
             <AdminHeader />
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
                 {/* Page Header */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
-                    <div className="flex items-center gap-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-8 mb-6 md:mb-10">
+                    <div className="flex items-center gap-4 md:gap-6">
                         <Link
                             href="/admin"
-                            className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 hover:border-gray-900 transition-all group"
+                            className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-xl md:rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 hover:border-gray-900 transition-all group"
                         >
-                            <ChevronLeft className="w-6 h-6 text-gray-400 group-hover:text-gray-900" />
+                            <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-gray-400 group-hover:text-gray-900" />
                         </Link>
                         <div>
-                            <div className="flex items-center gap-3 mb-1">
-                                <div className="w-8 h-8 bg-blue-50 rounded-xl flex items-center justify-center">
-                                    <TrendingUp className="w-4 h-4 text-blue-600" />
+                            <div className="flex items-center gap-2 md:gap-3 mb-0.5 md:mb-1">
+                                <div className="hidden sm:flex w-6 h-6 md:w-8 md:h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                                    <TrendingUp className="w-3 h-3 md:w-4 md:h-4 text-blue-600" />
                                 </div>
-                                <h1 className="text-3xl font-black text-gray-900 tracking-tight">จัดการราคาขายส่ง</h1>
+                                <h1 className="text-xl md:text-3xl font-black text-gray-900 tracking-tight">จัดการราคาขายส่ง</h1>
                             </div>
-                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider ml-11">Bulk Pricing & Volume Discounts: {rates.length} Active Tiers</p>
+                            <p className="text-[8px] md:text-[10px] text-gray-400 font-bold uppercase tracking-wider ml-1 sm:ml-11">{rates.length} Active Tiers</p>
                         </div>
                     </div>
 
                     <button
                         onClick={() => handleOpenModal()}
-                        className="bg-gray-900 text-white px-8 py-4 rounded-[1.5rem] font-black flex items-center justify-center gap-3 hover:scale-[1.02] transition-all shadow-xl shadow-gray-200"
+                        className="bg-gray-900 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl md:rounded-[1.5rem] font-black text-sm md:text-base flex items-center justify-center gap-2 md:gap-3 hover:scale-[1.02] transition-all shadow-lg"
                     >
-                        <Plus className="w-6 h-6" />
+                        <Plus className="w-5 h-5 md:w-6 md:h-6" />
                         เพิ่มช่วงราคา
                     </button>
                 </div>
@@ -215,73 +215,73 @@ export default function AdminWholesalePage() {
                         </button>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                         {rates.map((rate) => (
                             <div
                                 key={rate.id}
                                 className={`bg-white rounded-[2.5rem] border overflow-hidden transition-all duration-500 group relative ${rate.isPopular ? 'border-amber-400 ring-4 ring-amber-50 shadow-2xl shadow-amber-100/50' : 'border-gray-100 shadow-sm hover:shadow-xl'}`}
                             >
                                 {rate.isPopular && (
-                                    <div className="absolute top-6 right-6 z-10">
-                                        <div className="bg-amber-400 text-white text-[10px] font-black px-4 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg shadow-amber-400/30">
-                                            <Flame className="w-3.5 h-3.5" /> POPULAR
+                                    <div className="absolute top-4 md:top-6 right-4 md:right-6 z-10">
+                                        <div className="bg-amber-400 text-white text-[8px] md:text-[10px] font-black px-3 md:px-4 py-1 md:py-1.5 rounded-full flex items-center gap-1 md:gap-1.5 shadow-lg shadow-amber-400/30">
+                                            <Flame className="w-3 md:w-3.5 h-3 md:h-3.5" /> POPULAR
                                         </div>
                                     </div>
                                 )}
 
-                                <div className="p-8 pb-4">
-                                    <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center text-brand-900 mb-6 group-hover:scale-110 transition-transform duration-500">
-                                        <LayoutGrid className="w-7 h-7" />
+                                <div className="p-5 md:p-8 pb-3 md:pb-4">
+                                    <div className="w-10 h-10 md:w-14 md:h-14 bg-gray-50 rounded-xl md:rounded-2xl flex items-center justify-center text-brand-900 mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-500">
+                                        <LayoutGrid className="w-5 h-5 md:w-7 md:h-7" />
                                     </div>
 
-                                    <div className="mb-8">
-                                        <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] mb-2">ปริมาณขั้นต่ำ</p>
-                                        <h3 className="text-4xl font-black text-gray-900 tracking-tighter">
-                                            {rate.minQuantity}+ <span className="text-base font-bold text-gray-400 tracking-normal ml-1">กิโลกรัม</span>
+                                    <div className="mb-6 md:mb-8">
+                                        <p className="text-[8px] md:text-[10px] text-gray-400 font-black uppercase tracking-[0.15em] md:tracking-[0.2em] mb-1 md:mb-2">ปริมาณขั้นต่ำ</p>
+                                        <h3 className="text-2xl md:text-4xl font-black text-gray-900 tracking-tighter">
+                                            {rate.minQuantity}+ <span className="text-xs md:text-base font-bold text-gray-400 tracking-normal ml-0.5 md:ml-1">กิโลกรัม</span>
                                         </h3>
                                     </div>
 
-                                    <div className="space-y-4 mb-8">
-                                        <div className="flex items-center justify-between p-4 bg-green-50 rounded-2xl border border-green-100/50 group-hover:bg-green-100 transition-colors duration-500">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 bg-green-500 text-white rounded-lg flex items-center justify-center">
-                                                    <DollarSign className="w-5 h-5" />
+                                    <div className="space-y-3 md:space-y-4 mb-6 md:mb-8">
+                                        <div className="flex items-center justify-between p-3 md:p-4 bg-green-50 rounded-xl md:rounded-2xl border border-green-100/50 group-hover:bg-green-100 transition-colors duration-500">
+                                            <div className="flex items-center gap-2 md:gap-3">
+                                                <div className="w-7 h-7 md:w-8 md:h-8 bg-green-500 text-white rounded-lg flex items-center justify-center">
+                                                    <DollarSign className="w-4 h-4 md:w-5 md:h-5" />
                                                 </div>
-                                                <span className="text-sm font-black text-green-700">ราคาส่ง</span>
+                                                <span className="text-xs md:text-sm font-black text-green-700">ราคาส่ง</span>
                                             </div>
-                                            <span className="text-2xl font-black text-green-600">฿{rate.pricePerKg}</span>
+                                            <span className="text-lg md:text-2xl font-black text-green-600">฿{rate.pricePerKg}</span>
                                         </div>
 
-                                        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100 group-hover:bg-white transition-colors duration-500">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 bg-gray-200 text-gray-500 rounded-lg flex items-center justify-center">
-                                                    <Box className="w-4 h-4" />
+                                        <div className="flex items-center justify-between p-3 md:p-4 bg-gray-50 rounded-xl md:rounded-2xl border border-gray-100 group-hover:bg-white transition-colors duration-500">
+                                            <div className="flex items-center gap-2 md:gap-3">
+                                                <div className="w-7 h-7 md:w-8 md:h-8 bg-gray-200 text-gray-500 rounded-lg flex items-center justify-center">
+                                                    <Box className="w-3.5 h-3.5 md:w-4 md:h-4" />
                                                 </div>
-                                                <span className="text-sm font-bold text-gray-600">ต้นทุนเฉลี่ย</span>
+                                                <span className="text-xs md:text-sm font-bold text-gray-600">ต้นทุน</span>
                                             </div>
-                                            <span className="text-lg font-bold text-gray-900">฿{rate.costPerUnit || '0'}</span>
+                                            <span className="text-sm md:text-lg font-bold text-gray-900">฿{rate.costPerUnit || '0'}</span>
                                         </div>
 
                                         {rate.discountLabel && (
-                                            <div className="bg-amber-50 px-4 py-3 rounded-xl border border-amber-100 text-amber-700 text-xs font-black uppercase tracking-wider text-center">
+                                            <div className="bg-amber-50 px-3 md:px-4 py-2 md:py-3 rounded-lg md:rounded-xl border border-amber-100 text-amber-700 text-[9px] md:text-xs font-black uppercase tracking-wider text-center">
                                                 {rate.discountLabel}
                                             </div>
                                         )}
                                     </div>
                                 </div>
 
-                                <div className="px-8 pb-8 flex gap-3">
+                                <div className="px-5 md:px-8 pb-5 md:pb-8 flex gap-2 md:gap-3">
                                     <button
                                         onClick={() => handleOpenModal(rate)}
-                                        className="flex-1 flex items-center justify-center gap-2 py-4 bg-gray-900 text-white rounded-2xl font-black text-sm hover:bg-brand-900 transition-all hover:shadow-lg active:scale-95"
+                                        className="flex-1 flex items-center justify-center gap-1.5 md:gap-2 py-3 md:py-4 bg-gray-900 text-white rounded-xl md:rounded-2xl font-black text-xs md:text-sm hover:bg-brand-900 transition-all active:scale-95"
                                     >
-                                        <Edit2 className="w-4 h-4" /> แก้ไขข้อมูล
+                                        <Edit2 className="w-3.5 h-3.5 md:w-4 md:h-4" /> แก้ไข
                                     </button>
                                     <button
                                         onClick={() => handleDelete(rate.id)}
-                                        className="w-16 h-[52px] flex items-center justify-center bg-red-50 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all shadow-sm hover:shadow-red-200"
+                                        className="w-12 h-[44px] md:w-16 md:h-[52px] flex items-center justify-center bg-red-50 text-red-500 rounded-xl md:rounded-2xl hover:bg-red-500 hover:text-white transition-all shadow-sm"
                                     >
-                                        <Trash2 className="w-5 h-5" />
+                                        <Trash2 className="w-4 h-4 md:w-5 md:h-5" />
                                     </button>
                                 </div>
                             </div>
@@ -292,21 +292,21 @@ export default function AdminWholesalePage() {
 
             {/* Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/40 backdrop-blur-xl animate-in fade-in duration-300">
-                    <div className="bg-white rounded-[3rem] w-full max-w-xl overflow-hidden shadow-2xl ring-1 ring-white/20 animate-in zoom-in-95 slide-in-from-bottom-10 duration-500">
-                        <div className="p-10">
-                            <div className="flex justify-between items-center mb-10">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-brand-900/40 backdrop-blur-md animate-in fade-in duration-300">
+                    <div className="bg-white rounded-3xl md:rounded-[3rem] w-full max-w-xl overflow-hidden shadow-2xl animate-in zoom-in-95 slide-in-from-bottom-10 duration-500">
+                        <div className="p-6 md:p-10">
+                            <div className="flex justify-between items-center mb-6 md:mb-10">
                                 <div>
-                                    <h2 className="text-3xl font-black text-gray-900 tracking-tight">
-                                        {editingRate ? 'แก้ไขเรทราคา' : 'เพิ่มเรทราคาใหม่'}
+                                    <h2 className="text-xl md:text-3xl font-black text-gray-900 tracking-tight">
+                                        {editingRate ? 'แก้ไขเรทราคา' : 'เพิ่มราคาขายส่ง'}
                                     </h2>
-                                    <p className="text-gray-400 font-medium">ระบุเงื่อนไขและราคาสำหรับยอดสั่งซื้อปริมาณมาก</p>
+                                    <p className="text-[10px] md:text-sm text-gray-400 font-medium font-bold uppercase tracking-wider">Bulk Pricing Control Center</p>
                                 </div>
                                 <button
                                     onClick={() => setIsModalOpen(false)}
-                                    className="w-12 h-12 flex items-center justify-center bg-gray-50 text-gray-400 rounded-2xl hover:bg-gray-100 hover:text-gray-900 transition-all"
+                                    className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-gray-50 text-gray-400 rounded-xl md:rounded-2xl hover:bg-gray-100"
                                 >
-                                    <X className="w-6 h-6" />
+                                    <X className="w-5 h-5 md:w-6 md:h-6" />
                                 </button>
                             </div>
 

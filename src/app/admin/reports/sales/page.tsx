@@ -167,67 +167,67 @@ export default function SalesReportPage() {
         <main className="min-h-screen bg-[#F8F9FB]">
             <AdminHeader />
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
                 {/* Page Header */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
-                    <div className="flex items-center gap-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-8 mb-6 md:mb-10">
+                    <div className="flex items-center gap-4 md:gap-6">
                         <Link
                             href="/admin"
-                            className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 hover:border-gray-900 transition-all group"
+                            className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-xl md:rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 hover:border-gray-900 transition-all group"
                         >
-                            <ChevronLeft className="w-6 h-6 text-gray-400 group-hover:text-gray-900" />
+                            <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-gray-400 group-hover:text-gray-900" />
                         </Link>
                         <div>
-                            <div className="flex items-center gap-3 mb-1">
-                                <div className="w-8 h-8 bg-amber-50 rounded-xl flex items-center justify-center">
-                                    <TrendingUp className="w-4 h-4 text-amber-600" />
+                            <div className="flex items-center gap-2 md:gap-3 mb-0.5 md:mb-1">
+                                <div className="hidden sm:flex w-6 h-6 md:w-8 md:h-8 bg-amber-50 rounded-lg flex items-center justify-center">
+                                    <TrendingUp className="w-3.5 h-3.5 md:w-4 md:h-4 text-amber-600" />
                                 </div>
-                                <h1 className="text-3xl font-black text-gray-900 tracking-tight">รายงานยอดขาย</h1>
+                                <h1 className="text-xl md:text-3xl font-black text-gray-900 tracking-tight">รายงานยอดขาย</h1>
                             </div>
-                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider ml-11">Sales Analytics & Data Visualization / {period.toUpperCase()} View</p>
+                            <p className="text-[8px] md:text-[10px] text-gray-400 font-bold uppercase tracking-wider ml-1 sm:ml-11">Sales Analytics / {period.toUpperCase()} View</p>
                         </div>
                     </div>
 
                     <button
                         onClick={() => window.print()}
-                        className="bg-white text-gray-900 border-2 border-gray-900 px-8 py-4 rounded-[1.5rem] font-black flex items-center justify-center gap-3 hover:bg-gray-900 hover:text-white transition-all shadow-xl shadow-gray-200"
+                        className="bg-gray-900 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl md:rounded-[1.5rem] font-black text-sm md:text-base flex items-center justify-center gap-2 md:gap-3 hover:scale-[1.02] transition-all shadow-lg"
                     >
-                        <Download className="w-6 h-6" />
+                        <Download className="w-5 h-5 md:w-6 md:h-6" />
                         ส่งออกรายงาน
                     </button>
                 </div>
 
                 {/* Period & Date Controller */}
-                <div className="bg-white p-6 rounded-[2.5rem] shadow-sm border border-gray-100 mb-10 flex flex-col md:flex-row items-stretch md:items-center gap-6 ring-4 ring-gray-100/50">
-                    <div className="flex bg-gray-50 p-1.5 rounded-2xl">
+                <div className="bg-white p-4 md:p-6 rounded-2xl md:rounded-[2.5rem] shadow-sm border border-gray-100 mb-6 md:mb-10 flex flex-col md:flex-row items-stretch md:items-center gap-4 md:gap-6">
+                    <div className="flex bg-gray-50 p-1 md:p-1.5 rounded-xl md:rounded-2xl shrink-0">
                         {(['day', 'month', 'year'] as const).map((p) => (
                             <button
                                 key={p}
                                 onClick={() => setPeriod(p)}
-                                className={`px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all ${period === p ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-400 hover:text-gray-900'}`}
+                                className={`flex-1 md:flex-none px-4 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl font-black text-[10px] md:text-xs uppercase tracking-widest transition-all ${period === p ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-400 hover:text-gray-900'}`}
                             >
-                                {p === 'day' ? 'รายวัน' : p === 'month' ? 'รายเดือน' : 'รายปี'}
+                                {p === 'day' ? 'วัน' : p === 'month' ? 'เดือน' : 'ปี'}
                             </button>
                         ))}
                     </div>
 
-                    <div className="flex-1 flex items-center justify-between md:justify-end gap-6 relative">
+                    <div className="flex-1 flex items-center justify-between md:justify-end gap-3 md:gap-6 relative">
                         <button
                             onClick={handlePrev}
-                            className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center hover:bg-gray-100 transition-colors"
+                            className="w-10 h-10 md:w-12 md:h-12 bg-gray-50 rounded-lg md:rounded-xl flex items-center justify-center hover:bg-gray-100 transition-colors"
                         >
-                            <ChevronLeft className="w-6 h-6 text-gray-400" />
+                            <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-gray-400" />
                         </button>
 
                         <div
-                            className="flex items-center gap-4 cursor-pointer group"
+                            className="flex items-center gap-3 md:gap-4 cursor-pointer group"
                             onClick={handleCalendarClick}
                         >
-                            <div className="w-12 h-12 bg-gray-900 rounded-xl flex items-center justify-center shadow-lg shadow-gray-200">
-                                <Calendar className="w-5 h-5 text-white" />
+                            <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-900 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg shadow-gray-200">
+                                <Calendar className="w-4 h-4 md:w-5 md:h-5 text-white" />
                             </div>
                             <div className="text-right">
-                                <p className="text-2xl font-black text-gray-900">{getPeriodText()}</p>
+                                <p className="text-lg md:text-2xl font-black text-gray-900 leading-tight">{getPeriodText()}</p>
                             </div>
                             {period === 'year' ? (
                                 <select
@@ -265,9 +265,9 @@ export default function SalesReportPage() {
 
                         <button
                             onClick={handleNext}
-                            className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center hover:bg-gray-100 transition-colors"
+                            className="w-10 h-10 md:w-12 md:h-12 bg-gray-50 rounded-lg md:rounded-xl flex items-center justify-center hover:bg-gray-100 transition-colors"
                         >
-                            <ChevronRight className="w-6 h-6 text-gray-400" />
+                            <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-gray-400" />
                         </button>
                     </div>
                 </div>
@@ -280,72 +280,110 @@ export default function SalesReportPage() {
                 ) : (
                     <>
                         {/* Summary Stats */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                            <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
-                                <div className="flex items-center gap-4 mb-4">
-                                    <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center">
-                                        <DollarSign className="w-6 h-6 text-orange-500" />
+                        {/* Summary Stats */}
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
+                            <div className="bg-white p-4 md:p-6 rounded-xl md:rounded-[2rem] shadow-sm border border-gray-100">
+                                <div className="flex items-center gap-2 md:gap-4 mb-2 md:mb-4">
+                                    <div className="w-8 h-8 md:w-12 md:h-12 bg-orange-50 rounded-lg md:rounded-2xl flex items-center justify-center shrink-0">
+                                        <DollarSign className="w-4 h-4 md:w-6 md:h-6 text-orange-500" />
                                     </div>
-                                    <p className="text-sm font-black text-gray-400 uppercase tracking-widest">ยอดขายรวม</p>
+                                    <p className="text-[8px] md:text-sm font-black text-gray-400 uppercase tracking-widest leading-tight">ยอดขายรวม</p>
                                 </div>
-                                <h2 className="text-3xl font-black text-gray-900 tracking-tighter">฿{data?.summary?.totalRevenue.toLocaleString()}</h2>
+                                <h2 className="text-lg md:text-3xl font-black text-gray-900 tracking-tighter">฿{data?.summary?.totalRevenue.toLocaleString()}</h2>
                             </div>
 
-                            <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
-                                <div className="flex items-center gap-4 mb-4">
-                                    <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center">
-                                        <ShoppingBag className="w-6 h-6 text-blue-500" />
+                            <div className="bg-white p-4 md:p-6 rounded-xl md:rounded-[2rem] shadow-sm border border-gray-100">
+                                <div className="flex items-center gap-2 md:gap-4 mb-2 md:mb-4">
+                                    <div className="w-8 h-8 md:w-12 md:h-12 bg-blue-50 rounded-lg md:rounded-2xl flex items-center justify-center shrink-0">
+                                        <ShoppingBag className="w-4 h-4 md:w-6 md:h-6 text-blue-500" />
                                     </div>
-                                    <p className="text-sm font-black text-gray-400 uppercase tracking-widest">จำนวนออเดอร์</p>
+                                    <p className="text-[8px] md:text-sm font-black text-gray-400 uppercase tracking-widest leading-tight">จำนวนออเดอร์</p>
                                 </div>
-                                <h2 className="text-3xl font-black text-gray-900 tracking-tighter">{data?.summary?.totalOrders.toLocaleString()} ออเดอร์</h2>
+                                <h2 className="text-lg md:text-3xl font-black text-gray-900 tracking-tighter">{data?.summary?.totalOrders.toLocaleString()} <span className="text-[10px] md:text-lg font-bold text-gray-400">ออเดอร์</span></h2>
                             </div>
 
-                            <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
-                                <div className="flex items-center gap-4 mb-4">
-                                    <div className="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center">
-                                        <TrendingUp className="w-6 h-6 text-green-500" />
+                            <div className="bg-white p-4 md:p-6 rounded-xl md:rounded-[2rem] shadow-sm border border-gray-100">
+                                <div className="flex items-center gap-2 md:gap-4 mb-2 md:mb-4">
+                                    <div className="w-8 h-8 md:w-12 md:h-12 bg-green-50 rounded-lg md:rounded-2xl flex items-center justify-center shrink-0">
+                                        <TrendingUp className="w-4 h-4 md:w-6 md:h-6 text-green-500" />
                                     </div>
-                                    <p className="text-sm font-black text-gray-400 uppercase tracking-widest">กำไรสุทธิ</p>
+                                    <p className="text-[8px] md:text-sm font-black text-gray-400 uppercase tracking-widest leading-tight">กำไรสุทธิ</p>
                                 </div>
-                                <h2 className="text-3xl font-black text-gray-900 tracking-tighter">฿{data?.summary?.totalProfit.toLocaleString()}</h2>
+                                <h2 className="text-lg md:text-3xl font-black text-gray-900 tracking-tighter">฿{data?.summary?.totalProfit.toLocaleString()}</h2>
                             </div>
 
-                            <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100">
-                                <div className="flex items-center gap-4 mb-4">
-                                    <div className="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center">
-                                        <Users className="w-6 h-6 text-purple-500" />
+                            <div className="bg-white p-4 md:p-6 rounded-xl md:rounded-[2rem] shadow-sm border border-gray-100">
+                                <div className="flex items-center gap-2 md:gap-4 mb-2 md:mb-4">
+                                    <div className="w-8 h-8 md:w-12 md:h-12 bg-purple-50 rounded-lg md:rounded-2xl flex items-center justify-center shrink-0">
+                                        <Users className="w-4 h-4 md:w-6 md:h-6 text-purple-500" />
                                     </div>
-                                    <p className="text-sm font-black text-gray-400 uppercase tracking-widest">ค่าเฉลี่ย/ออเดอร์</p>
+                                    <p className="text-[8px] md:text-sm font-black text-gray-400 uppercase tracking-widest leading-tight">เฉลี่ย/ออเดอร์</p>
                                 </div>
-                                <h2 className="text-3xl font-black text-gray-900 tracking-tighter">฿{Math.round(data?.summary?.avgOrderValue).toLocaleString()}</h2>
+                                <h2 className="text-lg md:text-3xl font-black text-gray-900 tracking-tighter">฿{Math.round(data?.summary?.avgOrderValue).toLocaleString()}</h2>
                             </div>
                         </div>
 
                         {/* Chart */}
-                        <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 mb-8">
-                            <h3 className="text-xl font-black text-gray-900 mb-8 flex items-center gap-2">
-                                <div className="w-2 h-6 bg-amber-500 rounded-full"></div>
-                                กราฟแสดงแนวโน้มยอดขาย
+                        <div className="bg-white p-5 md:p-8 rounded-2xl md:rounded-[2.5rem] shadow-sm border border-gray-100 mb-6 md:mb-8">
+                            <h3 className="text-lg md:text-xl font-black text-gray-900 mb-6 md:mb-8 flex items-center gap-2">
+                                <div className="w-1.5 h-5 md:w-2 md:h-6 bg-amber-500 rounded-full"></div>
+                                แนวโน้มยอดขาย
                             </h3>
-                            <div className="h-[400px] w-full">
+                            <div className="h-[250px] md:h-[400px] w-full">
                                 <Line options={chartOptions} data={chartData} />
                             </div>
                         </div>
 
-                        {/* Order Table */}
-                        <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
-                            <div className="p-8 border-b border-gray-50 flex items-center justify-between">
-                                <h3 className="text-xl font-black text-gray-900 flex items-center gap-2">
-                                    <div className="w-2 h-6 bg-blue-500 rounded-full"></div>
-                                    รายการสั่งซื้อในระบบ
+                        {/* Order List */}
+                        <div className="bg-white rounded-2xl md:rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
+                            <div className="p-5 md:p-8 border-b border-gray-50 flex items-center justify-between">
+                                <h3 className="text-lg md:text-xl font-black text-gray-900 flex items-center gap-2">
+                                    <div className="w-1.5 h-5 md:w-2 md:h-6 bg-blue-500 rounded-full"></div>
+                                    รายการสั่งซื้อ
                                 </h3>
-                                <button className="flex items-center gap-2 px-4 py-2 bg-gray-50 text-gray-600 rounded-xl font-black text-sm hover:bg-gray-100 transition-all">
-                                    <Download className="w-4 h-4" />
+                                <button className="flex items-center gap-2 px-3 md:px-4 py-2 bg-gray-50 text-gray-600 rounded-lg md:rounded-xl font-black text-[10px] md:text-sm hover:bg-gray-100 transition-all uppercase tracking-widest shrink-0">
+                                    <Download className="w-3.5 h-3.5 md:w-4 md:h-4" />
                                     ส่งออก Excel
                                 </button>
                             </div>
-                            <div className="overflow-x-auto">
+
+                            {/* Mobile View: Cards */}
+                            <div className="block md:hidden">
+                                {data?.orders.length === 0 ? (
+                                    <div className="p-10 text-center text-gray-400 italic font-bold">ไม่พบข้อมูลการขาย</div>
+                                ) : (
+                                    <div className="divide-y divide-gray-50">
+                                        {data?.orders.map((order: any) => (
+                                            <div key={order.id} className="p-4 flex flex-col gap-3">
+                                                <div className="flex justify-between items-start">
+                                                    <div>
+                                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Order ID: {order.id.slice(-6).toUpperCase()}</p>
+                                                        <p className="text-sm font-black text-gray-900">{order.customerName}</p>
+                                                    </div>
+                                                    <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase ${order.status === 'DELIVERED' ? 'bg-green-100 text-green-700' :
+                                                        order.status === 'PENDING' ? 'bg-orange-100 text-orange-700' :
+                                                            'bg-gray-100 text-gray-600'
+                                                        }`}>
+                                                        {order.status}
+                                                    </span>
+                                                </div>
+                                                <div className="flex justify-between items-center text-xs">
+                                                    <p className="text-gray-500 font-bold">{format(new Date(order.createdAt), 'dd MMM yy HH:mm', { locale: th })}</p>
+                                                    <div className="text-right">
+                                                        <p className="font-black text-amber-600">฿{order.totalAmount.toLocaleString()}</p>
+                                                        {order.discountAmount > 0 && (
+                                                            <p className="text-[10px] text-green-600 font-bold">-฿{order.discountAmount.toLocaleString()}</p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Desktop View: Table */}
+                            <div className="hidden md:block overflow-x-auto">
                                 <table className="w-full">
                                     <thead>
                                         <tr className="bg-gray-50/50">
