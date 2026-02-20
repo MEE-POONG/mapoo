@@ -108,7 +108,7 @@ jobs:
               --label io.portainer.accesscontrol.teams=discord \
               --restart=always -d \
               -p $TARGET_PORT:3000 \
-              --network mapoo-network \
+              --network kong_kong-net \
               --dns 8.8.8.8 --dns 1.1.1.1 \
               -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
               -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
