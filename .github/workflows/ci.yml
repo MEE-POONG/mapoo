@@ -86,7 +86,7 @@ jobs:
           script: |
             set -e
             TAG="${{ github.event.inputs.tag || github.run_id }}"
-            CONTAINER_NAME="mapoo-shop-dashboard"
+            CONTAINER_NAME="mapoo"
             IMAGE_NAME="chunwarayut/mapoo-shop"
             TARGET_PORT=7081
             
