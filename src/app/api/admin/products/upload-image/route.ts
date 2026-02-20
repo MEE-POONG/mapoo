@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { verifyAdminToken, getAdminTokenFromHeaders } from '@/lib/adminAuth';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
+import { uploadToCloudflare } from '@/lib/cloudflare';
 
 export async function POST(request: Request) {
     try {
@@ -30,24 +29,17 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'กรุณาอัปโหลดเฉพาะไฟล์รูปภาพ (JPG, PNG, WEBP)' }, { status: 400 });
         }
 
-        const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
+        // อัปโหลดไปยัง Cloudflare Images
+        const result = await uploadToCloudflare(file);
 
-        // Define path
-        const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'products');
+        if (!result.success) {
+            return NextResponse.json(
+                { error: result.error || 'เกิดข้อผิดพลาดในการอัปโหลด' },
+                { status: 500 }
+            );
+        }
 
-        // Create directory
-        try {
-            await mkdir(uploadDir, { recursive: true });
-        } catch (e) { }
-
-        const fileName = `prod_${Date.now()}${path.extname(file.name)}`;
-        const filePath = path.join(uploadDir, fileName);
-
-        await writeFile(filePath, buffer);
-
-        const fileUrl = `/uploads/products/${fileName}`;
-        return NextResponse.json({ url: fileUrl });
+        return NextResponse.json({ url: result.url, imageId: result.imageId });
 
     } catch (error) {
         console.error('Upload product image error:', error);

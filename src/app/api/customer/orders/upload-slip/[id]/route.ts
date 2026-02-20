@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { verifyToken, getTokenFromHeaders } from '@/lib/auth';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
+import { uploadToCloudflare } from '@/lib/cloudflare';
 
 export async function POST(
     request: Request,
@@ -47,38 +46,26 @@ export async function POST(
             return NextResponse.json({ error: 'ไม่พบออเดอร์หรือคุณไม่มีสิทธิ์เข้าถึง' }, { status: 403 });
         }
 
-        // Convert file to Buffer
-        const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
+        // --- 3. อัปโหลดไปยัง Cloudflare Images ---
+        const result = await uploadToCloudflare(file);
 
-        // Define path
-        const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'slips');
-
-        // Create directory if not exists
-        try {
-            await mkdir(uploadDir, { recursive: true });
-        } catch (e) {
-            // Directory exists or other error handled by writeFile
+        if (!result.success) {
+            return NextResponse.json(
+                { error: result.error || 'เกิดข้อผิดพลาดในการอัปโหลด' },
+                { status: 500 }
+            );
         }
-
-        const fileName = `${orderId}_${Date.now()}${path.extname(file.name)}`;
-        const filePath = path.join(uploadDir, fileName);
-
-        // Write file
-        await writeFile(filePath, buffer);
-
-        const fileUrl = `/uploads/slips/${fileName}`;
 
         // Update Order
         await prisma.order.update({
             where: { id: orderId },
             data: {
-                slipImageUrl: fileUrl,
+                slipImageUrl: result.url!,
                 status: 'PENDING'
             }
         });
 
-        return NextResponse.json({ message: 'อัปโหลดหลักฐานเรียบร้อยแล้ว', url: fileUrl });
+        return NextResponse.json({ message: 'อัปโหลดหลักฐานเรียบร้อยแล้ว', url: result.url });
 
     } catch (error) {
         console.error('Upload slip error:', error);

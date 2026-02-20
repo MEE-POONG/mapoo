@@ -2,7 +2,7 @@
 const nextConfig = {
     output: 'standalone',
     images: {
-        domains: ['images.unsplash.com', 'localhost'],
+        domains: ['images.unsplash.com', 'localhost', 'imagedelivery.net'],
     },
 };
 
