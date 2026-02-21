@@ -54,27 +54,27 @@ export default function Navbar() {
     return (
         <nav className="glass-nav fixed w-full z-50 border-b border-brand-200 shadow-sm transition-all duration-300">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between items-center h-20">
+                <div className="flex justify-between items-center h-16 sm:h-20">
                     {/* Logo */}
                     <Link href="/" className="flex-shrink-0 flex items-center gap-2 cursor-pointer group">
                         <img
                             src="/logo.png"
                             alt=" Logo"
-                            className="w-10 h-10 object-contain group-hover:rotate-12 transition-transform duration-300"
+                            className="w-8 h-8 sm:w-10 sm:h-10 object-contain group-hover:rotate-12 transition-transform duration-300"
                         />
                         <div>
-                            <span className="font-bold text-2xl tracking-tight text-brand-800 group-hover:text-accent-600 transition-colors">คุณปู หมูแดดเดียว</span>
+                            <span className="font-bold text-lg sm:text-2xl tracking-tight text-brand-800 group-hover:text-accent-600 transition-colors">คุณปู หมูแดดเดียว</span>
                             <p className="text-xs text-brand-500 -mt-1 tracking-wider uppercase font-semibold">โคราช</p>
                         </div>
                     </Link>
 
                     {/* Desktop Menu */}
-                    <div className="hidden lg:flex lg:space-x-8 items-center">
+                    <div className="hidden xl:flex xl:space-x-6 items-center">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className={`font-medium text-sm lg:text-base transition-all duration-300 relative group ${pathname === link.href ? 'text-accent-600' : 'text-brand-700 hover:text-accent-600'
+                                className={`font-medium text-sm transition-all duration-300 relative group whitespace-nowrap ${pathname === link.href ? 'text-accent-600' : 'text-brand-700 hover:text-accent-600'
                                     }`}
                             >
                                 {link.name}
@@ -89,7 +89,7 @@ export default function Navbar() {
                         {/* Auth Buttons */}
                         {!isLoading && (
                             customer ? (
-                                <div className="relative hidden lg:block" ref={dropdownRef}>
+                                <div className="relative hidden xl:block" ref={dropdownRef}>
                                     <button
                                         onClick={() => setShowDropdown(!showDropdown)}
                                         className="flex items-center gap-2 px-4 py-2 bg-accent-50 text-accent-700 rounded-xl hover:bg-accent-100 transition-colors border border-accent-200"
@@ -130,7 +130,7 @@ export default function Navbar() {
                                     )}
                                 </div>
                             ) : (
-                                <div className="hidden lg:flex items-center gap-2">
+                                <div className="hidden xl:flex items-center gap-2">
                                     <Link
                                         href="/login"
                                         className="px-4 py-2 text-brand-700 hover:text-accent-600 font-medium transition-colors"
@@ -151,7 +151,7 @@ export default function Navbar() {
                         {!isLoading && (
                             <Link
                                 href={customer ? "/account" : "/login"}
-                                className="lg:hidden text-brand-700 hover:text-accent-600 p-2"
+                                className="xl:hidden text-brand-700 hover:text-accent-600 p-2"
                             >
                                 {customer ? <User className="w-6 h-6 text-accent-600" /> : <LogIn className="w-6 h-6" />}
                             </Link>
@@ -170,7 +170,7 @@ export default function Navbar() {
                         {/* Mobile Menu Toggle */}
                         <button
                             onClick={() => setShowMobileMenu(!showMobileMenu)}
-                            className="lg:hidden text-brand-700 hover:text-accent-600 p-2"
+                            className="xl:hidden text-brand-700 hover:text-accent-600 p-2"
                         >
                             <Menu className="w-7 h-7" />
                         </button>
@@ -180,7 +180,7 @@ export default function Navbar() {
 
             {/* Mobile Sidebar Overlay */}
             {showMobileMenu && (
-                <div className="fixed inset-0 z-[9999] lg:hidden">
+                <div className="fixed inset-0 z-[9999] xl:hidden">
                     {/* Backdrop */}
                     <div
                         className="fixed inset-0 bg-brand-900/40"
